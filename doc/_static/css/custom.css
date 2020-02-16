@@ -1,0 +1,90 @@
+body {
+    counter-reset: listing;
+}
+
+/* By default table cells don't wrap in RTD style.
+   This makes them wrap again. */
+.wy-table-responsive table td {
+    white-space: normal;
+}
+.code-block-caption::before {
+    counter-increment: listing;
+    content: "Listing " counter(listing) ": ";
+}
+.code-block-caption {
+    font-family: 'Consolas', 'courier new', 'courier';
+    font-size: 15px;
+}
+#example-code div {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+h1, h2, h3 {
+	width: 100%;
+}
+.figure {
+	margin-left: 2px;
+	margin-right: 2px;
+}
+.rst-content .highlight>pre {
+    line-height: 1.5;
+}
+.wy-nav-content-wrap {
+    background: #fff;
+}
+.wy-side-nav-search {
+    background-color: #931a2a;
+}
+.wy-side-nav-search > div.version {
+    color: #FFF;
+}
+div[class^='highlight'] {
+    border-style: solid;
+    border-width: 2px 0 2px 0;
+    background: #FCFCFC;
+}
+div[class^='highlight'] pre {
+    white-space: pre;
+    margin: 0;
+    padding: 12px 12px;
+    font-family: Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    display: block;
+    overflow: auto;
+    color: #404040;
+}
+.headerlink {
+    visibility: hidden;
+}
+.rst-content code.literal {
+	color: black;
+    font-weight: bold;
+}
+.wy-nav-content-wrap {
+    background: #fff;
+}
+.wy-side-nav-search {
+    background-color: #931a2a;
+}
+.wy-side-nav-search > div.version {
+    color: #FFF;
+}
+.wy-menu-vertical {
+    font-family: "Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;
+}
+.wy-plain-list-disc, .rst-content .section ul, .rst-content .toctree-wrapper ul, article ul {
+    list-style: disc;
+    line-height: 30px;
+    margin-bottom: 30px;
+}
+.wy-table-responsive table td, .wy-table-responsive table th {
+    white-space: normal;
+}
+.c1 {
+    color: #28811f;
+}
+.bp {
+    color: #004bd7;
+}

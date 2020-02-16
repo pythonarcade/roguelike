@@ -1,0 +1,10 @@
+sphinx
+sphinx-rtd-theme
+wheel
+black
+pytest
+coveralls
+flake8
+pytest-cov
+pre-commit
+arcade
