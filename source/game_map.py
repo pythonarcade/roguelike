@@ -15,7 +15,9 @@ class GameMap:
 
         return tiles
 
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
+    def make_map(
+        self, max_rooms, room_min_size, room_max_size, map_width, map_height, player
+    ):
         rooms = []
         num_rooms = 0
 

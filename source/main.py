@@ -25,20 +25,24 @@ WALL_CHAR = 219
 FOV_RADIUS = 10
 
 colors = {
-    'dark_wall': (0, 0, 100),
-    'dark_ground': (50, 50, 150),
-    'light_wall': (130, 110, 50),
-    'light_ground': (200, 180, 50)
+    "dark_wall": (0, 0, 100),
+    "dark_ground": (50, 50, 150),
+    "light_wall": (130, 110, 50),
+    "light_ground": (200, 180, 50),
 }
 
-textures = arcade.load_spritesheet(":resources:images/spritesheets/codepage_437.png",
-                                   sprite_width=SPRITE_WIDTH,
-                                   sprite_height=SPRITE_HEIGHT,
-                                   columns=32,
-                                   count=8 * 32)
+textures = arcade.load_spritesheet(
+    ":resources:images/spritesheets/codepage_437.png",
+    sprite_width=SPRITE_WIDTH,
+    sprite_height=SPRITE_HEIGHT,
+    columns=32,
+    count=8 * 32,
+)
+
 
 class Item(arcade.Sprite):
     """ Character Sprite on Screen """
+
     def __init__(self, letter, color):
         super().__init__(scale=SCALE)
         self._x = 0
@@ -76,10 +80,12 @@ class Item(arcade.Sprite):
         self._y = value
         self.center_y = self._y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
 
+
 def char_to_pixel(char_x, char_y):
     px = char_x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
     py = char_y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
     return px, py
+
 
 def recalculate_fov(char_x, char_y, radius, sprite_list):
     for sprite in sprite_list:
@@ -98,7 +104,7 @@ def recalculate_fov(char_x, char_y, radius, sprite_list):
         for j in range(radius):
             v1 = char_x, char_y
             v2 = x, y
-            x2, y2 = arcade.lerp_vec(v1, v2, j/radius)
+            x2, y2 = arcade.lerp_vec(v1, v2, j / radius)
 
             pixel_point = char_to_pixel(x2, y2)
 
@@ -111,17 +117,15 @@ def recalculate_fov(char_x, char_y, radius, sprite_list):
             if blocked:
                 break
 
-
     for sprite in sprite_list:
         if sprite.is_visible and sprite.block_sight:
-            sprite.color = colors['light_wall']
+            sprite.color = colors["light_wall"]
         elif not sprite.is_visible and sprite.block_sight:
-            sprite.color = colors['dark_wall']
+            sprite.color = colors["dark_wall"]
         elif not sprite.is_visible and not sprite.block_sight:
-            sprite.color = colors['dark_ground']
+            sprite.color = colors["dark_ground"]
         elif sprite.is_visible and not sprite.block_sight:
-            sprite.color = colors['light_ground']
-
+            sprite.color = colors["light_ground"]
 
 
 class MyGame(arcade.Window):
@@ -142,8 +146,9 @@ class MyGame(arcade.Window):
         """ Set up the game here. Call this function to restart the game. """
 
         self.characters = arcade.SpriteList()
-        self.dungeon_sprites = arcade.SpriteList(use_spatial_hash=True,
-                                                 spatial_hash_cell_size=16)
+        self.dungeon_sprites = arcade.SpriteList(
+            use_spatial_hash=True, spatial_hash_cell_size=16
+        )
 
         self.player = Item(ord("@"), arcade.csscolor.WHITE)
         self.player.x = 0
@@ -160,7 +165,9 @@ class MyGame(arcade.Window):
         max_rooms = 30
 
         self.game_map = GameMap(map_width, map_height)
-        self.game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, self.player)
+        self.game_map.make_map(
+            max_rooms, room_min_size, room_max_size, map_width, map_height, self.player
+        )
         print(self.player.x, self.player.y)
 
         # Draw all the tiles in the game map
@@ -169,17 +176,16 @@ class MyGame(arcade.Window):
                 wall = self.game_map.tiles[x][y].block_sight
 
                 if wall:
-                    sprite = Item(WALL_CHAR, colors.get('dark_wall'))
+                    sprite = Item(WALL_CHAR, colors.get("dark_wall"))
                     sprite.block_sight = True
                 else:
-                    sprite = Item(WALL_CHAR, colors.get('dark_ground'))
+                    sprite = Item(WALL_CHAR, colors.get("dark_ground"))
                     sprite.block_sight = False
 
                 sprite.x = x
                 sprite.y = y
 
                 self.dungeon_sprites.append(sprite)
-
 
     def on_draw(self):
         """
@@ -209,7 +215,9 @@ class MyGame(arcade.Window):
                 player_moved = True
 
             if player_moved:
-                recalculate_fov(self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites)
+                recalculate_fov(
+                    self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites
+                )
         except Exception as e:
             print(e)
 
