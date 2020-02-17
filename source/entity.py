@@ -12,14 +12,15 @@ textures = arcade.load_spritesheet(
 class Entity(arcade.Sprite):
     """ Character Sprite on Screen """
 
-    def __init__(self, x:int, y:int, char:str="X", color=arcade.csscolor.WHITE):
+    def __init__(self, x:int, y:int, char:str="X", color=arcade.csscolor.WHITE,
+                 name=None, blocks=False):
         super().__init__(scale=SCALE)
         self.x = x
         self.y = y
         self.color = color
         self.char = char
-        self.name = ""
-        self.blocks = False
+        self.name = name
+        self.blocks = blocks
         self.block_sight = False
         self.is_visible = False
 

@@ -106,6 +106,9 @@ class MyGame(arcade.Window):
         self.dungeon_sprites = arcade.SpriteList(
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
+        self.entities = arcade.SpriteList(
+            use_spatial_hash=True, spatial_hash_cell_size=16
+        )
 
         self.player = Entity(0, 0, "@", arcade.csscolor.WHITE)
         self.characters.append(self.player)
@@ -121,7 +124,14 @@ class MyGame(arcade.Window):
 
         self.game_map = GameMap(map_width, map_height)
         self.game_map.make_map(
-            max_rooms, room_min_size, room_max_size, map_width, map_height, self.player
+            max_rooms=max_rooms,
+            room_min_size=room_min_size,
+            room_max_size=room_max_size,
+            map_width=map_width,
+            map_height=map_height,
+            player=self.player,
+            entities=self.entities,
+            max_monsters_per_room=3
         )
 
         # Draw all the tiles in the game map
@@ -148,6 +158,7 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
+        self.entities.draw(filter=gl.GL_NEAREST)
         self.characters.draw(filter=gl.GL_NEAREST)
 
     def move(self, cx, cy):
