@@ -1,3 +1,7 @@
+"""
+Create a procedural dungeon.
+Original code from https://github.com/TStand90/roguelike_tutorial_revised
+"""
 from random import randint
 
 from rectangle import Rect

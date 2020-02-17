@@ -17,10 +17,10 @@ SCREEN_TITLE = "RogueLike"
 SCALE = 1
 SPRITE_WIDTH = 9
 SPRITE_HEIGHT = 16
-ROWS = 60
-COLUMNS = 150
-SCREEN_WIDTH = SPRITE_WIDTH * COLUMNS
-SCREEN_HEIGHT = SPRITE_HEIGHT * ROWS
+MAP_HEIGHT = 45
+MAP_WIDTH = 80
+SCREEN_WIDTH = SPRITE_WIDTH * MAP_WIDTH
+SCREEN_HEIGHT = SPRITE_HEIGHT * MAP_HEIGHT
 WALL_CHAR = 219
 FOV_RADIUS = 10
 
@@ -86,29 +86,47 @@ def char_to_pixel(char_x, char_y):
     py = char_y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
     return px, py
 
+def pixel_to_char(pixel_x, pixel_y):
+    px = pixel_x - SPRITE_WIDTH / 2 * SCALE
+    px = round(px / (SPRITE_WIDTH * SCALE))
+
+    py = pixel_y - SPRITE_HEIGHT / 2 * SCALE
+    py = round(py / SPRITE_HEIGHT * SCALE)
+    return px, py
 
 def recalculate_fov(char_x, char_y, radius, sprite_list):
     for sprite in sprite_list:
-        sprite.is_visible = False
+        if sprite.is_visible:
+            sprite.is_visible = False
+            if sprite.block_sight:
+                sprite.color = colors.get("dark_wall")
+            else:
+                sprite.color = colors.get("dark_ground")
 
+    resolution = 12
     circumference = 2 * math.pi * radius
-    print(circumference)
 
-    radians_per_point = 2 * math.pi / circumference
-    for i in range(int(round(circumference))):
+    radians_per_point = 2 * math.pi / (circumference * resolution)
+    point_count = int(round(circumference)) * resolution
+
+    for i in range(point_count):
         radians = i * radians_per_point
 
         x = math.sin(radians) * radius + char_x
         y = math.cos(radians) * radius + char_y
 
-        for j in range(radius):
+        raychecks = radius
+        for j in range(raychecks):
             v1 = char_x, char_y
             v2 = x, y
-            x2, y2 = arcade.lerp_vec(v1, v2, j / radius)
+            x2, y2 = arcade.lerp_vec(v1, v2, j / raychecks )
+            x2 = round(x2)
+            y2 = round(y2)
 
             pixel_point = char_to_pixel(x2, y2)
 
-            sprites_at_point = arcade.get_sprites_at_point(pixel_point, sprite_list)
+            sprites_at_point = arcade.get_sprites_exactly_at_point(pixel_point, sprite_list)
+            # checks += 1
             blocked = False
             for sprite in sprites_at_point:
                 sprite.is_visible = True
@@ -120,10 +138,6 @@ def recalculate_fov(char_x, char_y, radius, sprite_list):
     for sprite in sprite_list:
         if sprite.is_visible and sprite.block_sight:
             sprite.color = colors["light_wall"]
-        elif not sprite.is_visible and sprite.block_sight:
-            sprite.color = colors["dark_wall"]
-        elif not sprite.is_visible and not sprite.block_sight:
-            sprite.color = colors["dark_ground"]
         elif sprite.is_visible and not sprite.block_sight:
             sprite.color = colors["light_ground"]
 
@@ -142,6 +156,15 @@ class MyGame(arcade.Window):
         self.game_map = None
         self.dungeon_sprites = None
 
+        # Track the current state of what key is pressed
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
+        self.keyboard_frame_counter = 0
+
+
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
@@ -156,8 +179,8 @@ class MyGame(arcade.Window):
         self.characters.append(self.player)
 
         # Size of the map
-        map_width = COLUMNS
-        map_height = ROWS
+        map_width = MAP_WIDTH
+        map_height = MAP_HEIGHT
 
         # Some variables for the rooms in the map
         room_max_size = 10
@@ -168,24 +191,25 @@ class MyGame(arcade.Window):
         self.game_map.make_map(
             max_rooms, room_min_size, room_max_size, map_width, map_height, self.player
         )
-        print(self.player.x, self.player.y)
 
         # Draw all the tiles in the game map
         for y in range(self.game_map.height):
             for x in range(self.game_map.width):
                 wall = self.game_map.tiles[x][y].block_sight
-
+                sprite = Item(WALL_CHAR, arcade.csscolor.BLACK)
                 if wall:
-                    sprite = Item(WALL_CHAR, colors.get("dark_wall"))
                     sprite.block_sight = True
                 else:
-                    sprite = Item(WALL_CHAR, colors.get("dark_ground"))
                     sprite.block_sight = False
 
                 sprite.x = x
                 sprite.y = y
 
                 self.dungeon_sprites.append(sprite)
+
+        recalculate_fov(
+            self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites
+        )
 
     def on_draw(self):
         """
@@ -197,27 +221,63 @@ class MyGame(arcade.Window):
         self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
         self.characters.draw(filter=gl.GL_NEAREST)
 
-    def on_key_press(self, symbol: int, modifiers: int):
-        """ Manage keyboard input """
-        try:
-            player_moved = False
-            if symbol == arcade.key.UP:
-                self.player.y += 1
-                player_moved = True
-            elif symbol == arcade.key.DOWN:
-                self.player.y -= 1
-                player_moved = True
-            elif symbol == arcade.key.LEFT:
-                self.player.x -= 1
-                player_moved = True
-            elif symbol == arcade.key.RIGHT:
-                self.player.x += 1
-                player_moved = True
+    def move(self, cx, cy):
+        if not self.game_map.is_blocked(self.player.x + cx, self.player.y + cy):
+            self.player.x += cx
+            self.player.y += cy
+            recalculate_fov(
+                self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites
+            )
 
-            if player_moved:
-                recalculate_fov(
-                    self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites
-                )
+    def on_key_press(self, key: int, modifiers: int):
+        """ Manage keyboard input """
+        if key == arcade.key.UP:
+            self.up_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.DOWN:
+            self.down_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.LEFT:
+            self.left_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = True
+            self.keyboard_frame_counter = 0
+
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.UP:
+            self.up_pressed = False
+        elif key == arcade.key.DOWN:
+            self.down_pressed = False
+        elif key == arcade.key.LEFT:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
+
+    def on_update(self, dt):
+        try:
+            cx = 0
+            cy = 0
+            if self.keyboard_frame_counter % 10 == 0:
+
+                if self.up_pressed and not self.down_pressed:
+                    cy = 1
+                elif self.down_pressed and not self.up_pressed:
+                    cy = -1
+                if self.left_pressed and not self.right_pressed:
+                    cx = -1
+                elif self.right_pressed and not self.left_pressed:
+                    cx = 1
+
+                if cx:
+                    self.move(cx, 0)
+                if cy:
+                    self.move(0, cy)
+
+            self.keyboard_frame_counter += 1
+
         except Exception as e:
             print(e)
 
@@ -227,7 +287,3 @@ def main():
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window.setup()
     arcade.run()
-
-
-if __name__ == "__main__":
-    main()

@@ -1,3 +1,7 @@
+"""
+Tile used in creating a procedural dungeon.
+Original code from https://github.com/TStand90/roguelike_tutorial_revised
+"""
 class Tile:
     """
     A tile on a map. It may or may not be blocked, and may or may not block sight.
