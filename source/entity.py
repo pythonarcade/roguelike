@@ -25,6 +25,8 @@ class Entity(arcade.Sprite):
         super().__init__(scale=SCALE)
         self.x = x
         self.y = y
+        self.visible_color = None
+        self.not_visible_color = None
         self.color = color
         self.char = char
         self.name = name
