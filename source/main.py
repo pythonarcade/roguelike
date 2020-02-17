@@ -25,9 +25,11 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title, antialiasing=False)
 
         arcade.set_background_color(arcade.color.BLACK)
-        self.player = None
-        self.characters = None
         self.game_map = None
+        self.player = None
+
+        self.characters = None
+        self.entities = None
         self.dungeon_sprites = None
 
         # Track the current state of what key is pressed
@@ -80,12 +82,21 @@ class MyGame(arcade.Window):
                 sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
                 if wall:
                     sprite.block_sight = True
+                    sprite.visible_color = colors["light_wall"]
+                    sprite.not_visible_color = colors["dark_wall"]
                 else:
                     sprite.block_sight = False
+                    sprite.visible_color = colors["light_ground"]
+                    sprite.not_visible_color = colors["dark_ground"]
 
                 self.dungeon_sprites.append(sprite)
 
-        recalculate_fov(self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites)
+        recalculate_fov(
+            self.player.x,
+            self.player.y,
+            FOV_RADIUS,
+            [self.dungeon_sprites, self.entities],
+        )
 
     def on_draw(self):
         """
@@ -94,16 +105,19 @@ class MyGame(arcade.Window):
 
         arcade.start_render()
 
-        self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
-        self.entities.draw(filter=gl.GL_NEAREST)
-        self.characters.draw(filter=gl.GL_NEAREST)
+        self.dungeon_sprites.draw()
+        self.entities.draw()
+        self.characters.draw()
 
     def move(self, cx, cy):
         if not self.game_map.is_blocked(self.player.x + cx, self.player.y + cy):
             self.player.x += cx
             self.player.y += cy
             recalculate_fov(
-                self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites
+                self.player.x,
+                self.player.y,
+                FOV_RADIUS,
+                [self.dungeon_sprites, self.entities],
             )
 
     def on_key_press(self, key: int, modifiers: int):

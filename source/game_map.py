@@ -1,7 +1,7 @@
+import arcade
 from random import randint
 
 from entity import Entity
-
 from rectangle import Rect
 from tile import Tile
 from constants import *
@@ -115,11 +115,25 @@ class GameMap:
             ):
                 if randint(0, 100) < 80:
                     monster = Entity(
-                        x, y, "o", colors["desaturated_green"], "Orc", blocks=True
+                        x=x,
+                        y=y,
+                        char="o",
+                        color=colors["transparent"],
+                        visible_color=colors["desaturated_green"],
+                        not_visible_color=colors["transparent"],
+                        name="Orc",
+                        blocks=True,
                     )
                 else:
                     monster = Entity(
-                        x, y, "T", colors["darker_green"], "Troll", blocks=True
+                        x=x,
+                        y=y,
+                        char="T",
+                        color=colors["transparent"],
+                        visible_color=colors["darker_green"],
+                        not_visible_color=colors["transparent"],
+                        name="Troll",
+                        blocks=True,
                     )
 
                 entities.append(monster)

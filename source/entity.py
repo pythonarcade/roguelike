@@ -19,14 +19,16 @@ class Entity(arcade.Sprite):
         y: int,
         char: str = "X",
         color=arcade.csscolor.WHITE,
+        visible_color=arcade.csscolor.WHITE,
+        not_visible_color=arcade.csscolor.WHITE,
         name=None,
         blocks=False,
     ):
         super().__init__(scale=SCALE)
         self.x = x
         self.y = y
-        self.visible_color = None
-        self.not_visible_color = None
+        self.visible_color = visible_color
+        self.not_visible_color = not_visible_color
         self.color = color
         self.char = char
         self.name = name

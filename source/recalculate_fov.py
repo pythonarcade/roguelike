@@ -5,14 +5,14 @@ from constants import *
 from util import char_to_pixel
 
 
-def recalculate_fov(char_x, char_y, radius, sprite_list):
-    for sprite in sprite_list:
-        if sprite.is_visible:
-            sprite.is_visible = False
-            if sprite.block_sight:
-                sprite.color = colors.get("dark_wall")
-            else:
-                sprite.color = colors.get("dark_ground")
+def recalculate_fov(char_x, char_y, radius, sprite_lists):
+    for sprite_list in sprite_lists:
+        for sprite in sprite_list:
+            if sprite.is_visible:
+                sprite.is_visible = False
+                sprite.color = sprite.not_visible_color
+                if len(sprite.color) == 4:
+                    sprite.alpha = sprite.not_visible_color[3]
 
     resolution = 12
     circumference = 2 * math.pi * radius
@@ -36,20 +36,23 @@ def recalculate_fov(char_x, char_y, radius, sprite_list):
 
             pixel_point = char_to_pixel(x2, y2)
 
-            sprites_at_point = arcade.get_sprites_at_exact_point(
-                pixel_point, sprite_list
-            )
-            # checks += 1
             blocked = False
-            for sprite in sprites_at_point:
-                sprite.is_visible = True
-                if sprite.block_sight:
-                    blocked = True
+            for sprite_list in sprite_lists:
+                sprites_at_point = arcade.get_sprites_at_exact_point(
+                    pixel_point, sprite_list
+                )
+                # checks += 1
+                for sprite in sprites_at_point:
+                    sprite.is_visible = True
+                    if sprite.block_sight:
+                        blocked = True
+
             if blocked:
                 break
 
-    for sprite in sprite_list:
-        if sprite.is_visible and sprite.block_sight:
-            sprite.color = colors["light_wall"]
-        elif sprite.is_visible and not sprite.block_sight:
-            sprite.color = colors["light_ground"]
+    for sprite_list in sprite_lists:
+        for sprite in sprite_list:
+            if sprite.is_visible:
+                sprite.color = sprite.visible_color
+                if len(sprite.color) == 4:
+                    sprite.alpha = sprite.visible_color[3]
