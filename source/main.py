@@ -125,7 +125,7 @@ def recalculate_fov(char_x, char_y, radius, sprite_list):
 
             pixel_point = char_to_pixel(x2, y2)
 
-            sprites_at_point = arcade.get_sprites_exactly_at_point(pixel_point, sprite_list)
+            sprites_at_point = arcade.get_sprites_at_exact_point(pixel_point, sprite_list)
             # checks += 1
             blocked = False
             for sprite in sprites_at_point:
