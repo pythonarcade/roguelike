@@ -12,74 +12,8 @@ import pyglet.gl as gl
 import math
 
 from game_map import GameMap
-
-SCREEN_TITLE = "RogueLike"
-SCALE = 1
-SPRITE_WIDTH = 9
-SPRITE_HEIGHT = 16
-MAP_HEIGHT = 45
-MAP_WIDTH = 80
-SCREEN_WIDTH = SPRITE_WIDTH * MAP_WIDTH
-SCREEN_HEIGHT = SPRITE_HEIGHT * MAP_HEIGHT
-WALL_CHAR = 219
-FOV_RADIUS = 10
-
-colors = {
-    "dark_wall": (0, 0, 100),
-    "dark_ground": (50, 50, 150),
-    "light_wall": (130, 110, 50),
-    "light_ground": (200, 180, 50),
-}
-
-textures = arcade.load_spritesheet(
-    ":resources:images/spritesheets/codepage_437.png",
-    sprite_width=SPRITE_WIDTH,
-    sprite_height=SPRITE_HEIGHT,
-    columns=32,
-    count=8 * 32,
-)
-
-
-class Item(arcade.Sprite):
-    """ Character Sprite on Screen """
-
-    def __init__(self, letter, color):
-        super().__init__(scale=SCALE)
-        self._x = 0
-        self._y = 0
-        self.color = color
-        self.char = letter
-        self.block_sight = False
-        self.is_visible = False
-
-    @property
-    def char(self):
-        """ Character of the item """
-        return self._char
-
-    @char.setter
-    def char(self, value):
-        self._char = value
-        self.texture = textures[self._char]
-
-    @property
-    def x(self):
-        return self._x
-
-    @x.setter
-    def x(self, value):
-        self._x = value
-        self.center_x = self._x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
-
-    @property
-    def y(self):
-        return self._y
-
-    @y.setter
-    def y(self, value):
-        self._y = value
-        self.center_y = self._y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
-
+from constants import *
+from entity import Entity
 
 def char_to_pixel(char_x, char_y):
     px = char_x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
@@ -173,9 +107,7 @@ class MyGame(arcade.Window):
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
 
-        self.player = Item(ord("@"), arcade.csscolor.WHITE)
-        self.player.x = 0
-        self.player.y = 0
+        self.player = Entity(0, 0, "@", arcade.csscolor.WHITE)
         self.characters.append(self.player)
 
         # Size of the map
@@ -196,14 +128,11 @@ class MyGame(arcade.Window):
         for y in range(self.game_map.height):
             for x in range(self.game_map.width):
                 wall = self.game_map.tiles[x][y].block_sight
-                sprite = Item(WALL_CHAR, arcade.csscolor.BLACK)
+                sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
                 if wall:
                     sprite.block_sight = True
                 else:
                     sprite.block_sight = False
-
-                sprite.x = x
-                sprite.y = y
 
                 self.dungeon_sprites.append(sprite)
 
