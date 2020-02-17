@@ -15,10 +15,12 @@ from game_map import GameMap
 from constants import *
 from entity import Entity
 
+
 def char_to_pixel(char_x, char_y):
     px = char_x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
     py = char_y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
     return px, py
+
 
 def pixel_to_char(pixel_x, pixel_y):
     px = pixel_x - SPRITE_WIDTH / 2 * SCALE
@@ -27,6 +29,7 @@ def pixel_to_char(pixel_x, pixel_y):
     py = pixel_y - SPRITE_HEIGHT / 2 * SCALE
     py = round(py / SPRITE_HEIGHT * SCALE)
     return px, py
+
 
 def recalculate_fov(char_x, char_y, radius, sprite_list):
     for sprite in sprite_list:
@@ -53,13 +56,15 @@ def recalculate_fov(char_x, char_y, radius, sprite_list):
         for j in range(raychecks):
             v1 = char_x, char_y
             v2 = x, y
-            x2, y2 = arcade.lerp_vec(v1, v2, j / raychecks )
+            x2, y2 = arcade.lerp_vec(v1, v2, j / raychecks)
             x2 = round(x2)
             y2 = round(y2)
 
             pixel_point = char_to_pixel(x2, y2)
 
-            sprites_at_point = arcade.get_sprites_at_exact_point(pixel_point, sprite_list)
+            sprites_at_point = arcade.get_sprites_at_exact_point(
+                pixel_point, sprite_list
+            )
             # checks += 1
             blocked = False
             for sprite in sprites_at_point:
@@ -98,7 +103,6 @@ class MyGame(arcade.Window):
 
         self.keyboard_frame_counter = 0
 
-
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
@@ -131,7 +135,7 @@ class MyGame(arcade.Window):
             map_height=map_height,
             player=self.player,
             entities=self.entities,
-            max_monsters_per_room=3
+            max_monsters_per_room=3,
         )
 
         # Draw all the tiles in the game map
@@ -146,9 +150,7 @@ class MyGame(arcade.Window):
 
                 self.dungeon_sprites.append(sprite)
 
-        recalculate_fov(
-            self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites
-        )
+        recalculate_fov(self.player.x, self.player.y, FOV_RADIUS, self.dungeon_sprites)
 
     def on_draw(self):
         """

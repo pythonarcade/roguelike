@@ -9,11 +9,19 @@ textures = arcade.load_spritesheet(
     count=8 * 32,
 )
 
+
 class Entity(arcade.Sprite):
     """ Character Sprite on Screen """
 
-    def __init__(self, x:int, y:int, char:str="X", color=arcade.csscolor.WHITE,
-                 name=None, blocks=False):
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        char: str = "X",
+        color=arcade.csscolor.WHITE,
+        name=None,
+        blocks=False,
+    ):
         super().__init__(scale=SCALE)
         self.x = x
         self.y = y

@@ -6,6 +6,7 @@ from rectangle import Rect
 from tile import Tile
 from constants import *
 
+
 class GameMap:
     def __init__(self, width, height):
         self.width = width
@@ -17,8 +18,17 @@ class GameMap:
 
         return tiles
 
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
-                 max_monsters_per_room):
+    def make_map(
+        self,
+        max_rooms,
+        room_min_size,
+        room_max_size,
+        map_width,
+        map_height,
+        player,
+        entities,
+        max_monsters_per_room,
+    ):
         rooms = []
         num_rooms = 0
 
@@ -100,11 +110,17 @@ class GameMap:
             y = randint(room.y1 + 1, room.y2 - 1)
 
             # Check if an entity is already in that location
-            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+            if not any(
+                [entity for entity in entities if entity.x == x and entity.y == y]
+            ):
                 if randint(0, 100) < 80:
-                    monster = Entity(x, y, 'o', colors['desaturated_green'], 'Orc', blocks=True)
+                    monster = Entity(
+                        x, y, "o", colors["desaturated_green"], "Orc", blocks=True
+                    )
                 else:
-                    monster = Entity(x, y, 'T', colors['darker_green'], 'Troll', blocks=True)
+                    monster = Entity(
+                        x, y, "T", colors["darker_green"], "Troll", blocks=True
+                    )
 
                 entities.append(monster)
 

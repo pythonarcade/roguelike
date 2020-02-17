@@ -2,6 +2,8 @@
 Rect used in creating a procedural dungeon.
 Original code from https://github.com/TStand90/roguelike_tutorial_revised
 """
+
+
 class Rect:
     # a rectangle on the map. used to characterize a room.
     def __init__(self, x, y, w, h):
