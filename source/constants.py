@@ -9,6 +9,9 @@ SCREEN_HEIGHT = SPRITE_HEIGHT * MAP_HEIGHT
 WALL_CHAR = chr(219)
 FOV_RADIUS = 10
 
+PLAYER_TURN = 1
+ENEMY_TURN = 2
+
 colors = {
     "dark_wall": (0, 0, 100, 255),
     "dark_ground": (50, 50, 150, 255),

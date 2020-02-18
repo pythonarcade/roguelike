@@ -41,6 +41,9 @@ class Entity(arcade.Sprite):
         self.x += dx
         self.y += dy
 
+    def process_turn(self):
+        print(f"The {self.name} ponders its existence.")
+
     @property
     def char(self):
         """ Character of the item """

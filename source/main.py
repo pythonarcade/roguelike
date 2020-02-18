@@ -17,13 +17,13 @@ from recalculate_fov import recalculate_fov
 from util import char_to_pixel
 
 
-def is_open(x, y, sprite_list):
+def get_blocking_sprites(x, y, sprite_list):
     px, py = char_to_pixel(x, y)
-    sprites = arcade.get_sprites_at_exact_point((px, py), sprite_list)
-    for sprite in sprites:
-        if sprite.blocks:
-            return False
-    return True
+    sprite_list = arcade.get_sprites_at_exact_point((px, py), sprite_list)
+    for sprite in sprite_list:
+        if not sprite.blocks:
+            sprite_list.remove(sprite)
+    return sprite_list
 
 
 class MyGame(arcade.Window):
@@ -47,12 +47,17 @@ class MyGame(arcade.Window):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+        self.game_state = PLAYER_TURN
 
         self.keyboard_frame_counter = 0
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
+        # Set game state
+        self.game_state = PLAYER_TURN
+
+        # Create sprite lists
         self.characters = arcade.SpriteList()
         self.dungeon_sprites = arcade.SpriteList(
             use_spatial_hash=True, spatial_hash_cell_size=16
@@ -61,9 +66,11 @@ class MyGame(arcade.Window):
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
 
+        # Create player
         self.player = Entity(0, 0, "@", arcade.csscolor.WHITE)
         self.characters.append(self.player)
 
+        # --- Create map
         # Size of the map
         map_width = MAP_WIDTH
         map_height = MAP_HEIGHT
@@ -104,6 +111,7 @@ class MyGame(arcade.Window):
 
                 self.dungeon_sprites.append(sprite)
 
+        # Set field of view
         recalculate_fov(
             self.player.x,
             self.player.y,
@@ -118,15 +126,17 @@ class MyGame(arcade.Window):
 
         arcade.start_render()
 
-        self.dungeon_sprites.draw()
-        self.entities.draw()
-        self.characters.draw()
+        self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
+        self.entities.draw(filter=gl.GL_NEAREST)
+        self.characters.draw(filter=gl.GL_NEAREST)
 
 
-    def move(self, cx, cy):
+    def move_player(self, cx, cy):
         nx = self.player.x + cx
         ny = self.player.y + cy
-        if is_open(nx, ny, self.dungeon_sprites) and is_open(nx, ny, self.entities):
+        blocking_dungeon_sprites = get_blocking_sprites(nx, ny, self.dungeon_sprites)
+        blocking_entity_sprites = get_blocking_sprites(nx, ny, self.entities)
+        if len(blocking_dungeon_sprites) + len(blocking_entity_sprites) == 0:
             self.player.x += cx
             self.player.y += cy
             recalculate_fov(
@@ -135,6 +145,12 @@ class MyGame(arcade.Window):
                 FOV_RADIUS,
                 [self.dungeon_sprites, self.entities],
             )
+            return True
+        elif len(blocking_entity_sprites) > 0:
+            print(f"You kick the {blocking_entity_sprites[0].name}.")
+            return True
+
+        return False
 
     def on_key_press(self, key: int, modifiers: int):
         """ Manage keyboard input """
@@ -163,6 +179,10 @@ class MyGame(arcade.Window):
         elif key == arcade.key.RIGHT:
             self.right_pressed = False
 
+    def move_enemies(self):
+        for entity in self.entities:
+            entity.process_turn()
+
     def on_update(self, dt):
         try:
             cx = 0
@@ -179,12 +199,20 @@ class MyGame(arcade.Window):
                     cx = 1
 
                 if cx:
-                    self.move(cx, 0)
+                    success = self.move_player(cx, 0)
+                    if success:
+                        self.game_state = ENEMY_TURN
+
                 if cy:
-                    self.move(0, cy)
+                    success = self.move_player(0, cy)
+                    if success:
+                        self.game_state = ENEMY_TURN
 
             self.keyboard_frame_counter += 1
 
+            if self.game_state == ENEMY_TURN:
+                self.move_enemies()
+                self.game_state = PLAYER_TURN
         except Exception as e:
             print(e)
 
