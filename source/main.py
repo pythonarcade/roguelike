@@ -69,7 +69,8 @@ class MyGame(arcade.Window):
                              y=0,
                              char="@",
                              color=arcade.csscolor.WHITE,
-                             fighter=fighter_component)
+                             fighter=fighter_component,
+                             name="Player")
         self.characters.append(self.player)
 
         # --- Create map
@@ -149,7 +150,10 @@ class MyGame(arcade.Window):
             )
             return True
         elif blocking_entity_sprites:
-            print(f"You kick the {blocking_entity_sprites[0].name}.")
+            target = blocking_entity_sprites[0]
+            attack_results = self.player.fighter.attack(target)
+            print(attack_results)
+            # print(f"You kick the {blocking_entity_sprites[0].name}.")
             return True
 
         return False
@@ -213,38 +217,30 @@ class MyGame(arcade.Window):
                                     sprite_lists=[self.dungeon_sprites, self.entities])
 
     def on_update(self, dt):
-        # try:
-            cx = 0
-            cy = 0
-            if self.keyboard_frame_counter % 10 == 0:
+        cx = 0
+        cy = 0
+        if self.keyboard_frame_counter % 10 == 0:
 
-                if self.up_pressed or self.up_left_pressed or self.up_right_pressed:
-                    cy += 1
-                if self.down_pressed or self.down_left_pressed or self.down_right_pressed:
-                    cy -= 1
+            if self.up_pressed or self.up_left_pressed or self.up_right_pressed:
+                cy += 1
+            if self.down_pressed or self.down_left_pressed or self.down_right_pressed:
+                cy -= 1
 
-                if self.left_pressed or self.down_left_pressed or self.up_left_pressed:
-                    cx -= 1
-                if self.right_pressed or self.down_right_pressed or self.up_right_pressed:
-                    cx += 1
+            if self.left_pressed or self.down_left_pressed or self.up_left_pressed:
+                cx -= 1
+            if self.right_pressed or self.down_right_pressed or self.up_right_pressed:
+                cx += 1
 
-                if cx:
-                    success = self.move_player(cx, 0)
-                    if success:
-                        self.game_state = ENEMY_TURN
+            if cx or cy:
+                success = self.move_player(cx, cy)
+                if success:
+                    self.game_state = ENEMY_TURN
 
-                if cy:
-                    success = self.move_player(0, cy)
-                    if success:
-                        self.game_state = ENEMY_TURN
+        self.keyboard_frame_counter += 1
 
-            self.keyboard_frame_counter += 1
-
-            if self.game_state == ENEMY_TURN:
-                self.move_enemies()
-                self.game_state = PLAYER_TURN
-        # except Exception as e:
-        #     print(e)
+        if self.game_state == ENEMY_TURN:
+            self.move_enemies()
+            self.game_state = PLAYER_TURN
 
 
 def main():
