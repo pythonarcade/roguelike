@@ -40,6 +40,11 @@ class MyGame(arcade.Window):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+        self.up_left_pressed = False
+        self.up_right_pressed = False
+        self.down_left_pressed = False
+        self.down_right_pressed = False
+
         self.game_state = PLAYER_TURN
 
         self.keyboard_frame_counter = 0
@@ -151,31 +156,55 @@ class MyGame(arcade.Window):
         return False
 
     def on_key_press(self, key: int, modifiers: int):
+        print("key", key)
         """ Manage keyboard input """
-        if key == arcade.key.UP:
+        if key == arcade.key.UP or key == arcade.key.W or key == arcade.key.NUM_8:
             self.up_pressed = True
             self.keyboard_frame_counter = 0
-        elif key == arcade.key.DOWN:
+        elif key == arcade.key.DOWN or key == arcade.key.NUM_2:
             self.down_pressed = True
             self.keyboard_frame_counter = 0
-        elif key == arcade.key.LEFT:
+        elif key == arcade.key.LEFT or key == arcade.key.NUM_4:
             self.left_pressed = True
             self.keyboard_frame_counter = 0
-        elif key == arcade.key.RIGHT:
+        elif key == arcade.key.RIGHT or key == arcade.key.NUM_6:
             self.right_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.RIGHT or key == arcade.key.NUM_6:
+            self.right_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.NUM_7 or key == arcade.key.Q:
+            self.up_left_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.NUM_9 or key == arcade.key.E:
+            self.up_right_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.NUM_1 or key == arcade.key.Z:
+            self.down_left_pressed = True
+            self.keyboard_frame_counter = 0
+        elif key == arcade.key.NUM_3 or key == arcade.key.C:
+            self.down_right_pressed = True
             self.keyboard_frame_counter = 0
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP:
+        if key == arcade.key.UP or key == arcade.key.NUM_8:
             self.up_pressed = False
-        elif key == arcade.key.DOWN:
+        elif key == arcade.key.DOWN or key == arcade.key.NUM_2:
             self.down_pressed = False
-        elif key == arcade.key.LEFT:
+        elif key == arcade.key.LEFT or key == arcade.key.NUM_4:
             self.left_pressed = False
-        elif key == arcade.key.RIGHT:
+        elif key == arcade.key.RIGHT or key == arcade.key.NUM_6:
             self.right_pressed = False
+        elif key == arcade.key.NUM_7 or key == arcade.key.Q:
+            self.up_left_pressed = False
+        elif key == arcade.key.NUM_9 or key == arcade.key.E:
+            self.up_right_pressed = False
+        elif key == arcade.key.NUM_1 or key == arcade.key.Z:
+            self.down_left_pressed = False
+        elif key == arcade.key.NUM_3 or key == arcade.key.C:
+            self.down_right_pressed = False
 
     def move_enemies(self):
         for entity in self.entities:
@@ -191,14 +220,15 @@ class MyGame(arcade.Window):
             cy = 0
             if self.keyboard_frame_counter % 10 == 0:
 
-                if self.up_pressed and not self.down_pressed:
-                    cy = 1
-                elif self.down_pressed and not self.up_pressed:
-                    cy = -1
-                if self.left_pressed and not self.right_pressed:
-                    cx = -1
-                elif self.right_pressed and not self.left_pressed:
-                    cx = 1
+                if self.up_pressed or self.up_left_pressed or self.up_right_pressed:
+                    cy += 1
+                if self.down_pressed or self.down_left_pressed or self.down_right_pressed:
+                    cy -= 1
+
+                if self.left_pressed or self.down_left_pressed or self.up_left_pressed:
+                    cx -= 1
+                if self.right_pressed or self.down_right_pressed or self.up_right_pressed:
+                    cx += 1
 
                 if cx:
                     success = self.move_player(cx, 0)
