@@ -5,7 +5,8 @@ from entity import Entity
 from rectangle import Rect
 from tile import Tile
 from constants import *
-
+from fighter import Fighter
+from ai import BasicMonster
 
 class GameMap:
     def __init__(self, width, height):
@@ -114,6 +115,8 @@ class GameMap:
                 [entity for entity in entities if entity.x == x and entity.y == y]
             ):
                 if randint(0, 100) < 80:
+                    fighter_component = Fighter(hp=10, defense=0, power=3)
+                    ai_component = BasicMonster()
                     monster = Entity(
                         x=x,
                         y=y,
@@ -123,8 +126,12 @@ class GameMap:
                         not_visible_color=colors["transparent"],
                         name="Orc",
                         blocks=True,
+                        fighter=fighter_component,
+                        ai=ai_component
                     )
                 else:
+                    fighter_component = Fighter(hp=16, defense=1, power=4)
+                    ai_component = BasicMonster()
                     monster = Entity(
                         x=x,
                         y=y,
@@ -134,6 +141,8 @@ class GameMap:
                         not_visible_color=colors["transparent"],
                         name="Troll",
                         blocks=True,
+                        fighter=fighter_component,
+                        ai=ai_component
                     )
 
                 entities.append(monster)

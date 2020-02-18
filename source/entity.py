@@ -1,5 +1,7 @@
+import math
 import arcade
 from constants import *
+from util import get_blocking_sprites
 
 textures = arcade.load_spritesheet(
     ":resources:images/spritesheets/codepage_437.png",
@@ -23,6 +25,8 @@ class Entity(arcade.Sprite):
         not_visible_color=arcade.csscolor.WHITE,
         name=None,
         blocks=False,
+        fighter=None,
+        ai=None
     ):
         super().__init__(scale=SCALE)
         self.x = x
@@ -36,13 +40,35 @@ class Entity(arcade.Sprite):
         self.block_sight = False
         self.is_visible = False
 
+        self.fighter = fighter
+        if self.fighter:
+            self.fighter.owner = self
+
+        self.ai = ai
+        if self.ai:
+            self.ai.owner = self
+
     def move(self, dx, dy):
         # Move the entity by a given amount
         self.x += dx
         self.y += dy
 
-    def process_turn(self):
-        print(f"The {self.name} ponders its existence.")
+    def move_towards(self, target_x, target_y, game_map, entities):
+        dx = target_x - self.x
+        dy = target_y - self.y
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+
+        dx = int(round(dx / distance))
+        dy = int(round(dy / distance))
+
+        if not (game_map.is_blocked(self.x + dx, self.y + dy) or
+                get_blocking_sprites(self.x + dx, self.y + dy, entities)):
+            self.move(dx, dy)
+
+    def distance_to(self, other):
+        dx = other.x - self.x
+        dy = other.y - self.y
+        return math.sqrt(dx ** 2 + dy ** 2)
 
     @property
     def char(self):

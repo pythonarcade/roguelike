@@ -15,15 +15,8 @@ from constants import *
 from entity import Entity
 from recalculate_fov import recalculate_fov
 from util import char_to_pixel
-
-
-def get_blocking_sprites(x, y, sprite_list):
-    px, py = char_to_pixel(x, y)
-    sprite_list = arcade.get_sprites_at_exact_point((px, py), sprite_list)
-    for sprite in sprite_list:
-        if not sprite.blocks:
-            sprite_list.remove(sprite)
-    return sprite_list
+from fighter import Fighter
+from util import get_blocking_sprites
 
 
 class MyGame(arcade.Window):
@@ -67,7 +60,12 @@ class MyGame(arcade.Window):
         )
 
         # Create player
-        self.player = Entity(0, 0, "@", arcade.csscolor.WHITE)
+        fighter_component = Fighter(hp=30, defense=2, power=5)
+        self.player = Entity(x=0,
+                             y=0,
+                             char="@",
+                             color=arcade.csscolor.WHITE,
+                             fighter=fighter_component)
         self.characters.append(self.player)
 
         # --- Create map
@@ -136,7 +134,7 @@ class MyGame(arcade.Window):
         ny = self.player.y + cy
         blocking_dungeon_sprites = get_blocking_sprites(nx, ny, self.dungeon_sprites)
         blocking_entity_sprites = get_blocking_sprites(nx, ny, self.entities)
-        if len(blocking_dungeon_sprites) + len(blocking_entity_sprites) == 0:
+        if not blocking_dungeon_sprites and not blocking_entity_sprites:
             self.player.x += cx
             self.player.y += cy
             recalculate_fov(
@@ -146,7 +144,7 @@ class MyGame(arcade.Window):
                 [self.dungeon_sprites, self.entities],
             )
             return True
-        elif len(blocking_entity_sprites) > 0:
+        elif blocking_entity_sprites:
             print(f"You kick the {blocking_entity_sprites[0].name}.")
             return True
 
@@ -181,7 +179,11 @@ class MyGame(arcade.Window):
 
     def move_enemies(self):
         for entity in self.entities:
-            entity.process_turn()
+            if entity.ai:
+                entity.ai.take_turn(target=self.player,
+                                    fov_map=None,
+                                    game_map=self.game_map,
+                                    entities=self.entities)
 
     def on_update(self, dt):
         try:
