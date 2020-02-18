@@ -14,6 +14,16 @@ from game_map import GameMap
 from constants import *
 from entity import Entity
 from recalculate_fov import recalculate_fov
+from util import char_to_pixel
+
+
+def is_open(x, y, sprite_list):
+    px, py = char_to_pixel(x, y)
+    sprites = arcade.get_sprites_at_exact_point((px, py), sprite_list)
+    for sprite in sprites:
+        if sprite.blocks:
+            return False
+    return True
 
 
 class MyGame(arcade.Window):
@@ -81,10 +91,13 @@ class MyGame(arcade.Window):
                 wall = self.game_map.tiles[x][y].block_sight
                 sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
                 if wall:
+                    sprite.name = "Wall"
                     sprite.block_sight = True
+                    sprite.blocks = True
                     sprite.visible_color = colors["light_wall"]
                     sprite.not_visible_color = colors["dark_wall"]
                 else:
+                    sprite.name = "Ground"
                     sprite.block_sight = False
                     sprite.visible_color = colors["light_ground"]
                     sprite.not_visible_color = colors["dark_ground"]
@@ -109,8 +122,11 @@ class MyGame(arcade.Window):
         self.entities.draw()
         self.characters.draw()
 
+
     def move(self, cx, cy):
-        if not self.game_map.is_blocked(self.player.x + cx, self.player.y + cy):
+        nx = self.player.x + cx
+        ny = self.player.y + cy
+        if is_open(nx, ny, self.dungeon_sprites) and is_open(nx, ny, self.entities):
             self.player.x += cx
             self.player.y += cy
             recalculate_fov(
