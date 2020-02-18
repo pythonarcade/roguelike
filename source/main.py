@@ -18,7 +18,6 @@ from util import char_to_pixel
 from fighter import Fighter
 from util import get_blocking_sprites
 
-
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -156,7 +155,6 @@ class MyGame(arcade.Window):
         return False
 
     def on_key_press(self, key: int, modifiers: int):
-        print("key", key)
         """ Manage keyboard input """
         if key == arcade.key.UP or key == arcade.key.W or key == arcade.key.NUM_8:
             self.up_pressed = True
@@ -212,10 +210,10 @@ class MyGame(arcade.Window):
                 entity.ai.take_turn(target=self.player,
                                     fov_map=None,
                                     game_map=self.game_map,
-                                    entities=self.entities)
+                                    sprite_lists=[self.dungeon_sprites, self.entities])
 
     def on_update(self, dt):
-        try:
+        # try:
             cx = 0
             cy = 0
             if self.keyboard_frame_counter % 10 == 0:
@@ -245,8 +243,8 @@ class MyGame(arcade.Window):
             if self.game_state == ENEMY_TURN:
                 self.move_enemies()
                 self.game_state = PLAYER_TURN
-        except Exception as e:
-            print(e)
+        # except Exception as e:
+        #     print(e)
 
 
 def main():
