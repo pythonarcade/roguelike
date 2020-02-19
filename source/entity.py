@@ -39,6 +39,7 @@ class Entity(arcade.Sprite):
         self.blocks = blocks
         self.block_sight = False
         self.is_visible = False
+        self.is_dead = False
 
         self.fighter = fighter
         if self.fighter:

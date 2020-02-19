@@ -213,14 +213,15 @@ class MyGame(arcade.Window):
             if entity.ai:
                 results = entity.ai.take_turn(
                     target=self.player,
-                    fov_map=None,
-                    game_map=self.game_map,
                     sprite_lists=[self.dungeon_sprites, self.entities],
                 )
                 full_results.extend(results)
         return full_results
 
     def check_for_player_movement(self):
+        if self.player.is_dead:
+            return
+
         self.time_since_last_move_check = 0
         cx = 0
         cy = 0
@@ -254,16 +255,39 @@ class MyGame(arcade.Window):
         new_action_queue = []
         for action in self.action_queue:
             if "enemy_turn" in action:
-                print("Enemy turn")
                 new_actions = self.move_enemies()
                 if new_actions:
                     new_action_queue.extend(new_actions)
             if "message" in action:
-                print("Message")
                 print(action["message"])
             if "dead" in action:
-                print("Death")
-                action["dead"].kill()
+                target = action["dead"]
+                target.color = colors["dead_body"]
+                target.is_dead = True
+                if target is self.player:
+                    new_action_queue.extend([{'message': 'Player has died!'}])
+                else:
+                    new_action_queue.extend(
+                        [
+                            {"delay":
+                                 {
+                                     "time":DEATH_DELAY,
+                                     "action":{"remove": target}
+                                 }
+                            }
+                        ]
+                    )
+            if "remove" in action:
+                target = action["remove"]
+                target.remove_from_sprite_lists()
+            if "delay" in action:
+                target = action["delay"]
+                target["time"] -= dt
+                if target["time"] > 0:
+                    new_action_queue.extend([{"delay": target}])
+                else:
+                    new_action_queue.extend([target["action"]])
+
 
         self.action_queue = new_action_queue
 

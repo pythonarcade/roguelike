@@ -8,6 +8,7 @@ SCREEN_WIDTH = SPRITE_WIDTH * MAP_WIDTH
 SCREEN_HEIGHT = SPRITE_HEIGHT * MAP_HEIGHT
 WALL_CHAR = chr(219)
 FOV_RADIUS = 10
+DEATH_DELAY = 0.5
 
 PLAYER_TURN = 1
 ENEMY_TURN = 2
@@ -19,5 +20,6 @@ colors = {
     "light_ground": (200, 180, 50, 255),
     "desaturated_green": (63, 127, 63, 255),
     "darker_green": (0, 127, 0, 255),
+    "dead_body": (200, 0, 0),
     "transparent": (255, 255, 255, 0),
 }
