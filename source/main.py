@@ -159,52 +159,41 @@ class MyGame(arcade.Window):
     def on_key_press(self, key: int, modifiers: int):
         """ Manage keyboard input """
         self.time_since_last_move_check = None
-        if key == arcade.key.UP or key == arcade.key.W or key == arcade.key.NUM_8:
+        if key in KEYMAP_UP:
             self.up_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.DOWN or key == arcade.key.NUM_2:
+        elif key in KEYMAP_DOWN:
             self.down_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.LEFT or key == arcade.key.NUM_4:
+        elif key in KEYMAP_LEFT:
             self.left_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.RIGHT or key == arcade.key.NUM_6:
+        elif key in KEYMAP_RIGHT:
             self.right_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.RIGHT or key == arcade.key.NUM_6:
-            self.right_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.NUM_7 or key == arcade.key.Q:
+        elif key in KEYMAP_UP_LEFT:
             self.up_left_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.NUM_9 or key == arcade.key.E:
+        elif key in KEYMAP_UP_RIGHT:
             self.up_right_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.NUM_1 or key == arcade.key.Z:
+        elif key in KEYMAP_DOWN_LEFT:
             self.down_left_pressed = True
-            self.keyboard_frame_counter = 0
-        elif key == arcade.key.NUM_3 or key == arcade.key.C:
+        elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = True
-            self.keyboard_frame_counter = 0
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP or key == arcade.key.NUM_8:
+        if key in KEYMAP_UP:
             self.up_pressed = False
-        elif key == arcade.key.DOWN or key == arcade.key.NUM_2:
+        elif key in KEYMAP_DOWN:
             self.down_pressed = False
-        elif key == arcade.key.LEFT or key == arcade.key.NUM_4:
+        elif key in KEYMAP_LEFT:
             self.left_pressed = False
-        elif key == arcade.key.RIGHT or key == arcade.key.NUM_6:
+        elif key in KEYMAP_RIGHT:
             self.right_pressed = False
-        elif key == arcade.key.NUM_7 or key == arcade.key.Q:
+        elif key in KEYMAP_UP_LEFT:
             self.up_left_pressed = False
-        elif key == arcade.key.NUM_9 or key == arcade.key.E:
+        elif key in KEYMAP_UP_RIGHT:
             self.up_right_pressed = False
-        elif key == arcade.key.NUM_1 or key == arcade.key.Z:
+        elif key in KEYMAP_DOWN_LEFT:
             self.down_left_pressed = False
-        elif key == arcade.key.NUM_3 or key == arcade.key.C:
+        elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = False
 
     def move_enemies(self):
