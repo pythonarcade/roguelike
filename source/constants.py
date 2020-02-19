@@ -21,7 +21,7 @@ KEYMAP_UP_LEFT = [arcade.key.NUM_7, arcade.key.Q]
 KEYMAP_DOWN_LEFT = [arcade.key.NUM_1, arcade.key.Z]
 KEYMAP_UP_RIGHT = [arcade.key.NUM_9, arcade.key.E]
 KEYMAP_DOWN_RIGHT = [arcade.key.NUM_3, arcade.key.C]
-
+KEYMAP_PICKUP = [arcade.key.G]
 
 colors = {
     "dark_wall": (0, 0, 100, 255),
@@ -32,6 +32,7 @@ colors = {
     "status_panel_text": (0, 0, 0, 255),
     "desaturated_green": (63, 127, 63, 255),
     "darker_green": (0, 127, 0, 255),
+    "potion": (108, 0, 160, 255),
     "dying": (200, 0, 0, 255),
     "dead_body": (127, 0, 0, 255),
     "transparent": (0, 0, 0, 0),

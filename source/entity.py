@@ -28,6 +28,8 @@ class Entity(arcade.Sprite):
         blocks=False,
         fighter=None,
         ai=None,
+        inventory=None,
+        item=None
     ):
         super().__init__(scale=SCALE)
         self._x = 0
@@ -43,6 +45,8 @@ class Entity(arcade.Sprite):
         self.block_sight = False
         self.is_visible = False
         self.is_dead = False
+        self.item = item
+        self.inventory = inventory
 
         self.fighter = fighter
         if self.fighter:

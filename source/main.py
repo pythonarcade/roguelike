@@ -11,6 +11,7 @@ from recalculate_fov import recalculate_fov
 from fighter import Fighter
 from util import get_blocking_sprites
 from status_bar import draw_status_bar
+from inventory import Inventory
 
 class MyGame(arcade.Window):
     """
@@ -68,6 +69,7 @@ class MyGame(arcade.Window):
             color=arcade.csscolor.WHITE,
             fighter=fighter_component,
             name="Player",
+            inventory=Inventory(capacity=5)
         )
         self.characters.append(self.player)
 
@@ -91,6 +93,7 @@ class MyGame(arcade.Window):
             player=self.player,
             entities=self.entities,
             max_monsters_per_room=3,
+            max_items_per_room=2
         )
 
         # Take the tiles and make sprites out of them
@@ -193,6 +196,9 @@ class MyGame(arcade.Window):
             self.down_left_pressed = True
         elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = True
+        elif key in KEYMAP_PICKUP:
+            self.action_queue.extend([{'pickup': True}])
+
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -308,6 +314,13 @@ class MyGame(arcade.Window):
                     new_action_queue.extend([{"delay": target}])
                 else:
                     new_action_queue.extend([target["action"]])
+            if "pickup" in action:
+                entities = arcade.get_sprites_at_exact_point(self.player.position, self.entities)
+                for entity in entities:
+                    if entity.item:
+                        results = self.player.inventory.add_item(entity)
+                        if results:
+                            new_action_queue.extend(results)
 
         self.action_queue = new_action_queue
 
