@@ -2,6 +2,7 @@ import math
 import arcade
 from constants import *
 from util import get_blocking_sprites
+from util import char_to_pixel
 
 textures = arcade.load_spritesheet(
     ":resources:images/spritesheets/codepage_437.png",
@@ -29,6 +30,8 @@ class Entity(arcade.Sprite):
         ai=None,
     ):
         super().__init__(scale=SCALE)
+        self._x = 0
+        self._y = 0
         self.x = x
         self.y = y
         self.visible_color = visible_color
@@ -100,7 +103,8 @@ class Entity(arcade.Sprite):
     @x.setter
     def x(self, value):
         self._x = value
-        self.center_x = self._x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
+        self.center_x, self.center_y = char_to_pixel(self._x, self._y)
+        # self.center_x = self._x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
 
     @property
     def y(self):
@@ -109,4 +113,5 @@ class Entity(arcade.Sprite):
     @y.setter
     def y(self, value):
         self._y = value
-        self.center_y = self._y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
+        self.center_x, self.center_y = char_to_pixel(self._x, self._y)
+        # self.center_y = self._y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE

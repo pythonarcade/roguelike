@@ -1,11 +1,5 @@
 """
-Starting Template Simple
-
-Once you have learned how to use classes, you can begin your program with this
-template.
-
-If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.starting_template_simple
+Main Game Engine
 """
 import arcade
 import pyglet.gl as gl
@@ -16,7 +10,7 @@ from entity import Entity
 from recalculate_fov import recalculate_fov
 from fighter import Fighter
 from util import get_blocking_sprites
-
+from status_bar import draw_status_bar
 
 class MyGame(arcade.Window):
     """
@@ -49,6 +43,8 @@ class MyGame(arcade.Window):
         self.time_since_last_move_check = 0
 
         self.action_queue = []
+        self.mouse_over_text = None
+        self.mouse_position = None
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -135,19 +131,25 @@ class MyGame(arcade.Window):
         self.entities.draw(filter=gl.GL_NEAREST)
         self.characters.draw(filter=gl.GL_NEAREST)
 
+        arcade.draw_xywh_rectangle_filled(0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"])
         text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
-        arcade.draw_text(text, 0, 0, arcade.csscolor.WHITE)
+        arcade.draw_text(text, 0, 0, colors["status_panel_text"])
+        size = 65
+        margin = 2
+        draw_status_bar(size / 2 + margin, 24, size, 10, self.player.fighter.hp, self.player.fighter.max_hp)
 
         while len(self.messages) > 2:
             self.messages.pop(0)
 
-        if len(self.messages) == 2:
-            text = self.messages[1]
-            arcade.draw_text(text, 200, 0, arcade.csscolor.WHITE)
+        y = 20
+        for message in self.messages:
+            arcade.draw_text(message, 200, y, colors["status_panel_text"])
+            y -= 20
 
-        if len(self.messages) >= 1:
-            text = self.messages[0]
-            arcade.draw_text(text, 200, 20, arcade.csscolor.WHITE)
+        if self.mouse_over_text:
+            x, y = self.mouse_position
+            arcade.draw_xywh_rectangle_filled(x, y, 100, 16, arcade.color.BLACK)
+            arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
 
     def move_player(self, cx, cy):
         nx = self.player.x + cx
@@ -211,6 +213,14 @@ class MyGame(arcade.Window):
             self.down_left_pressed = False
         elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = False
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        self.mouse_position = x, y
+        sprite_list = arcade.get_sprites_at_point((x, y), self.entities)
+        self.mouse_over_text = None
+        for sprite in sprite_list:
+            if sprite.fighter and sprite.is_visible:
+                self.mouse_over_text = f"{sprite.name} {sprite.fighter.hp}/{sprite.fighter.max_hp}"
 
     def move_enemies(self):
         full_results = []
@@ -280,7 +290,7 @@ class MyGame(arcade.Window):
                             {"delay":
                                  {
                                      "time": DEATH_DELAY,
-                                     "action":{"remove": target}
+                                     "action": {"remove": target}
                                  }
                             }
                         ]
@@ -298,7 +308,6 @@ class MyGame(arcade.Window):
                     new_action_queue.extend([{"delay": target}])
                 else:
                     new_action_queue.extend([target["action"]])
-
 
         self.action_queue = new_action_queue
 
