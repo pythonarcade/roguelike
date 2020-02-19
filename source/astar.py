@@ -48,7 +48,7 @@ def astar(sprite_lists, start, end):
     while len(open_list) > 0:
         loop_count += 1
         if loop_count > 50:
-            print("BREAK!")
+            # print("BREAK!")
             return None
 
         # Get the current node

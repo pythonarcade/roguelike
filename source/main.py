@@ -133,6 +133,9 @@ class MyGame(arcade.Window):
         self.entities.draw(filter=gl.GL_NEAREST)
         self.characters.draw(filter=gl.GL_NEAREST)
 
+        text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
+        arcade.draw_text(text, 0, 0, arcade.csscolor.WHITE)
+
     def move_player(self, cx, cy):
         nx = self.player.x + cx
         ny = self.player.y + cy
