@@ -44,6 +44,8 @@ class MyGame(arcade.Window):
         self.down_left_pressed = False
         self.down_right_pressed = False
 
+        self.messages = []
+
         self.time_since_last_move_check = 0
 
         self.action_queue = []
@@ -135,6 +137,17 @@ class MyGame(arcade.Window):
 
         text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
         arcade.draw_text(text, 0, 0, arcade.csscolor.WHITE)
+
+        while len(self.messages) > 2:
+            self.messages.pop(0)
+
+        if len(self.messages) == 2:
+            text = self.messages[1]
+            arcade.draw_text(text, 200, 0, arcade.csscolor.WHITE)
+
+        if len(self.messages) >= 1:
+            text = self.messages[0]
+            arcade.draw_text(text, 200, 20, arcade.csscolor.WHITE)
 
     def move_player(self, cx, cy):
         nx = self.player.x + cx
@@ -252,6 +265,7 @@ class MyGame(arcade.Window):
                     new_action_queue.extend(new_actions)
             if "message" in action:
                 print(action["message"])
+                self.messages.append(action["message"])
             if "dead" in action:
                 target = action["dead"]
                 target.color = colors["dying"]
@@ -260,6 +274,7 @@ class MyGame(arcade.Window):
                 if target is self.player:
                     new_action_queue.extend([{'message': 'Player has died!'}])
                 else:
+                    new_action_queue.extend([{'message': f'{target.name} has been killed!'}])
                     new_action_queue.extend(
                         [
                             {"delay":
