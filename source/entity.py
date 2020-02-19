@@ -26,7 +26,7 @@ class Entity(arcade.Sprite):
         name=None,
         blocks=False,
         fighter=None,
-        ai=None
+        ai=None,
     ):
         super().__init__(scale=SCALE)
         self.x = x
@@ -61,8 +61,10 @@ class Entity(arcade.Sprite):
         dx = int(round(dx / distance))
         dy = int(round(dy / distance))
 
-        if not (game_map.is_blocked(self.x + dx, self.y + dy) or
-                get_blocking_sprites(self.x + dx, self.y + dy, entities)):
+        if not (
+            game_map.is_blocked(self.x + dx, self.y + dy)
+            or get_blocking_sprites(self.x + dx, self.y + dy, entities)
+        ):
             self.move(dx, dy)
 
     def distance_to(self, other):

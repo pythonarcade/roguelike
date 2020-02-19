@@ -12,7 +12,7 @@ class Fighter:
         self.hp -= amount
 
         if self.hp <= 0:
-            results.append({'dead': self.owner})
+            results.append({"dead": self.owner})
 
         return results
 
@@ -22,11 +22,17 @@ class Fighter:
         damage = self.power - target.fighter.defense
 
         if damage > 0:
-            results.append({'message':
-                                f'{self.owner.name.capitalize()} attacks {target.name} for {damage} hit points.'})
+            results.append(
+                {
+                    "message": f"{self.owner.name.capitalize()} attacks {target.name} for {damage} hit points."
+                }
+            )
             results.extend(target.fighter.take_damage(damage))
         else:
-            results.append({'message':
-                            f'{self.owner.name.capitalize()} attacks {target.name} but does no damage.'})
+            results.append(
+                {
+                    "message": f"{self.owner.name.capitalize()} attacks {target.name} but does no damage."
+                }
+            )
 
         return results

@@ -8,6 +8,7 @@ from constants import *
 from fighter import Fighter
 from ai import BasicMonster
 
+
 class GameMap:
     def __init__(self, width, height):
         self.width = width
@@ -127,7 +128,7 @@ class GameMap:
                         name="Orc",
                         blocks=True,
                         fighter=fighter_component,
-                        ai=ai_component
+                        ai=ai_component,
                     )
                 else:
                     fighter_component = Fighter(hp=16, defense=1, power=4)
@@ -142,7 +143,7 @@ class GameMap:
                         name="Troll",
                         blocks=True,
                         fighter=fighter_component,
-                        ai=ai_component
+                        ai=ai_component,
                     )
 
                 entities.append(monster)

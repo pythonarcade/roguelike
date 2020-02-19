@@ -14,9 +14,9 @@ from game_map import GameMap
 from constants import *
 from entity import Entity
 from recalculate_fov import recalculate_fov
-from util import char_to_pixel
 from fighter import Fighter
 from util import get_blocking_sprites
+
 
 class MyGame(arcade.Window):
     """
@@ -44,16 +44,14 @@ class MyGame(arcade.Window):
         self.down_left_pressed = False
         self.down_right_pressed = False
 
-        self.game_state = PLAYER_TURN
+        self.time_since_last_move_check = 0
 
-        self.keyboard_frame_counter = 0
+        self.action_queue = []
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
         # Set game state
-        self.game_state = PLAYER_TURN
-
         # Create sprite lists
         self.characters = arcade.SpriteList()
         self.dungeon_sprites = arcade.SpriteList(
@@ -65,12 +63,14 @@ class MyGame(arcade.Window):
 
         # Create player
         fighter_component = Fighter(hp=30, defense=2, power=5)
-        self.player = Entity(x=0,
-                             y=0,
-                             char="@",
-                             color=arcade.csscolor.WHITE,
-                             fighter=fighter_component,
-                             name="Player")
+        self.player = Entity(
+            x=0,
+            y=0,
+            char="@",
+            color=arcade.csscolor.WHITE,
+            fighter=fighter_component,
+            name="Player",
+        )
         self.characters.append(self.player)
 
         # --- Create map
@@ -95,7 +95,7 @@ class MyGame(arcade.Window):
             max_monsters_per_room=3,
         )
 
-        # Draw all the tiles in the game map
+        # Take the tiles and make sprites out of them
         for y in range(self.game_map.height):
             for x in range(self.game_map.width):
                 wall = self.game_map.tiles[x][y].block_sight
@@ -133,7 +133,6 @@ class MyGame(arcade.Window):
         self.entities.draw(filter=gl.GL_NEAREST)
         self.characters.draw(filter=gl.GL_NEAREST)
 
-
     def move_player(self, cx, cy):
         nx = self.player.x + cx
         ny = self.player.y + cy
@@ -148,18 +147,18 @@ class MyGame(arcade.Window):
                 FOV_RADIUS,
                 [self.dungeon_sprites, self.entities],
             )
-            return True
+            return [{"enemy_turn": True}]
         elif blocking_entity_sprites:
             target = blocking_entity_sprites[0]
             attack_results = self.player.fighter.attack(target)
-            print(attack_results)
-            # print(f"You kick the {blocking_entity_sprites[0].name}.")
-            return True
+            attack_results.extend([{"enemy_turn": True}])
+            return attack_results
 
-        return False
+        return None
 
     def on_key_press(self, key: int, modifiers: int):
         """ Manage keyboard input """
+        self.time_since_last_move_check = None
         if key == arcade.key.UP or key == arcade.key.W or key == arcade.key.NUM_8:
             self.up_pressed = True
             self.keyboard_frame_counter = 0
@@ -209,38 +208,64 @@ class MyGame(arcade.Window):
             self.down_right_pressed = False
 
     def move_enemies(self):
+        full_results = []
         for entity in self.entities:
             if entity.ai:
-                entity.ai.take_turn(target=self.player,
-                                    fov_map=None,
-                                    game_map=self.game_map,
-                                    sprite_lists=[self.dungeon_sprites, self.entities])
+                results = entity.ai.take_turn(
+                    target=self.player,
+                    fov_map=None,
+                    game_map=self.game_map,
+                    sprite_lists=[self.dungeon_sprites, self.entities],
+                )
+                full_results.extend(results)
+        return full_results
 
-    def on_update(self, dt):
+    def check_for_player_movement(self):
+        self.time_since_last_move_check = 0
         cx = 0
         cy = 0
-        if self.keyboard_frame_counter % 10 == 0:
 
-            if self.up_pressed or self.up_left_pressed or self.up_right_pressed:
-                cy += 1
-            if self.down_pressed or self.down_left_pressed or self.down_right_pressed:
-                cy -= 1
+        if self.up_pressed or self.up_left_pressed or self.up_right_pressed:
+            cy += 1
+        if self.down_pressed or self.down_left_pressed or self.down_right_pressed:
+            cy -= 1
 
-            if self.left_pressed or self.down_left_pressed or self.up_left_pressed:
-                cx -= 1
-            if self.right_pressed or self.down_right_pressed or self.up_right_pressed:
-                cx += 1
+        if self.left_pressed or self.down_left_pressed or self.up_left_pressed:
+            cx -= 1
+        if self.right_pressed or self.down_right_pressed or self.up_right_pressed:
+            cx += 1
 
-            if cx or cy:
-                success = self.move_player(cx, cy)
-                if success:
-                    self.game_state = ENEMY_TURN
+        if cx or cy:
+            results = self.move_player(cx, cy)
+            if results:
+                self.action_queue.extend(results)
 
-        self.keyboard_frame_counter += 1
+    def on_update(self, dt):
 
-        if self.game_state == ENEMY_TURN:
-            self.move_enemies()
-            self.game_state = PLAYER_TURN
+        if self.time_since_last_move_check is not None:
+            self.time_since_last_move_check += dt
+
+        if (
+            self.time_since_last_move_check is None
+            or self.time_since_last_move_check > 0.3
+        ):
+            self.check_for_player_movement()
+
+        new_action_queue = []
+        for action in self.action_queue:
+            if "enemy_turn" in action:
+                print("Enemy turn")
+                new_actions = self.move_enemies()
+                if new_actions:
+                    new_action_queue.extend(new_actions)
+            if "message" in action:
+                print("Message")
+                print(action["message"])
+            if "dead" in action:
+                print("Death")
+                action["dead"].kill()
+
+        self.action_queue = new_action_queue
 
 
 def main():

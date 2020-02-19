@@ -1,6 +1,7 @@
 from constants import *
 import arcade
 
+
 def char_to_pixel(char_x, char_y):
     px = char_x * SPRITE_WIDTH * SCALE + SPRITE_WIDTH / 2 * SCALE
     py = char_y * SPRITE_HEIGHT * SCALE + SPRITE_HEIGHT / 2 * SCALE
