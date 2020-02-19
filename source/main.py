@@ -251,7 +251,8 @@ class MyGame(arcade.Window):
                 print(action["message"])
             if "dead" in action:
                 target = action["dead"]
-                target.color = colors["dead_body"]
+                target.color = colors["dying"]
+                # target.visible_color = colors["dying"]
                 target.is_dead = True
                 if target is self.player:
                     new_action_queue.extend([{'message': 'Player has died!'}])
@@ -260,7 +261,7 @@ class MyGame(arcade.Window):
                         [
                             {"delay":
                                  {
-                                     "time":DEATH_DELAY,
+                                     "time": DEATH_DELAY,
                                      "action":{"remove": target}
                                  }
                             }
@@ -268,7 +269,10 @@ class MyGame(arcade.Window):
                     )
             if "remove" in action:
                 target = action["remove"]
-                target.remove_from_sprite_lists()
+                target.char = "X"
+                target.color = colors["dead_body"]
+                target.visible_color = colors["dead_body"]
+                target.blocks = False
             if "delay" in action:
                 target = action["delay"]
                 target["time"] -= dt
