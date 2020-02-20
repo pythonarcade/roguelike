@@ -30,10 +30,18 @@ class Inventory:
 
         return results
 
-    def get_item_number(self, item: int):
-        return self.items[item]
+    def get_item_number(self, item_number: int):
+        return self.items[item_number]
 
-    def remove_item_number(self, item: int):
+    def remove_item_number(self, item_number: int):
         results = []
-        self.items[item] = None
+        self.items[item_number] = None
+        return results
+
+    def remove_item(self, item: int):
+        results = []
+        for i in range(self.capacity):
+            if self.items[i] is item:
+                self.items[i] = None
+
         return results

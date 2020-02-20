@@ -7,6 +7,7 @@ from constants import *
 from fighter import Fighter
 from ai import BasicMonster
 from item import Item
+from potion import Potion
 
 
 def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
@@ -60,7 +61,7 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-            item = Entity(
+            item = Potion(
                 x=x,
                 y=y,
                 char="!",
