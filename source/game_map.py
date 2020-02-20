@@ -8,6 +8,7 @@ from fighter import Fighter
 from ai import BasicMonster
 from item import Item
 from potion import Potion
+from lightning_scroll import LightningScroll
 
 
 def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
@@ -61,15 +62,22 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-            item = Potion(
-                x=x,
-                y=y,
-                char="!",
-                color=colors["transparent"],
-                visible_color=colors["potion"],
-                name="Healing Potion",
-                item=Item(),
-            )
+            type = randint(0, 100)
+            if type < 70:
+                item = Potion(
+                    x=x,
+                    y=y,
+                    char="!",
+                    color=colors["transparent"],
+                    visible_color=colors["potion"],
+                    name="Healing Potion",
+                    item=Item(),
+                )
+            else:
+                item = LightningScroll(
+                    x=x,
+                    y=y
+                )
 
             entities.append(item)
 
