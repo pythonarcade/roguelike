@@ -167,7 +167,6 @@ class GameEngine:
                 target.color = colors["dead_body"]
                 target.visible_color = colors["dead_body"]
                 target.blocks = False
-                print(f"Removing {target.name}.")
             if "delay" in action:
                 target = action["delay"]
                 target["time"] -= delta_time
@@ -176,7 +175,6 @@ class GameEngine:
                 else:
                     new_action_queue.extend([target["action"]])
             if "pickup" in action:
-                print("Pickup")
                 entities = arcade.get_sprites_at_exact_point(
                     self.player.position, self.entities
                 )

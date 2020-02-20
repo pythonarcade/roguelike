@@ -121,7 +121,6 @@ class MyGame(arcade.Window):
         elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = True
         elif key in KEYMAP_PICKUP:
-            print("Pickup")
             self.game_engine.action_queue.extend([{"pickup": True}])
         elif key in KEYMAP_USE_ITEM_1:
             self.game_engine.action_queue.extend([{"use_item": 0}])
