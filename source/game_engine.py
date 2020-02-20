@@ -140,6 +140,32 @@ class GameEngine:
                 full_results.extend(results)
         return full_results
 
+    def dying(self, target: Entity):
+        target.color = colors["dying"]
+        # target.visible_color = colors["dying"]
+        target.is_dead = True
+        if target is self.player:
+            results = [{"message": "Player has died!"}]
+        else:
+            results = [
+                {"message": f"{target.name} has been killed!"},
+                {"delay": {"time": DEATH_DELAY, "action": {"dead": target}}},
+            ]
+        return results
+
+    def pick_up(self):
+        entities = arcade.get_sprites_at_exact_point(
+            self.player.position, self.entities
+        )
+        for entity in entities:
+            if isinstance(entity, Entity):
+                if entity.item:
+                    results = self.player.inventory.add_item(entity)
+                    return results
+            else:
+                raise ValueError("Sprite is not an instance of Entity.")
+        return None
+
     def process_action_queue(self, delta_time: float):
         new_action_queue = []
         for action in self.action_queue:
@@ -150,22 +176,13 @@ class GameEngine:
             if "message" in action:
                 print(action["message"])
                 self.messages.append(action["message"])
+            if "dying" in action:
+                target = action["dying"]
+                new_actions = self.dying(target)
+                if new_actions:
+                    new_action_queue.extend(new_actions)
             if "dead" in action:
                 target = action["dead"]
-                target.color = colors["dying"]
-                # target.visible_color = colors["dying"]
-                target.is_dead = True
-                if target is self.player:
-                    new_action_queue.extend([{"message": "Player has died!"}])
-                else:
-                    new_action_queue.extend(
-                        [{"message": f"{target.name} has been killed!"}]
-                    )
-                    new_action_queue.extend(
-                        [{"delay": {"time": DEATH_DELAY, "action": {"remove": target}}}]
-                    )
-            if "remove" in action:
-                target = action["remove"]
                 target.char = "X"
                 target.color = colors["dead_body"]
                 target.visible_color = colors["dead_body"]
@@ -178,17 +195,9 @@ class GameEngine:
                 else:
                     new_action_queue.extend([target["action"]])
             if "pickup" in action:
-                entities = arcade.get_sprites_at_exact_point(
-                    self.player.position, self.entities
-                )
-                for entity in entities:
-                    if isinstance(entity, Entity):
-                        if entity.item:
-                            results = self.player.inventory.add_item(entity)
-                            if results:
-                                new_action_queue.extend(results)
-                    else:
-                        raise ValueError("Sprite is not an instance of Entity.")
+                new_actions = self.pick_up()
+                if new_actions:
+                    new_action_queue.extend(new_actions)
 
             if "select_item" in action:
                 item_number = action["select_item"]
@@ -215,7 +224,9 @@ class GameEngine:
                         self.entities.append(item)
                         item.center_x = self.player.center_x
                         item.center_y = self.player.center_y
-                        new_action_queue.extend([{"message": f"You dropped the {item.name}."}])
+                        new_action_queue.extend(
+                            [{"message": f"You dropped the {item.name}."}]
+                        )
 
         # Reload the action queue with new items
         self.action_queue = new_action_queue

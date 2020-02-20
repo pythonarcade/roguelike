@@ -9,6 +9,7 @@ from entity import Entity
 from status_bar import draw_status_bar
 from game_engine import GameEngine
 
+
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -81,7 +82,9 @@ class MyGame(arcade.Window):
                 y = 40
                 x = i * field_width
                 if i == selected_item:
-                    arcade.draw_lrtb_rectangle_outline(x - 1, x + field_width - 5, y + 20, y, arcade.color.BLACK, 2)
+                    arcade.draw_lrtb_rectangle_outline(
+                        x - 1, x + field_width - 5, y + 20, y, arcade.color.BLACK, 2
+                    )
                 if self.game_engine.player.inventory.items[i]:
                     item_name = self.game_engine.player.inventory.items[i].name
                 else:
