@@ -209,4 +209,16 @@ class GameEngine:
 
                             new_action_queue.extend({"enemy_turn": True})
 
+            if "drop_item" in action:
+                item_number = self.selected_item
+                if item_number is not None:
+                    item = self.player.inventory.get_item_number(item_number)
+                    if item:
+                        self.player.inventory.remove_item_number(item_number)
+                        self.entities.append(item)
+                        item.center_x = self.player.center_x
+                        item.center_y = self.player.center_y
+                        new_action_queue.extend([{"message": f"You dropped the {item.name}."}])
+
+        # Reload the action queue with new items
         self.action_queue = new_action_queue
