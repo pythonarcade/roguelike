@@ -127,33 +127,48 @@ class MyGame(arcade.Window):
         """
         Render the screen.
         """
+        try:
+            arcade.start_render()
 
-        arcade.start_render()
+            # Draw the sprites
+            self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
+            self.entities.draw(filter=gl.GL_NEAREST)
+            self.characters.draw(filter=gl.GL_NEAREST)
 
-        self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
-        self.entities.draw(filter=gl.GL_NEAREST)
-        self.characters.draw(filter=gl.GL_NEAREST)
+            # Draw the status panel
+            arcade.draw_xywh_rectangle_filled(0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"])
+            text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
+            arcade.draw_text(text, 0, 0, colors["status_panel_text"])
+            size = 65
+            margin = 2
+            draw_status_bar(size / 2 + margin, 24, size, 10, self.player.fighter.hp, self.player.fighter.max_hp)
+            capacity = self.player.inventory.capacity
+            for i in range(capacity):
+                y = 40
+                x = i * SCREEN_WIDTH / (capacity + 1)
+                if self.player.inventory.items[i]:
+                    item_name = self.player.inventory.items[i].name
+                else:
+                    item_name = ""
+                text = f"{i+1}: {item_name}"
+                arcade.draw_text(text, x, y, colors["status_panel_text"])
+            # Check message queue. Limit to 2 lines
+            while len(self.messages) > 2:
+                self.messages.pop(0)
 
-        arcade.draw_xywh_rectangle_filled(0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"])
-        text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
-        arcade.draw_text(text, 0, 0, colors["status_panel_text"])
-        size = 65
-        margin = 2
-        draw_status_bar(size / 2 + margin, 24, size, 10, self.player.fighter.hp, self.player.fighter.max_hp)
+            # Draw messages
+            y = 20
+            for message in self.messages:
+                arcade.draw_text(message, 200, y, colors["status_panel_text"])
+                y -= 20
 
-        while len(self.messages) > 2:
-            self.messages.pop(0)
-
-        y = 20
-        for message in self.messages:
-            arcade.draw_text(message, 200, y, colors["status_panel_text"])
-            y -= 20
-
-        if self.mouse_over_text:
-            x, y = self.mouse_position
-            arcade.draw_xywh_rectangle_filled(x, y, 100, 16, arcade.color.BLACK)
-            arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
-
+            # Draw mouse-over text
+            if self.mouse_over_text:
+                x, y = self.mouse_position
+                arcade.draw_xywh_rectangle_filled(x, y, 100, 16, arcade.color.BLACK)
+                arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
+        except Exception as e:
+            print(e)
     def move_player(self, cx, cy):
         nx = self.player.x + cx
         ny = self.player.y + cy
@@ -198,6 +213,26 @@ class MyGame(arcade.Window):
             self.down_right_pressed = True
         elif key in KEYMAP_PICKUP:
             self.action_queue.extend([{'pickup': True}])
+        elif key in KEYMAP_USE_ITEM_1:
+            self.action_queue.extend([{'use_item': 0}])
+        elif key in KEYMAP_USE_ITEM_2:
+            self.action_queue.extend([{'use_item': 1}])
+        elif key in KEYMAP_USE_ITEM_3:
+            self.action_queue.extend([{'use_item': 2}])
+        elif key in KEYMAP_USE_ITEM_4:
+            self.action_queue.extend([{'use_item': 3}])
+        elif key in KEYMAP_USE_ITEM_5:
+            self.action_queue.extend([{'use_item': 4}])
+        elif key in KEYMAP_USE_ITEM_6:
+            self.action_queue.extend([{'use_item': 5}])
+        elif key in KEYMAP_USE_ITEM_7:
+            self.action_queue.extend([{'use_item': 6}])
+        elif key in KEYMAP_USE_ITEM_8:
+            self.action_queue.extend([{'use_item': 7}])
+        elif key in KEYMAP_USE_ITEM_9:
+            self.action_queue.extend([{'use_item': 8}])
+        elif key in KEYMAP_USE_ITEM_0:
+            self.action_queue.extend([{'use_item': 9}])
 
 
     def on_key_release(self, key, modifiers):
@@ -321,6 +356,17 @@ class MyGame(arcade.Window):
                         results = self.player.inventory.add_item(entity)
                         if results:
                             new_action_queue.extend(results)
+
+            if "use_item" in action:
+                item_number = action["use_item"]
+                item = self.player.inventory.get_item_number(item_number)
+                if item:
+                    if item.name == "Healing Potion":
+                        self.player.fighter.hp += 5
+                        if self.player.fighter.hp > self.player.fighter.max_hp:
+                            self.player.fighter.hp = self.player.fighter.max_hp
+                        self.player.inventory.remove_item_number(item_number)
+
 
         self.action_queue = new_action_queue
 

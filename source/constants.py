@@ -6,7 +6,7 @@ SPRITE_WIDTH = 9
 SPRITE_HEIGHT = 16
 MAP_HEIGHT = 45
 MAP_WIDTH = 80
-STATUS_PANEL_HEIGHT = 40
+STATUS_PANEL_HEIGHT = 60
 SCREEN_WIDTH = SPRITE_WIDTH * MAP_WIDTH
 SCREEN_HEIGHT = SPRITE_HEIGHT * MAP_HEIGHT + STATUS_PANEL_HEIGHT
 WALL_CHAR = chr(219)
@@ -21,7 +21,17 @@ KEYMAP_UP_LEFT = [arcade.key.NUM_7, arcade.key.Q]
 KEYMAP_DOWN_LEFT = [arcade.key.NUM_1, arcade.key.Z]
 KEYMAP_UP_RIGHT = [arcade.key.NUM_9, arcade.key.E]
 KEYMAP_DOWN_RIGHT = [arcade.key.NUM_3, arcade.key.C]
-KEYMAP_PICKUP = [arcade.key.G]
+KEYMAP_PICKUP = [arcade.key.NUM_5, arcade.key.G]
+KEYMAP_USE_ITEM_1 = [arcade.key.KEY_1]
+KEYMAP_USE_ITEM_2 = [arcade.key.KEY_2]
+KEYMAP_USE_ITEM_3 = [arcade.key.KEY_3]
+KEYMAP_USE_ITEM_4 = [arcade.key.KEY_4]
+KEYMAP_USE_ITEM_5 = [arcade.key.KEY_5]
+KEYMAP_USE_ITEM_6 = [arcade.key.KEY_6]
+KEYMAP_USE_ITEM_7 = [arcade.key.KEY_7]
+KEYMAP_USE_ITEM_8 = [arcade.key.KEY_8]
+KEYMAP_USE_ITEM_9 = [arcade.key.KEY_9]
+KEYMAP_USE_ITEM_0 = [arcade.key.KEY_0]
 
 colors = {
     "dark_wall": (0, 0, 100, 255),
