@@ -9,10 +9,11 @@ def get_blocking_sprites(x, y, sprite_list):
     sprite_list = arcade.get_sprites_at_exact_point((px, py), sprite_list)
     for sprite in sprite_list:
         if isinstance(sprite, Entity):
+            print(f"Checking {sprite.name}")
             if not sprite.blocks:
                 sprite_list.remove(sprite)
         else:
-            raise TypeError("Sprite is not an instance of Entity." "")
+            raise TypeError("Sprite is not an instance of Entity.")
     if len(sprite_list) > 0:
         return sprite_list
     else:

@@ -23,6 +23,8 @@ WALL_CHAR = chr(219)
 FOV_RADIUS = 10
 DEATH_DELAY = 0.5
 
+REPEAT_MOVEMENT_DELAY = 0.25
+
 KEYMAP_UP = [arcade.key.UP, arcade.key.W, arcade.key.NUM_8]
 KEYMAP_LEFT = [arcade.key.LEFT, arcade.key.A, arcade.key.NUM_4]
 KEYMAP_DOWN = [arcade.key.DOWN, arcade.key.X, arcade.key.NUM_2]

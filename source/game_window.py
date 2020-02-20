@@ -4,31 +4,20 @@ Main Game Engine
 import arcade
 import pyglet.gl as gl
 
-from game_map import GameMap
 from constants import *
 from entity import Entity
-from recalculate_fov import recalculate_fov
-from fighter import Fighter
-from get_blocking_sprites import get_blocking_sprites
 from status_bar import draw_status_bar
-from inventory import Inventory
-
+from game_engine import GameEngine
 
 class MyGame(arcade.Window):
     """
     Main application class.
     """
 
-    def __init__(self, width, height, title):
+    def __init__(self, width: int, height: int, title: str):
         super().__init__(width, height, title, antialiasing=False)
 
-        arcade.set_background_color(arcade.color.BLACK)
-        self.game_map = None
-        self.player = None
-
-        self.characters = None
-        self.entities = None
-        self.dungeon_sprites = None
+        self.game_engine = GameEngine()
 
         # Track the current state of what key is pressed
         self.left_pressed = False
@@ -40,84 +29,17 @@ class MyGame(arcade.Window):
         self.down_left_pressed = False
         self.down_right_pressed = False
 
-        self.messages = []
-
         self.time_since_last_move_check = 0
 
-        self.action_queue = []
         self.mouse_over_text = None
         self.mouse_position = None
+
+        arcade.set_background_color(arcade.color.BLACK)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
 
-        # Set game state
-        # Create sprite lists
-        self.characters = arcade.SpriteList()
-        self.dungeon_sprites = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-        self.entities = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-
-        # Create player
-        fighter_component = Fighter(hp=30, defense=2, power=5)
-        self.player = Entity(
-            x=0,
-            y=0,
-            char="@",
-            color=arcade.csscolor.WHITE,
-            fighter=fighter_component,
-            name="Player",
-            inventory=Inventory(capacity=5),
-        )
-        self.characters.append(self.player)
-
-        # --- Create map
-        # Size of the map
-        map_width = MAP_WIDTH
-        map_height = MAP_HEIGHT
-
-        self.game_map = GameMap(map_width, map_height)
-        self.game_map.make_map(
-            max_rooms=MAX_ROOMS,
-            room_min_size=ROOM_MIN_SIZE,
-            room_max_size=ROOM_MAX_SIZE,
-            map_width=map_width,
-            map_height=map_height,
-            player=self.player,
-            entities=self.entities,
-            max_monsters_per_room=MAX_MONSTERS_PER_ROOM,
-            max_items_per_room=MAX_ITEMS_PER_ROOM,
-        )
-
-        # Take the tiles and make sprites out of them
-        for y in range(self.game_map.height):
-            for x in range(self.game_map.width):
-                wall = self.game_map.tiles[x][y].block_sight
-                sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
-                if wall:
-                    sprite.name = "Wall"
-                    sprite.block_sight = True
-                    sprite.blocks = True
-                    sprite.visible_color = colors["light_wall"]
-                    sprite.not_visible_color = colors["dark_wall"]
-                else:
-                    sprite.name = "Ground"
-                    sprite.block_sight = False
-                    sprite.visible_color = colors["light_ground"]
-                    sprite.not_visible_color = colors["dark_ground"]
-
-                self.dungeon_sprites.append(sprite)
-
-        # Set field of view
-        recalculate_fov(
-            self.player.x,
-            self.player.y,
-            FOV_RADIUS,
-            [self.dungeon_sprites, self.entities],
-        )
+        self.game_engine.setup()
 
     def on_draw(self):
         """
@@ -127,9 +49,9 @@ class MyGame(arcade.Window):
             arcade.start_render()
 
             # Draw the sprites
-            self.dungeon_sprites.draw(filter=gl.GL_NEAREST)
-            self.entities.draw(filter=gl.GL_NEAREST)
-            self.characters.draw(filter=gl.GL_NEAREST)
+            self.game_engine.dungeon_sprites.draw(filter=gl.GL_NEAREST)
+            self.game_engine.entities.draw(filter=gl.GL_NEAREST)
+            self.game_engine.characters.draw(filter=gl.GL_NEAREST)
 
             # Draw the status panel
             arcade.draw_xywh_rectangle_filled(
@@ -139,7 +61,7 @@ class MyGame(arcade.Window):
                 STATUS_PANEL_HEIGHT,
                 colors["status_panel_background"],
             )
-            text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
+            text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
             arcade.draw_text(text, 0, 0, colors["status_panel_text"])
             size = 65
             margin = 2
@@ -148,26 +70,26 @@ class MyGame(arcade.Window):
                 24,
                 size,
                 10,
-                self.player.fighter.hp,
-                self.player.fighter.max_hp,
+                self.game_engine.player.fighter.hp,
+                self.game_engine.player.fighter.max_hp,
             )
-            capacity = self.player.inventory.capacity
+            capacity = self.game_engine.player.inventory.capacity
             for i in range(capacity):
                 y = 40
                 x = i * SCREEN_WIDTH / (capacity + 1)
-                if self.player.inventory.items[i]:
-                    item_name = self.player.inventory.items[i].name
+                if self.game_engine.player.inventory.items[i]:
+                    item_name = self.game_engine.player.inventory.items[i].name
                 else:
                     item_name = ""
                 text = f"{i+1}: {item_name}"
                 arcade.draw_text(text, x, y, colors["status_panel_text"])
             # Check message queue. Limit to 2 lines
-            while len(self.messages) > 2:
-                self.messages.pop(0)
+            while len(self.game_engine.messages) > 2:
+                self.game_engine.messages.pop(0)
 
             # Draw messages
             y = 20
-            for message in self.messages:
+            for message in self.game_engine.messages:
                 arcade.draw_text(message, 200, y, colors["status_panel_text"])
                 y -= 20
 
@@ -178,29 +100,6 @@ class MyGame(arcade.Window):
                 arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
         except Exception as e:
             print(e)
-
-    def move_player(self, cx, cy):
-        nx = self.player.x + cx
-        ny = self.player.y + cy
-        blocking_dungeon_sprites = get_blocking_sprites(nx, ny, self.dungeon_sprites)
-        blocking_entity_sprites = get_blocking_sprites(nx, ny, self.entities)
-        if not blocking_dungeon_sprites and not blocking_entity_sprites:
-            self.player.x += cx
-            self.player.y += cy
-            recalculate_fov(
-                self.player.x,
-                self.player.y,
-                FOV_RADIUS,
-                [self.dungeon_sprites, self.entities],
-            )
-            return [{"enemy_turn": True}]
-        elif blocking_entity_sprites:
-            target = blocking_entity_sprites[0]
-            attack_results = self.player.fighter.attack(target)
-            attack_results.extend([{"enemy_turn": True}])
-            return attack_results
-
-        return None
 
     def on_key_press(self, key: int, modifiers: int):
         """ Manage keyboard input """
@@ -222,29 +121,30 @@ class MyGame(arcade.Window):
         elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = True
         elif key in KEYMAP_PICKUP:
-            self.action_queue.extend([{"pickup": True}])
+            print("Pickup")
+            self.game_engine.action_queue.extend([{"pickup": True}])
         elif key in KEYMAP_USE_ITEM_1:
-            self.action_queue.extend([{"use_item": 0}])
+            self.game_engine.action_queue.extend([{"use_item": 0}])
         elif key in KEYMAP_USE_ITEM_2:
-            self.action_queue.extend([{"use_item": 1}])
+            self.game_engine.action_queue.extend([{"use_item": 1}])
         elif key in KEYMAP_USE_ITEM_3:
-            self.action_queue.extend([{"use_item": 2}])
+            self.game_engine.action_queue.extend([{"use_item": 2}])
         elif key in KEYMAP_USE_ITEM_4:
-            self.action_queue.extend([{"use_item": 3}])
+            self.game_engine.action_queue.extend([{"use_item": 3}])
         elif key in KEYMAP_USE_ITEM_5:
-            self.action_queue.extend([{"use_item": 4}])
+            self.game_engine.action_queue.extend([{"use_item": 4}])
         elif key in KEYMAP_USE_ITEM_6:
-            self.action_queue.extend([{"use_item": 5}])
+            self.game_engine.action_queue.extend([{"use_item": 5}])
         elif key in KEYMAP_USE_ITEM_7:
-            self.action_queue.extend([{"use_item": 6}])
+            self.game_engine.action_queue.extend([{"use_item": 6}])
         elif key in KEYMAP_USE_ITEM_8:
-            self.action_queue.extend([{"use_item": 7}])
+            self.game_engine.action_queue.extend([{"use_item": 7}])
         elif key in KEYMAP_USE_ITEM_9:
-            self.action_queue.extend([{"use_item": 8}])
+            self.game_engine.action_queue.extend([{"use_item": 8}])
         elif key in KEYMAP_USE_ITEM_0:
-            self.action_queue.extend([{"use_item": 9}])
+            self.game_engine.action_queue.extend([{"use_item": 9}])
 
-    def on_key_release(self, key, modifiers):
+    def on_key_release(self, key: int, modifiers: int):
         """Called when the user releases a key. """
 
         if key in KEYMAP_UP:
@@ -277,19 +177,8 @@ class MyGame(arcade.Window):
             else:
                 raise TypeError("Sprite is not an instance of Entity class.")
 
-    def move_enemies(self):
-        full_results = []
-        for entity in self.entities:
-            if entity.ai:
-                results = entity.ai.take_turn(
-                    target=self.player,
-                    sprite_lists=[self.dungeon_sprites, self.entities],
-                )
-                full_results.extend(results)
-        return full_results
-
     def check_for_player_movement(self):
-        if self.player.is_dead:
+        if self.game_engine.player.is_dead:
             return
 
         self.time_since_last_move_check = 0
@@ -307,81 +196,25 @@ class MyGame(arcade.Window):
             cx += 1
 
         if cx or cy:
-            results = self.move_player(cx, cy)
-            if results:
-                self.action_queue.extend(results)
+            self.game_engine.move_player(cx, cy)
 
-    def on_update(self, dt):
+    def on_update(self, delta_time: float):
 
+        # --- Manage continuous movement while direction keys are held down
+
+        # Time since last check, if we are tracking
         if self.time_since_last_move_check is not None:
-            self.time_since_last_move_check += dt
+            self.time_since_last_move_check += delta_time
 
+        # Check if we should move again based on the clock, or if the clock
+        # was set to None as a trigger to move immediate
         if (
             self.time_since_last_move_check is None
-            or self.time_since_last_move_check > 0.3
+            or self.time_since_last_move_check >= REPEAT_MOVEMENT_DELAY
         ):
             self.check_for_player_movement()
 
-        new_action_queue = []
-        for action in self.action_queue:
-            if "enemy_turn" in action:
-                new_actions = self.move_enemies()
-                if new_actions:
-                    new_action_queue.extend(new_actions)
-            if "message" in action:
-                print(action["message"])
-                self.messages.append(action["message"])
-            if "dead" in action:
-                target = action["dead"]
-                target.color = colors["dying"]
-                # target.visible_color = colors["dying"]
-                target.is_dead = True
-                if target is self.player:
-                    new_action_queue.extend([{"message": "Player has died!"}])
-                else:
-                    new_action_queue.extend(
-                        [{"message": f"{target.name} has been killed!"}]
-                    )
-                    new_action_queue.extend(
-                        [{"delay": {"time": DEATH_DELAY, "action": {"remove": target}}}]
-                    )
-            if "remove" in action:
-                target = action["remove"]
-                target.char = "X"
-                target.color = colors["dead_body"]
-                target.visible_color = colors["dead_body"]
-                target.blocks = False
-            if "delay" in action:
-                target = action["delay"]
-                target["time"] -= dt
-                if target["time"] > 0:
-                    new_action_queue.extend([{"delay": target}])
-                else:
-                    new_action_queue.extend([target["action"]])
-            if "pickup" in action:
-                entities = arcade.get_sprites_at_exact_point(
-                    self.player.position, self.entities
-                )
-                for entity in entities:
-                    if isinstance(entity, Entity):
-                        if entity.item:
-                            results = self.player.inventory.add_item(entity)
-                            if results:
-                                new_action_queue.extend(results)
-                    else:
-                        raise ValueError("Sprite is not an instance of Entity.")
-
-            if "use_item" in action:
-                item_number = action["use_item"]
-                item = self.player.inventory.get_item_number(item_number)
-                if item:
-                    if item.name == "Healing Potion":
-                        self.player.fighter.hp += 5
-                        if self.player.fighter.hp > self.player.fighter.max_hp:
-                            self.player.fighter.hp = self.player.fighter.max_hp
-                        self.player.inventory.remove_item_number(item_number)
-
-        self.action_queue = new_action_queue
+        self.game_engine.process_action_queue(delta_time)
 
 
 def main():
