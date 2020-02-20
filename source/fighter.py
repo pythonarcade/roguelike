@@ -1,4 +1,11 @@
+"""
+Fighter class manages any entity, including the player, that can fight.
+"""
+
+
 class Fighter:
+    """ Manage fighting player or NPC """
+
     def __init__(self, hp, defense, power):
         self.max_hp = hp
         self.hp = hp
@@ -10,8 +17,8 @@ class Fighter:
         results = []
 
         self.hp -= amount
-
         if self.hp <= 0:
+            self.hp = 0
             results.append({"dead": self.owner})
 
         return results

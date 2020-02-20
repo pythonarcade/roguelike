@@ -13,6 +13,7 @@ from util import get_blocking_sprites
 from status_bar import draw_status_bar
 from inventory import Inventory
 
+
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -69,7 +70,7 @@ class MyGame(arcade.Window):
             color=arcade.csscolor.WHITE,
             fighter=fighter_component,
             name="Player",
-            inventory=Inventory(capacity=5)
+            inventory=Inventory(capacity=5),
         )
         self.characters.append(self.player)
 
@@ -93,7 +94,7 @@ class MyGame(arcade.Window):
             player=self.player,
             entities=self.entities,
             max_monsters_per_room=3,
-            max_items_per_room=2
+            max_items_per_room=2,
         )
 
         # Take the tiles and make sprites out of them
@@ -136,12 +137,25 @@ class MyGame(arcade.Window):
             self.characters.draw(filter=gl.GL_NEAREST)
 
             # Draw the status panel
-            arcade.draw_xywh_rectangle_filled(0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"])
+            arcade.draw_xywh_rectangle_filled(
+                0,
+                0,
+                SCREEN_WIDTH,
+                STATUS_PANEL_HEIGHT,
+                colors["status_panel_background"],
+            )
             text = f"HP: {self.player.fighter.hp}/{self.player.fighter.max_hp}"
             arcade.draw_text(text, 0, 0, colors["status_panel_text"])
             size = 65
             margin = 2
-            draw_status_bar(size / 2 + margin, 24, size, 10, self.player.fighter.hp, self.player.fighter.max_hp)
+            draw_status_bar(
+                size / 2 + margin,
+                24,
+                size,
+                10,
+                self.player.fighter.hp,
+                self.player.fighter.max_hp,
+            )
             capacity = self.player.inventory.capacity
             for i in range(capacity):
                 y = 40
@@ -169,6 +183,7 @@ class MyGame(arcade.Window):
                 arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
         except Exception as e:
             print(e)
+
     def move_player(self, cx, cy):
         nx = self.player.x + cx
         ny = self.player.y + cy
@@ -212,28 +227,27 @@ class MyGame(arcade.Window):
         elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = True
         elif key in KEYMAP_PICKUP:
-            self.action_queue.extend([{'pickup': True}])
+            self.action_queue.extend([{"pickup": True}])
         elif key in KEYMAP_USE_ITEM_1:
-            self.action_queue.extend([{'use_item': 0}])
+            self.action_queue.extend([{"use_item": 0}])
         elif key in KEYMAP_USE_ITEM_2:
-            self.action_queue.extend([{'use_item': 1}])
+            self.action_queue.extend([{"use_item": 1}])
         elif key in KEYMAP_USE_ITEM_3:
-            self.action_queue.extend([{'use_item': 2}])
+            self.action_queue.extend([{"use_item": 2}])
         elif key in KEYMAP_USE_ITEM_4:
-            self.action_queue.extend([{'use_item': 3}])
+            self.action_queue.extend([{"use_item": 3}])
         elif key in KEYMAP_USE_ITEM_5:
-            self.action_queue.extend([{'use_item': 4}])
+            self.action_queue.extend([{"use_item": 4}])
         elif key in KEYMAP_USE_ITEM_6:
-            self.action_queue.extend([{'use_item': 5}])
+            self.action_queue.extend([{"use_item": 5}])
         elif key in KEYMAP_USE_ITEM_7:
-            self.action_queue.extend([{'use_item': 6}])
+            self.action_queue.extend([{"use_item": 6}])
         elif key in KEYMAP_USE_ITEM_8:
-            self.action_queue.extend([{'use_item': 7}])
+            self.action_queue.extend([{"use_item": 7}])
         elif key in KEYMAP_USE_ITEM_9:
-            self.action_queue.extend([{'use_item': 8}])
+            self.action_queue.extend([{"use_item": 8}])
         elif key in KEYMAP_USE_ITEM_0:
-            self.action_queue.extend([{'use_item': 9}])
-
+            self.action_queue.extend([{"use_item": 9}])
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -260,8 +274,13 @@ class MyGame(arcade.Window):
         sprite_list = arcade.get_sprites_at_point((x, y), self.entities)
         self.mouse_over_text = None
         for sprite in sprite_list:
-            if sprite.fighter and sprite.is_visible:
-                self.mouse_over_text = f"{sprite.name} {sprite.fighter.hp}/{sprite.fighter.max_hp}"
+            if isinstance(sprite, Entity):
+                if sprite.fighter and sprite.is_visible:
+                    self.mouse_over_text = (
+                        f"{sprite.name} {sprite.fighter.hp}/{sprite.fighter.max_hp}"
+                    )
+            else:
+                raise TypeError("Sprite is not an instance of Entity class.")
 
     def move_enemies(self):
         full_results = []
@@ -323,18 +342,13 @@ class MyGame(arcade.Window):
                 # target.visible_color = colors["dying"]
                 target.is_dead = True
                 if target is self.player:
-                    new_action_queue.extend([{'message': 'Player has died!'}])
+                    new_action_queue.extend([{"message": "Player has died!"}])
                 else:
-                    new_action_queue.extend([{'message': f'{target.name} has been killed!'}])
                     new_action_queue.extend(
-                        [
-                            {"delay":
-                                 {
-                                     "time": DEATH_DELAY,
-                                     "action": {"remove": target}
-                                 }
-                            }
-                        ]
+                        [{"message": f"{target.name} has been killed!"}]
+                    )
+                    new_action_queue.extend(
+                        [{"delay": {"time": DEATH_DELAY, "action": {"remove": target}}}]
                     )
             if "remove" in action:
                 target = action["remove"]
@@ -350,12 +364,17 @@ class MyGame(arcade.Window):
                 else:
                     new_action_queue.extend([target["action"]])
             if "pickup" in action:
-                entities = arcade.get_sprites_at_exact_point(self.player.position, self.entities)
+                entities = arcade.get_sprites_at_exact_point(
+                    self.player.position, self.entities
+                )
                 for entity in entities:
-                    if entity.item:
-                        results = self.player.inventory.add_item(entity)
-                        if results:
-                            new_action_queue.extend(results)
+                    if isinstance(entity, Entity):
+                        if entity.item:
+                            results = self.player.inventory.add_item(entity)
+                            if results:
+                                new_action_queue.extend(results)
+                    else:
+                        raise ValueError("Sprite is not an instance of Entity.")
 
             if "use_item" in action:
                 item_number = action["use_item"]
@@ -366,7 +385,6 @@ class MyGame(arcade.Window):
                         if self.player.fighter.hp > self.player.fighter.max_hp:
                             self.player.fighter.hp = self.player.fighter.max_hp
                         self.player.inventory.remove_item_number(item_number)
-
 
         self.action_queue = new_action_queue
 

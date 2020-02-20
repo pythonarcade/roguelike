@@ -1,3 +1,6 @@
+"""
+Manage inventory for the character.
+"""
 from entity import Entity
 
 
@@ -17,13 +20,11 @@ class Inventory:
                 break
 
         if not item_placed:
-            results.append({
-                'message': 'You cannot carry any more, your inventory is full'
-            })
+            results.append(
+                {"message": "You cannot carry any more, your inventory is full"}
+            )
         else:
-            results.append({
-                'message': f'You pick up the {item.name}!'
-            })
+            results.append({"message": f"You pick up the {item.name}!"})
             item.remove_from_sprite_lists()
 
         return results

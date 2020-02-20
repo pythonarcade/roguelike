@@ -1,5 +1,4 @@
 import math
-import arcade
 from constants import *
 from util import get_blocking_sprites
 from util import char_to_pixel
@@ -29,11 +28,13 @@ class Entity(arcade.Sprite):
         fighter=None,
         ai=None,
         inventory=None,
-        item=None
+        item=None,
     ):
-        super().__init__(scale=SCALE)
+        super().__init__(scale=SPRITE_SCALE)
         self._x = 0
         self._y = 0
+        self._char_value = 0
+
         self.x = x
         self.y = y
         self.visible_color = visible_color
@@ -97,7 +98,7 @@ class Entity(arcade.Sprite):
 
     @char_value.setter
     def char_value(self, value):
-        self._char = value
+        self._char_value = value
         self.texture = textures[self._char_value]
 
     @property

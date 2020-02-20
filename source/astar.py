@@ -1,9 +1,13 @@
+"""
+Classic A-star algorithm for path finding.
+"""
+
 from util import get_blocking_sprites
 from constants import *
 
 
 class Node:
-    """A node class for A* Pathfinding"""
+    """A node class for A* Path-finding"""
 
     def __init__(self, parent=None, position=None):
         self.parent = parent
@@ -43,11 +47,13 @@ def astar(sprite_lists, start, end):
     # Add the start node
     open_list.append(start_node)
 
+    # Loop counter used to break out if we work too hard
     loop_count = 0
-    # Loop until you find the end
+    # Loop until you find the end or we've worked too hard
     while len(open_list) > 0:
         loop_count += 1
         if loop_count > 50:
+            # Ok, this is too hard. Give up.
             # print("BREAK!")
             return None
 
@@ -92,7 +98,10 @@ def astar(sprite_lists, start, end):
             )
 
             # Make sure within range
-            # if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
+            # if node_position[0] > (len(maze) - 1)
+            #   or node_position[0] < 0
+            #   or node_position[1] > (len(maze[len(maze)-1]) -1)
+            #   or node_position[1] < 0:
             #     continue
 
             # Make sure walkable terrain

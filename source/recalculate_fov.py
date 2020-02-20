@@ -1,3 +1,7 @@
+"""
+Calculate Field Of Vision (FOV)
+"""
+
 import arcade
 import math
 
