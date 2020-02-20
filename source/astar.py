@@ -2,8 +2,8 @@
 Classic A-star algorithm for path finding.
 """
 
-from util import get_blocking_sprites
 from constants import *
+from get_blocking_sprites import get_blocking_sprites
 
 
 class Node:
@@ -22,6 +22,7 @@ class Node:
 
 
 def spot_is_blocked(x, y, sprite_lists):
+
     if x < 0 or y < 0 or x >= MAP_WIDTH or y >= MAP_HEIGHT:
         return True
 

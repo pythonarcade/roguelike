@@ -1,6 +1,5 @@
 import math
 from constants import *
-from util import get_blocking_sprites
 from util import char_to_pixel
 
 textures = arcade.load_spritesheet(
@@ -63,6 +62,8 @@ class Entity(arcade.Sprite):
         self.y += dy
 
     def move_towards(self, target_x, target_y, game_map, entities):
+        from get_blocking_sprites import get_blocking_sprites
+
         dx = target_x - self.x
         dy = target_y - self.y
         distance = math.sqrt(dx ** 2 + dy ** 2)

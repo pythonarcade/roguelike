@@ -1,8 +1,15 @@
 import arcade.key
 
 SCREEN_TITLE = "RogueLike"
-MAP_HEIGHT = 30
-MAP_WIDTH = 100
+MAP_HEIGHT = 35
+MAP_WIDTH = 120
+
+# Some variables for the rooms in the map
+ROOM_MAX_SIZE = 10
+ROOM_MIN_SIZE = 6
+MAX_ROOMS = 35
+MAX_MONSTERS_PER_ROOM = 3
+MAX_ITEMS_PER_ROOM = 2
 
 SPRITE_SCALE = 1
 SPRITE_WIDTH = 9

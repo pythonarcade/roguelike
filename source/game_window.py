@@ -9,7 +9,7 @@ from constants import *
 from entity import Entity
 from recalculate_fov import recalculate_fov
 from fighter import Fighter
-from util import get_blocking_sprites
+from get_blocking_sprites import get_blocking_sprites
 from status_bar import draw_status_bar
 from inventory import Inventory
 
@@ -79,22 +79,17 @@ class MyGame(arcade.Window):
         map_width = MAP_WIDTH
         map_height = MAP_HEIGHT
 
-        # Some variables for the rooms in the map
-        room_max_size = 10
-        room_min_size = 6
-        max_rooms = 30
-
         self.game_map = GameMap(map_width, map_height)
         self.game_map.make_map(
-            max_rooms=max_rooms,
-            room_min_size=room_min_size,
-            room_max_size=room_max_size,
+            max_rooms=MAX_ROOMS,
+            room_min_size=ROOM_MIN_SIZE,
+            room_max_size=ROOM_MAX_SIZE,
             map_width=map_width,
             map_height=map_height,
             player=self.player,
             entities=self.entities,
-            max_monsters_per_room=3,
-            max_items_per_room=2,
+            max_monsters_per_room=MAX_MONSTERS_PER_ROOM,
+            max_items_per_room=MAX_ITEMS_PER_ROOM,
         )
 
         # Take the tiles and make sprites out of them
