@@ -1,5 +1,0 @@
-[run]
-source = source
-omit =
-    ./tests/*
-    ./doc/*
