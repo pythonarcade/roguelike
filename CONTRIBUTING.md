@@ -6,7 +6,7 @@ Suggest Improvements
 
 Open up issues:
 
-https://github.com/pvcraven/pypi_package_example/issues
+https://github.com/pythonarcade/roguelike/issues
 
 Fix Bugs or Implement Features
 ------------------------------
