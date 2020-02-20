@@ -74,15 +74,21 @@ class MyGame(arcade.Window):
                 self.game_engine.player.fighter.max_hp,
             )
             capacity = self.game_engine.player.inventory.capacity
+            selected_item = self.game_engine.selected_item
+
+            field_width = SCREEN_WIDTH / (capacity + 1)
             for i in range(capacity):
                 y = 40
-                x = i * SCREEN_WIDTH / (capacity + 1)
+                x = i * field_width
+                if i == selected_item:
+                    arcade.draw_lrtb_rectangle_outline(x - 1, x + field_width - 5, y + 20, y, arcade.color.BLACK, 2)
                 if self.game_engine.player.inventory.items[i]:
                     item_name = self.game_engine.player.inventory.items[i].name
                 else:
                     item_name = ""
                 text = f"{i+1}: {item_name}"
                 arcade.draw_text(text, x, y, colors["status_panel_text"])
+
             # Check message queue. Limit to 2 lines
             while len(self.game_engine.messages) > 2:
                 self.game_engine.messages.pop(0)
@@ -122,26 +128,30 @@ class MyGame(arcade.Window):
             self.down_right_pressed = True
         elif key in KEYMAP_PICKUP:
             self.game_engine.action_queue.extend([{"pickup": True}])
-        elif key in KEYMAP_USE_ITEM_1:
-            self.game_engine.action_queue.extend([{"use_item": 0}])
-        elif key in KEYMAP_USE_ITEM_2:
-            self.game_engine.action_queue.extend([{"use_item": 1}])
-        elif key in KEYMAP_USE_ITEM_3:
-            self.game_engine.action_queue.extend([{"use_item": 2}])
-        elif key in KEYMAP_USE_ITEM_4:
-            self.game_engine.action_queue.extend([{"use_item": 3}])
-        elif key in KEYMAP_USE_ITEM_5:
-            self.game_engine.action_queue.extend([{"use_item": 4}])
-        elif key in KEYMAP_USE_ITEM_6:
-            self.game_engine.action_queue.extend([{"use_item": 5}])
-        elif key in KEYMAP_USE_ITEM_7:
-            self.game_engine.action_queue.extend([{"use_item": 6}])
-        elif key in KEYMAP_USE_ITEM_8:
-            self.game_engine.action_queue.extend([{"use_item": 7}])
-        elif key in KEYMAP_USE_ITEM_9:
-            self.game_engine.action_queue.extend([{"use_item": 8}])
-        elif key in KEYMAP_USE_ITEM_0:
-            self.game_engine.action_queue.extend([{"use_item": 9}])
+        elif key in KEYMAP_SELECT_ITEM_1:
+            self.game_engine.action_queue.extend([{"select_item": 1}])
+        elif key in KEYMAP_SELECT_ITEM_2:
+            self.game_engine.action_queue.extend([{"select_item": 2}])
+        elif key in KEYMAP_SELECT_ITEM_3:
+            self.game_engine.action_queue.extend([{"select_item": 3}])
+        elif key in KEYMAP_SELECT_ITEM_4:
+            self.game_engine.action_queue.extend([{"select_item": 4}])
+        elif key in KEYMAP_SELECT_ITEM_5:
+            self.game_engine.action_queue.extend([{"select_item": 5}])
+        elif key in KEYMAP_SELECT_ITEM_6:
+            self.game_engine.action_queue.extend([{"select_item": 6}])
+        elif key in KEYMAP_SELECT_ITEM_7:
+            self.game_engine.action_queue.extend([{"select_item": 7}])
+        elif key in KEYMAP_SELECT_ITEM_8:
+            self.game_engine.action_queue.extend([{"select_item": 8}])
+        elif key in KEYMAP_SELECT_ITEM_9:
+            self.game_engine.action_queue.extend([{"select_item": 9}])
+        elif key in KEYMAP_SELECT_ITEM_0:
+            self.game_engine.action_queue.extend([{"select_item": 0}])
+        elif key in KEYMAP_USE_ITEM:
+            self.game_engine.action_queue.extend([{"use_item": True}])
+        elif key in KEYMAP_DROP_ITEM:
+            self.game_engine.action_queue.extend([{"drop_item": True}])
 
     def on_key_release(self, key: int, modifiers: int):
         """Called when the user releases a key. """
@@ -165,7 +175,7 @@ class MyGame(arcade.Window):
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self.mouse_position = x, y
-        sprite_list = arcade.get_sprites_at_point((x, y), self.entities)
+        sprite_list = arcade.get_sprites_at_point((x, y), self.game_engine.entities)
         self.mouse_over_text = None
         for sprite in sprite_list:
             if isinstance(sprite, Entity):

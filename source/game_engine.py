@@ -18,6 +18,7 @@ class GameEngine:
         self.game_map: Optional[GameMap] = None
         self.messages = []
         self.action_queue = []
+        self.selected_item: Optional[int] = None
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -187,14 +188,25 @@ class GameEngine:
                     else:
                         raise ValueError("Sprite is not an instance of Entity.")
 
+            if "select_item" in action:
+                item_number = action["select_item"]
+                if item_number >= 1 and item_number <= self.player.inventory.capacity:
+                    # Fix up for 0 based index
+                    if self.selected_item != item_number - 1:
+                        self.selected_item = item_number - 1
+                        new_action_queue.extend({"enemy_turn": True})
+
             if "use_item" in action:
-                item_number = action["use_item"]
-                item = self.player.inventory.get_item_number(item_number)
-                if item:
-                    if item.name == "Healing Potion":
-                        self.player.fighter.hp += 5
-                        if self.player.fighter.hp > self.player.fighter.max_hp:
-                            self.player.fighter.hp = self.player.fighter.max_hp
-                        self.player.inventory.remove_item_number(item_number)
+                item_number = self.selected_item
+                if item_number is not None:
+                    item = self.player.inventory.get_item_number(item_number)
+                    if item:
+                        if item.name == "Healing Potion":
+                            self.player.fighter.hp += 5
+                            if self.player.fighter.hp > self.player.fighter.max_hp:
+                                self.player.fighter.hp = self.player.fighter.max_hp
+                            self.player.inventory.remove_item_number(item_number)
+
+                            new_action_queue.extend({"enemy_turn": True})
 
         self.action_queue = new_action_queue

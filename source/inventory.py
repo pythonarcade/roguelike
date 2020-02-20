@@ -26,6 +26,7 @@ class Inventory:
         else:
             results.append({"message": f"You pick up the {item.name}!"})
             item.remove_from_sprite_lists()
+            results.extend({"enemy_turn": True})
 
         return results
 

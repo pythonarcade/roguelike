@@ -10,6 +10,7 @@ from item import Item
 
 
 def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
+    """ Place monsters and items """
     # Get a random number of monsters
     number_of_monsters = randint(0, max_monsters_per_room)
     number_of_items = randint(0, max_items_per_room)

@@ -15,7 +15,7 @@ SPRITE_SCALE = 1
 SPRITE_WIDTH = 9
 SPRITE_HEIGHT = 16
 
-STATUS_PANEL_HEIGHT = 60
+STATUS_PANEL_HEIGHT = 65
 SCREEN_WIDTH = int(SPRITE_WIDTH * MAP_WIDTH * SPRITE_SCALE)
 SCREEN_HEIGHT = int(SPRITE_HEIGHT * MAP_HEIGHT * SPRITE_SCALE + STATUS_PANEL_HEIGHT)
 
@@ -25,25 +25,27 @@ DEATH_DELAY = 0.5
 
 REPEAT_MOVEMENT_DELAY = 0.25
 
-KEYMAP_UP = [arcade.key.UP, arcade.key.W, arcade.key.NUM_8]
-KEYMAP_LEFT = [arcade.key.LEFT, arcade.key.A, arcade.key.NUM_4]
-KEYMAP_DOWN = [arcade.key.DOWN, arcade.key.X, arcade.key.NUM_2]
-KEYMAP_RIGHT = [arcade.key.RIGHT, arcade.key.D, arcade.key.NUM_6]
-KEYMAP_UP_LEFT = [arcade.key.NUM_7, arcade.key.Q]
-KEYMAP_DOWN_LEFT = [arcade.key.NUM_1, arcade.key.Z]
-KEYMAP_UP_RIGHT = [arcade.key.NUM_9, arcade.key.E]
-KEYMAP_DOWN_RIGHT = [arcade.key.NUM_3, arcade.key.C]
-KEYMAP_PICKUP = [arcade.key.NUM_5, arcade.key.G]
-KEYMAP_USE_ITEM_1 = [arcade.key.KEY_1]
-KEYMAP_USE_ITEM_2 = [arcade.key.KEY_2]
-KEYMAP_USE_ITEM_3 = [arcade.key.KEY_3]
-KEYMAP_USE_ITEM_4 = [arcade.key.KEY_4]
-KEYMAP_USE_ITEM_5 = [arcade.key.KEY_5]
-KEYMAP_USE_ITEM_6 = [arcade.key.KEY_6]
-KEYMAP_USE_ITEM_7 = [arcade.key.KEY_7]
-KEYMAP_USE_ITEM_8 = [arcade.key.KEY_8]
-KEYMAP_USE_ITEM_9 = [arcade.key.KEY_9]
-KEYMAP_USE_ITEM_0 = [arcade.key.KEY_0]
+KEYMAP_UP = [arcade.key.UP, arcade.key.NUM_8]
+KEYMAP_LEFT = [arcade.key.LEFT, arcade.key.NUM_4]
+KEYMAP_DOWN = [arcade.key.DOWN, arcade.key.NUM_2]
+KEYMAP_RIGHT = [arcade.key.RIGHT, arcade.key.NUM_6]
+KEYMAP_UP_LEFT = [arcade.key.NUM_7]
+KEYMAP_DOWN_LEFT = [arcade.key.NUM_1]
+KEYMAP_UP_RIGHT = [arcade.key.NUM_9]
+KEYMAP_DOWN_RIGHT = [arcade.key.NUM_3]
+KEYMAP_PICKUP = [arcade.key.NUM_5]
+KEYMAP_SELECT_ITEM_1 = [arcade.key.KEY_1]
+KEYMAP_SELECT_ITEM_2 = [arcade.key.KEY_2]
+KEYMAP_SELECT_ITEM_3 = [arcade.key.KEY_3]
+KEYMAP_SELECT_ITEM_4 = [arcade.key.KEY_4]
+KEYMAP_SELECT_ITEM_5 = [arcade.key.KEY_5]
+KEYMAP_SELECT_ITEM_6 = [arcade.key.KEY_6]
+KEYMAP_SELECT_ITEM_7 = [arcade.key.KEY_7]
+KEYMAP_SELECT_ITEM_8 = [arcade.key.KEY_8]
+KEYMAP_SELECT_ITEM_9 = [arcade.key.KEY_9]
+KEYMAP_SELECT_ITEM_0 = [arcade.key.KEY_0]
+KEYMAP_USE_ITEM = [arcade.key.U]
+KEYMAP_DROP_ITEM = [arcade.key.D]
 
 colors = {
     "dark_wall": (0, 0, 100, 255),
