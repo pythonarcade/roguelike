@@ -14,7 +14,13 @@ tutorial uses the TCOD and SDL2 libraries. This tutorial uses the `Arcade Librar
 .. _Roguelike Tutorials: http://rogueliketutorials.com/
 .. _roguelike: https://en.wikipedia.org/wiki/Roguelike
 
-Contact the Maintainer
-----------------------
+Keybindings
+-----------
 
-paul@cravenfamily.com
+* Move with the number pad in 8 directions (num lock off)
+* Pick up an item with ``G`` or ``Num 5``
+* Select an item with the numbers ``1`` - ``5``
+* Use and item with ``U``
+* Drop an item with ``D``
+
+Contact the Maintainer: paul@cravenfamily.com
