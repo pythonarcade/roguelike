@@ -19,6 +19,8 @@ class GameEngine:
         self.messages = []
         self.action_queue = []
         self.selected_item: Optional[int] = None
+        self.game_state = NORMAL
+        self.grid_select_handlers = []
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -90,6 +92,13 @@ class GameEngine:
             FOV_RADIUS,
             [self.dungeon_sprites, self.entities],
         )
+
+    def grid_click(self, grid_x, grid_y):
+        for f in self.grid_select_handlers:
+            results = f(grid_x, grid_y)
+            if results:
+                self.action_queue.extend(results)
+        self.grid_select_handlers = []
 
     def move_player(self, cx, cy):
         """ Process player movement """
@@ -213,7 +222,8 @@ class GameEngine:
                     item = self.player.inventory.get_item_number(item_number)
                     if item:
                         results = item.use(self)
-                        new_action_queue.extend(results)
+                        if results:
+                            new_action_queue.extend(results)
 
             if "drop_item" in action:
                 item_number = self.selected_item

@@ -33,7 +33,7 @@ KEYMAP_UP_LEFT = [arcade.key.NUM_7]
 KEYMAP_DOWN_LEFT = [arcade.key.NUM_1]
 KEYMAP_UP_RIGHT = [arcade.key.NUM_9]
 KEYMAP_DOWN_RIGHT = [arcade.key.NUM_3]
-KEYMAP_PICKUP = [arcade.key.NUM_5]
+KEYMAP_PICKUP = [arcade.key.NUM_5, arcade.key.G]
 KEYMAP_SELECT_ITEM_1 = [arcade.key.KEY_1]
 KEYMAP_SELECT_ITEM_2 = [arcade.key.KEY_2]
 KEYMAP_SELECT_ITEM_3 = [arcade.key.KEY_3]
@@ -46,6 +46,10 @@ KEYMAP_SELECT_ITEM_9 = [arcade.key.KEY_9]
 KEYMAP_SELECT_ITEM_0 = [arcade.key.KEY_0]
 KEYMAP_USE_ITEM = [arcade.key.U]
 KEYMAP_DROP_ITEM = [arcade.key.D]
+
+# Game States
+NORMAL = 1
+SELECT_LOCATION = 2
 
 colors = {
     "dark_wall": (0, 0, 100, 255),

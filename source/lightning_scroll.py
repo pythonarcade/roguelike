@@ -35,9 +35,13 @@ class LightningScroll(Entity):
 
         # If we've got a closest enemy, zap them.
         if closest_entity:
-            damage = 10
-            closest_entity.fighter.take_damage(damage)
+            damage = 15
+            results = [{"enemy_turn": True}, {"message": f"{closest_entity.name} was struck by lighting for {damage} points."}]
+            result = closest_entity.fighter.take_damage(damage)
+            if result:
+                results.extend(result)
+
             game_engine.player.inventory.remove_item(self)
-            return [{"enemy_turn": True}, {"message": f"{closest_entity.name} was struck by lighting for {damage} points."}]
+            return
         else:
             return None

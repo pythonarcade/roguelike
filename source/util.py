@@ -13,6 +13,6 @@ def pixel_to_char(pixel_x, pixel_y):
     px = pixel_x - SPRITE_WIDTH / 2 * SPRITE_SCALE
     px = round(px / (SPRITE_WIDTH * SPRITE_SCALE))
 
-    py = pixel_y - SPRITE_HEIGHT / 2 * SPRITE_SCALE
-    py = round(py / SPRITE_HEIGHT * SPRITE_SCALE) - STATUS_PANEL_HEIGHT
+    py = pixel_y - SPRITE_HEIGHT / 2 * SPRITE_SCALE - STATUS_PANEL_HEIGHT
+    py = round(py / SPRITE_HEIGHT * SPRITE_SCALE)
     return px, py

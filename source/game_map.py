@@ -9,6 +9,7 @@ from ai import BasicMonster
 from item import Item
 from potion import Potion
 from lightning_scroll import LightningScroll
+from fireball_scroll import FireballScroll
 
 
 def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
@@ -73,8 +74,13 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
                     name="Healing Potion",
                     item=Item(),
                 )
-            else:
+            elif type < 85:
                 item = LightningScroll(
+                    x=x,
+                    y=y
+                )
+            else:
+                item = FireballScroll(
                     x=x,
                     y=y
                 )
