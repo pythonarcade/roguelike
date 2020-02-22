@@ -2,8 +2,8 @@ import math
 
 from typing import Optional
 from constants import *
-from item import Item
-from entity import Entity
+from entities.item import Item
+from entities.entity import Entity
 
 
 class LightningScroll(Entity):

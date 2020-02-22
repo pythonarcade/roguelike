@@ -1,5 +1,5 @@
 import arcade
-from entity import Entity
+from entities.entity import Entity
 from util import char_to_pixel
 
 

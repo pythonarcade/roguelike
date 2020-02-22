@@ -11,7 +11,6 @@ MAX_MONSTERS_PER_ROOM = 3
 MAX_ITEMS_PER_ROOM = 2
 
 
-
 class Rect:
     # a rectangle on the map. used to characterize a room.
     def __init__(self, x, y, w, h):
@@ -79,8 +78,7 @@ class GameMap:
         ]
 
     def make_map(
-        self,
-        player,
+        self, player,
     ):
         rooms = []
         num_rooms = 0

@@ -2,9 +2,9 @@ from typing import Optional
 
 from constants import *
 from inventory import Inventory
-from entity import Entity
+from entities.entity import Entity
 from procedural_generation.game_map import GameMap
-from fighter import Fighter
+from entities.fighter import Fighter
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites

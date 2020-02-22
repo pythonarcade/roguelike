@@ -1,7 +1,7 @@
 """
 Manage inventory for the character.
 """
-from entity import Entity
+from entities.entity import Entity
 
 
 class Inventory:

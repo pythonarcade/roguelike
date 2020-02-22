@@ -1,13 +1,13 @@
 import arcade
 
 from constants import *
-from entity import Entity
-from fighter import Fighter
-from ai import BasicMonster
-from lightning_scroll import LightningScroll
-from fireball_scroll import FireballScroll
-from potion import Potion
-from item import Item
+
+from entities.entity import Entity
+from entities.lightning_scroll import LightningScroll
+from entities.fireball_scroll import FireballScroll
+from entities.potion import Potion
+from entities.orc import Orc
+from entities.troll import Troll
 
 
 def map_to_sprites(game_map):
@@ -33,50 +33,15 @@ def map_to_sprites(game_map):
                 sprite.visible_color = colors["light_ground"]
                 sprite.not_visible_color = colors["dark_ground"]
             elif game_map[x][y] == TILE_ORC:
-                fighter_component = Fighter(hp=10, defense=0, power=3)
-                ai_component = BasicMonster()
-                sprite = Entity(
-                    x=x,
-                    y=y,
-                    char="o",
-                    color=colors["transparent"],
-                    visible_color=colors["desaturated_green"],
-                    not_visible_color=colors["transparent"],
-                    name=f"Orc",
-                    blocks=True,
-                    fighter=fighter_component,
-                    ai=ai_component,
-                )
+                sprite = Orc(x, y)
             elif game_map[x][y] == TILE_TROLL:
-                fighter_component = Fighter(hp=16, defense=1, power=4)
-                ai_component = BasicMonster()
-                sprite = Entity(
-                    x=x,
-                    y=y,
-                    char="T",
-                    color=colors["transparent"],
-                    visible_color=colors["darker_green"],
-                    not_visible_color=colors["transparent"],
-                    name=f"Troll",
-                    blocks=True,
-                    fighter=fighter_component,
-                    ai=ai_component,
-                )
-
+                sprite = Troll(x, y)
             elif game_map[x][y] == TILE_HEALING_POTION:
-                sprite = Potion(
-                    x=x,
-                    y=y,
-                    char="!",
-                    color=colors["transparent"],
-                    visible_color=colors["potion"],
-                    name="Healing Potion",
-                    item=Item(),
-                )
+                sprite = Potion(x, y)
             elif game_map[x][y] == TILE_LIGHTNING_SCROLL:
-                sprite = LightningScroll(x=x, y=y)
+                sprite = LightningScroll(x, y)
             elif game_map[x][y] == TILE_FIREBALL_SCROLL:
-                sprite = FireballScroll(x=x, y=y)
+                sprite = FireballScroll(x, y)
 
             if sprite:
                 sprite_list.append(sprite)

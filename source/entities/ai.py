@@ -3,7 +3,7 @@ Logic for the monster's turn.
 Basic artificial intelligence for monsters.
 Ok, it isn't real AI, more like a placeholder.
 """
-from astar import astar
+from entities.astar import astar
 
 
 class BasicMonster:

@@ -1,10 +1,6 @@
-import math
-
-from typing import Optional
 from constants import *
-from item import Item
-from entity import Entity
-from get_blocking_sprites import get_blocking_sprites
+from entities.item import Item
+from entities.entity import Entity
 from util import char_to_pixel
 
 

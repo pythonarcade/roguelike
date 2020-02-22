@@ -5,7 +5,7 @@ import arcade
 import pyglet.gl as gl
 
 from constants import *
-from entity import Entity
+from entities.entity import Entity
 from status_bar import draw_status_bar
 from game_engine import GameEngine
 from util import pixel_to_char
