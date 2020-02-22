@@ -51,6 +51,15 @@ KEYMAP_DROP_ITEM = [arcade.key.D]
 NORMAL = 1
 SELECT_LOCATION = 2
 
+# Tile Types
+TILE_EMPTY = 0
+TILE_WALL = 1
+TILE_ORC = 2
+TILE_TROLL = 3
+TILE_LIGHTNING_SCROLL = 4
+TILE_FIREBALL_SCROLL = 5
+TILE_HEALING_POTION = 6
+
 colors = {
     "dark_wall": (0, 0, 100, 255),
     "dark_ground": (50, 50, 150, 255),

@@ -3,7 +3,7 @@ from typing import Optional
 from constants import *
 from inventory import Inventory
 from entity import Entity
-from game_map import GameMap
+from procedural_generation.game_map import GameMap
 from fighter import Fighter
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
@@ -69,9 +69,8 @@ class GameEngine:
         # Take the tiles and make sprites out of them
         for y in range(self.game_map.height):
             for x in range(self.game_map.width):
-                wall = self.game_map.tiles[x][y].block_sight
                 sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
-                if wall:
+                if self.game_map.tiles[x][y] == TILE_WALL:
                     sprite.name = "Wall"
                     sprite.block_sight = True
                     sprite.blocks = True

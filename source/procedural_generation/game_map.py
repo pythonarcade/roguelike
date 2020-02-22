@@ -1,8 +1,7 @@
 from random import randint
 
 from entity import Entity
-from rectangle import Rect
-from tile import Tile
+from procedural_generation.rectangle import Rect
 from constants import *
 from fighter import Fighter
 from ai import BasicMonster
@@ -92,12 +91,8 @@ class GameMap:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.tiles = self.initialize_tiles()
-
-    def initialize_tiles(self):
-        tiles = [[Tile(True) for _ in range(self.height)] for _ in range(self.width)]
-
-        return tiles
+        self.tiles = [[TILE_WALL for _ in range(self.height)] for _ in range(self.width)]
+        self.entities = [[TILE_EMPTY for _ in range(self.height)] for _ in range(self.width)]
 
     def make_map(
         self,
@@ -172,18 +167,15 @@ class GameMap:
         # go through the tiles in the rectangle and make them passable
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
-                self.tiles[x][y].blocks = False
-                self.tiles[x][y].block_sight = False
+                self.tiles[x][y] = 0
 
     def create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
-            self.tiles[x][y].blocks = False
-            self.tiles[x][y].block_sight = False
+            self.tiles[x][y] = 0
 
     def create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            self.tiles[x][y].blocks = False
-            self.tiles[x][y].block_sight = False
+            self.tiles[x][y] = 0
 
     def is_blocked(self, x, y):
         if self.tiles[x][y].blocks:
