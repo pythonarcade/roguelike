@@ -1,14 +1,38 @@
 from random import randint
 
-from entity import Entity
-from procedural_generation.rectangle import Rect
 from constants import *
-from fighter import Fighter
-from ai import BasicMonster
-from item import Item
-from potion import Potion
-from lightning_scroll import LightningScroll
-from fireball_scroll import FireballScroll
+
+
+# Some variables for the rooms in the map
+ROOM_MAX_SIZE = 10
+ROOM_MIN_SIZE = 6
+MAX_ROOMS = 35
+MAX_MONSTERS_PER_ROOM = 3
+MAX_ITEMS_PER_ROOM = 2
+
+
+
+class Rect:
+    # a rectangle on the map. used to characterize a room.
+    def __init__(self, x, y, w, h):
+        self.x1 = x
+        self.y1 = y
+        self.x2 = x + w
+        self.y2 = y + h
+
+    def center(self):
+        center_x = int((self.x1 + self.x2) / 2)
+        center_y = int((self.y1 + self.y2) / 2)
+        return center_x, center_y
+
+    def intersect(self, other):
+        # returns true if this rectangle intersects with another one
+        return (
+            self.x1 <= other.x2
+            and self.x2 >= other.x1
+            and self.y1 <= other.y2
+            and self.y2 >= other.y1
+        )
 
 
 def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
@@ -23,100 +47,52 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         # Check if an entity is already in that location
-        if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+        if not entities[x][y]:
             if randint(0, 100) < 80:
-                fighter_component = Fighter(hp=10, defense=0, power=3)
-                ai_component = BasicMonster()
-                monster = Entity(
-                    x=x,
-                    y=y,
-                    char="o",
-                    color=colors["transparent"],
-                    visible_color=colors["desaturated_green"],
-                    not_visible_color=colors["transparent"],
-                    name=f"Orc",
-                    blocks=True,
-                    fighter=fighter_component,
-                    ai=ai_component,
-                )
+                entities[x][y] = TILE_ORC
             else:
-                fighter_component = Fighter(hp=16, defense=1, power=4)
-                ai_component = BasicMonster()
-                monster = Entity(
-                    x=x,
-                    y=y,
-                    char="T",
-                    color=colors["transparent"],
-                    visible_color=colors["darker_green"],
-                    not_visible_color=colors["transparent"],
-                    name=f"Troll",
-                    blocks=True,
-                    fighter=fighter_component,
-                    ai=ai_component,
-                )
-
-            entities.append(monster)
+                entities[x][y] = TILE_TROLL
 
     for i in range(number_of_items):
         x = randint(room.x1 + 1, room.x2 - 1)
         y = randint(room.y1 + 1, room.y2 - 1)
 
-        if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+        if not entities[x][y]:
             type = randint(0, 100)
             if type < 70:
-                item = Potion(
-                    x=x,
-                    y=y,
-                    char="!",
-                    color=colors["transparent"],
-                    visible_color=colors["potion"],
-                    name="Healing Potion",
-                    item=Item(),
-                )
+                entities[x][y] = TILE_HEALING_POTION
             elif type < 85:
-                item = LightningScroll(
-                    x=x,
-                    y=y
-                )
+                entities[x][y] = TILE_LIGHTNING_SCROLL
             else:
-                item = FireballScroll(
-                    x=x,
-                    y=y
-                )
-
-            entities.append(item)
+                entities[x][y] = TILE_FIREBALL_SCROLL
 
 
 class GameMap:
     def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.tiles = [[TILE_WALL for _ in range(self.height)] for _ in range(self.width)]
-        self.entities = [[TILE_EMPTY for _ in range(self.height)] for _ in range(self.width)]
+        self.map_width = width
+        self.map_height = height
+        self.tiles = [
+            [TILE_WALL for _ in range(self.map_height)] for _ in range(self.map_width)
+        ]
+        self.entities = [
+            [TILE_EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
+        ]
 
     def make_map(
         self,
-        max_rooms,
-        room_min_size,
-        room_max_size,
-        map_width,
-        map_height,
         player,
-        entities,
-        max_monsters_per_room,
-        max_items_per_room,
     ):
         rooms = []
         num_rooms = 0
 
-        for r in range(max_rooms):
+        for r in range(MAX_ROOMS):
             # random width and height
-            w = randint(room_min_size, room_max_size)
-            h = randint(room_min_size, room_max_size)
+            w = randint(ROOM_MIN_SIZE, ROOM_MIN_SIZE)
+            h = randint(ROOM_MIN_SIZE, ROOM_MIN_SIZE)
 
             # random position without going out of the boundaries of the map
-            x = randint(0, map_width - w - 1)
-            y = randint(0, map_height - h - 1)
+            x = randint(0, self.map_width - w - 1)
+            y = randint(0, self.map_height - h - 1)
 
             # "Rect" class makes rectangles easier to work with
             new_room = Rect(x, y, w, h)
@@ -156,7 +132,7 @@ class GameMap:
                         self.create_h_tunnel(prev_x, new_x, new_y)
 
                 place_entities(
-                    new_room, entities, max_monsters_per_room, max_items_per_room
+                    new_room, self.entities, MAX_MONSTERS_PER_ROOM, MAX_ITEMS_PER_ROOM
                 )
 
                 # finally, append the new room to the list
@@ -167,15 +143,15 @@ class GameMap:
         # go through the tiles in the rectangle and make them passable
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
-                self.tiles[x][y] = 0
+                self.tiles[x][y] = TILE_FLOOR
 
     def create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
-            self.tiles[x][y] = 0
+            self.tiles[x][y] = TILE_FLOOR
 
     def create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            self.tiles[x][y] = 0
+            self.tiles[x][y] = TILE_FLOOR
 
     def is_blocked(self, x, y):
         if self.tiles[x][y].blocks:

@@ -8,16 +8,17 @@ from entity import Entity
 
 class LightningScroll(Entity):
     def __init__(self, x: int, y: int):
-        super().__init__(x=x,
-                         y=y,
-                         char="S",
-                         color=colors["transparent"],
-                         visible_color=colors["potion"],
-                         name="Lightning Scroll",
-                         item=Item(),
-                         )
+        super().__init__(
+            x=x,
+            y=y,
+            char="S",
+            color=colors["transparent"],
+            visible_color=colors["potion"],
+            name="Lightning Scroll",
+            item=Item(),
+        )
 
-    def use(self, game_engine: 'GameEngine'):
+    def use(self, game_engine: "GameEngine"):
 
         # Find the closest enemy
         closest_distance: Optional[float] = None
@@ -36,7 +37,12 @@ class LightningScroll(Entity):
         # If we've got a closest enemy, zap them.
         if closest_entity:
             damage = 15
-            results = [{"enemy_turn": True}, {"message": f"{closest_entity.name} was struck by lighting for {damage} points."}]
+            results = [
+                {"enemy_turn": True},
+                {
+                    "message": f"{closest_entity.name} was struck by lighting for {damage} points."
+                },
+            ]
             result = closest_entity.fighter.take_damage(damage)
             if result:
                 results.extend(result)

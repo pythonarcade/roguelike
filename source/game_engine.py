@@ -7,6 +7,7 @@ from procedural_generation.game_map import GameMap
 from fighter import Fighter
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
+from map_to_sprites import map_to_sprites
 
 
 class GameEngine:
@@ -54,35 +55,10 @@ class GameEngine:
         map_height = MAP_HEIGHT
 
         self.game_map = GameMap(map_width, map_height)
-        self.game_map.make_map(
-            max_rooms=MAX_ROOMS,
-            room_min_size=ROOM_MIN_SIZE,
-            room_max_size=ROOM_MAX_SIZE,
-            map_width=map_width,
-            map_height=map_height,
-            player=self.player,
-            entities=self.entities,
-            max_monsters_per_room=MAX_MONSTERS_PER_ROOM,
-            max_items_per_room=MAX_ITEMS_PER_ROOM,
-        )
+        self.game_map.make_map(player=self.player)
 
-        # Take the tiles and make sprites out of them
-        for y in range(self.game_map.height):
-            for x in range(self.game_map.width):
-                sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
-                if self.game_map.tiles[x][y] == TILE_WALL:
-                    sprite.name = "Wall"
-                    sprite.block_sight = True
-                    sprite.blocks = True
-                    sprite.visible_color = colors["light_wall"]
-                    sprite.not_visible_color = colors["dark_wall"]
-                else:
-                    sprite.name = "Ground"
-                    sprite.block_sight = False
-                    sprite.visible_color = colors["light_ground"]
-                    sprite.not_visible_color = colors["dark_ground"]
-
-                self.dungeon_sprites.append(sprite)
+        self.dungeon_sprites = map_to_sprites(self.game_map.tiles)
+        self.entities = map_to_sprites(self.game_map.entities)
 
         # Set field of view
         recalculate_fov(

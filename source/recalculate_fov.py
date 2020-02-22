@@ -23,7 +23,6 @@ def recalculate_fov(char_x, char_y, radius, sprite_lists):
 
     radians_per_point = 2 * math.pi / (circumference * resolution)
     point_count = int(round(circumference)) * resolution
-
     for i in range(point_count):
         radians = i * radians_per_point
 

@@ -122,7 +122,14 @@ class MyGame(arcade.Window):
                 mouse_x, mouse_y = self.mouse_position
                 grid_x, grid_y = pixel_to_char(mouse_x, mouse_y)
                 center_x, center_y = char_to_pixel(grid_x, grid_y)
-                arcade.draw_rectangle_outline(center_x, center_y, SPRITE_WIDTH, SPRITE_HEIGHT, arcade.color.LIGHT_BLUE, 2)
+                arcade.draw_rectangle_outline(
+                    center_x,
+                    center_y,
+                    SPRITE_WIDTH,
+                    SPRITE_HEIGHT,
+                    arcade.color.LIGHT_BLUE,
+                    2,
+                )
 
         except Exception as e:
             print(e)
