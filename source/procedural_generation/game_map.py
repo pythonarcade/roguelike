@@ -150,9 +150,3 @@ class GameMap:
     def create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
             self.tiles[x][y] = TILE_FLOOR
-
-    def is_blocked(self, x, y):
-        if self.tiles[x][y].blocks:
-            return True
-
-        return False
