@@ -1,7 +1,7 @@
 from constants import *
 
 
-def char_to_pixel(char_x, char_y):
+def char_to_pixel(char_x: int, char_y: int) -> (int, int):
     px = char_x * SPRITE_WIDTH * SPRITE_SCALE + SPRITE_WIDTH / 2 * SPRITE_SCALE
     py = (
         char_y * SPRITE_HEIGHT * SPRITE_SCALE + SPRITE_HEIGHT / 2 * SPRITE_SCALE
@@ -9,7 +9,7 @@ def char_to_pixel(char_x, char_y):
     return px, py
 
 
-def pixel_to_char(pixel_x, pixel_y):
+def pixel_to_char(pixel_x: int, pixel_y: int) -> (int, int):
     px = pixel_x - SPRITE_WIDTH / 2 * SPRITE_SCALE
     px = round(px / (SPRITE_WIDTH * SPRITE_SCALE))
 

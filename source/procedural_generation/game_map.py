@@ -4,6 +4,8 @@ from constants import *
 
 
 # Some variables for the rooms in the map
+from entities.entity import Entity
+
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 6
 MAX_ROOMS = 35
@@ -67,7 +69,7 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
 
 
 class GameMap:
-    def __init__(self, width, height):
+    def __init__(self, width: int, height: int):
         self.map_width = width
         self.map_height = height
         self.tiles = [
@@ -78,7 +80,7 @@ class GameMap:
         ]
 
     def make_map(
-        self, player,
+        self, player: Entity,
     ):
         rooms = []
         num_rooms = 0
