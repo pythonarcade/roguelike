@@ -14,6 +14,7 @@ from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites
 
+
 class GameEngine:
     def __init__(self):
         self.characters: Optional[arcade.SpriteList] = None
@@ -137,7 +138,7 @@ class GameEngine:
                 self.action_queue.extend(results)
         self.grid_select_handlers = []
 
-    def move_player(self, cx, cy):
+    def move_player(self, cx: int, cy: int):
         """ Process player movement """
 
         # See what grid location we'd move to
