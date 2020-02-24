@@ -1,9 +1,11 @@
+from typing import Optional
+
 import arcade
 from entities.entity import Entity
 from util import char_to_pixel
 
 
-def get_blocking_sprites(x, y, sprite_list):
+def get_blocking_sprites(x: int, y: int, sprite_list: arcade.SpriteList) -> Optional[arcade.SpriteList]:
     """ Given an x,y grid location, return list of sprites that block movement. """
     px, py = char_to_pixel(x, y)
     sprite_list = arcade.get_sprites_at_exact_point((px, py), sprite_list)

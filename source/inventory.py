@@ -1,15 +1,17 @@
 """
 Manage inventory for the character.
 """
+from typing import Optional, List, Dict
+
 from entities.entity import Entity
 
 
 class Inventory:
-    def __init__(self, capacity):
+    def __init__(self, capacity: int):
         self.capacity = capacity
-        self.items = [None for _ in range(self.capacity)]
+        self.items: List[Optional[Entity]] = [None for _ in range(self.capacity)]
 
-    def add_item(self, item: Entity):
+    def add_item(self, item: Entity) -> List[Optional[Dict]]:
         results = []
 
         item_placed = False
@@ -30,15 +32,15 @@ class Inventory:
 
         return results
 
-    def get_item_number(self, item_number: int):
+    def get_item_number(self, item_number: int) -> Optional[Entity]:
         return self.items[item_number]
 
-    def remove_item_number(self, item_number: int):
+    def remove_item_number(self, item_number: int) -> List:
         results = []
         self.items[item_number] = None
         return results
 
-    def remove_item(self, item: int):
+    def remove_item(self, item: int) -> List:
         results = []
         for i in range(self.capacity):
             if self.items[i] is item:
