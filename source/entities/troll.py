@@ -5,7 +5,7 @@ from constants import colors
 
 
 class Troll(Entity):
-    def __init__(self, x, y):
+    def __init__(self, x: int = 0, y: int = 0):
         fighter_component = Fighter(hp=16, defense=1, power=4)
         ai_component = BasicMonster()
         super().__init__(

@@ -7,7 +7,7 @@ from entities.entity import Entity
 
 
 class LightningScroll(Entity):
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int = 0, y: int = 0):
         super().__init__(
             x=x,
             y=y,

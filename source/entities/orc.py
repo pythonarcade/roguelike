@@ -5,7 +5,7 @@ from constants import colors
 
 
 class Orc(Entity):
-    def __init__(self, x, y):
+    def __init__(self, x: int = 0, y: int = 0):
         fighter_component = Fighter(hp=10, defense=0, power=3)
         ai_component = BasicMonster()
         super().__init__(

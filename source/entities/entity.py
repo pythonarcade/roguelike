@@ -16,8 +16,8 @@ class Entity(arcade.Sprite):
 
     def __init__(
         self,
-        x: int,
-        y: int,
+        x: int = 0,
+        y: int = 0,
         char: str = "X",
         color=arcade.csscolor.WHITE,
         visible_color=arcade.csscolor.WHITE,
@@ -71,8 +71,7 @@ class Entity(arcade.Sprite):
         result['is_dead'] = self.is_dead
         return result
 
-    def restore_from_dict(self, entity):
-        result = entity['Entity']
+    def restore_from_dict(self, result):
         self.x = result['x']
         self.y = result['y']
         self.visible_color = result['visible_color']

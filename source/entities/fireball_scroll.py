@@ -5,7 +5,7 @@ from util import char_to_pixel
 
 
 class FireballScroll(Entity):
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int = 0, y: int = 0):
         self.game_engine = None
 
         super().__init__(

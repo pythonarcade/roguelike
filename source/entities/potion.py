@@ -4,7 +4,7 @@ from entities.item import Item
 
 
 class Potion(Entity):
-    def __init__(self, x, y):
+    def __init__(self, x: int = 0, y: int = 0):
         super().__init__(
             x,
             y,
