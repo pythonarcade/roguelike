@@ -1,3 +1,5 @@
+from typing import List
+
 import arcade
 
 from constants import *
@@ -10,7 +12,7 @@ from entities.orc import Orc
 from entities.troll import Troll
 
 
-def map_to_sprites(game_map):
+def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
 
     sprite_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=16)
 
