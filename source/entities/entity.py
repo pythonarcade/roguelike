@@ -56,6 +56,35 @@ class Entity(arcade.Sprite):
         if self.ai:
             self.ai.owner = self
 
+    def get_dict(self):
+        result = {}
+        result['x'] = self.x
+        result['y'] = self.y
+        result['visible_color'] = self.visible_color
+        result['not_visible_color'] = self.not_visible_color
+        result['color'] = self.color
+        result['char'] = self.char
+        result['name'] = self.name
+        result['blocks'] = self.blocks
+        result['block_sight'] = self.block_sight
+        result['is_visible'] = self.is_visible
+        result['is_dead'] = self.is_dead
+        return result
+
+    def restore_from_dict(self, entity):
+        result = entity['Entity']
+        self.x = result['x']
+        self.y = result['y']
+        self.visible_color = result['visible_color']
+        self.not_visible_color = result['not_visible_color']
+        self.color = result['color']
+        self.char = result['char']
+        self.name = result['name']
+        self.blocks = result['blocks']
+        self.block_sight = result['block_sight']
+        self.is_visible = result['is_visible']
+        self.is_dead = result['is_dead']
+
     def move(self, dx, dy):
         # Move the entity by a given amount
         self.x += dx

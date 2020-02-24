@@ -9,7 +9,6 @@ from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites
 
-
 class GameEngine:
     def __init__(self):
         self.characters: Optional[arcade.SpriteList] = None
@@ -67,6 +66,31 @@ class GameEngine:
             FOV_RADIUS,
             [self.dungeon_sprites, self.entities],
         )
+
+    def get_entity_dict(self, entity):
+        name = entity.__class__.__name__
+        return {name: entity.get_dict()}
+
+    def get_dict(self):
+
+        player_dict = self.get_entity_dict(self.player)
+
+        dungeon_dict = []
+        for sprite in self.dungeon_sprites:
+            dungeon_dict.append(self.get_entity_dict(sprite))
+
+        entity_dict = []
+        for sprite in self.entities:
+            entity_dict.append(self.get_entity_dict(sprite))
+
+        result = {'player': player_dict,
+                  'dungeon': dungeon_dict,
+                  'entities': entity_dict}
+        return result
+
+    def restore_from_dict(self, data):
+        player_dict = data['player']
+        self.player.restore_from_dict(player_dict)
 
     def grid_click(self, grid_x, grid_y):
         for f in self.grid_select_handlers:

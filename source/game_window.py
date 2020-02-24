@@ -2,6 +2,7 @@
 Main Game Engine
 """
 import arcade
+import json
 import pyglet.gl as gl
 
 from constants import *
@@ -183,6 +184,10 @@ class MyGame(arcade.Window):
             self.game_engine.action_queue.extend([{"use_item": True}])
         elif key in KEYMAP_DROP_ITEM:
             self.game_engine.action_queue.extend([{"drop_item": True}])
+        elif key == arcade.key.S:
+            self.save()
+        elif key == arcade.key.L:
+            self.load()
 
     def on_key_release(self, key: int, modifiers: int):
         """Called when the user releases a key. """
@@ -216,6 +221,21 @@ class MyGame(arcade.Window):
                     )
             else:
                 raise TypeError("Sprite is not an instance of Entity class.")
+
+    def save(self):
+        game_dict = self.game_engine.get_dict()
+        print(game_dict)
+
+        with open("game_same.json", "w") as write_file:
+            json.dump(game_dict, write_file)
+
+
+    def load(self):
+        with open("game_same.json", "r") as read_file:
+            data = json.load(read_file)
+
+        self.game_engine.restore_from_dict(data)
+        print(data)
 
     def check_for_player_movement(self):
         if self.game_engine.player.is_dead:
