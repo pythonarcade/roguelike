@@ -1,13 +1,11 @@
+"""
+Define the game engine
+"""
 from typing import Optional
 
 from constants import *
 from entities.inventory import Inventory
 from entities.entity import Entity
-from entities.potion import Potion
-from entities.fireball_scroll import FireballScroll
-from entities.orc import Orc
-from entities.troll import Troll
-from entities.lightning_scroll import LightningScroll
 from procedural_generation.game_map import GameMap
 from entities.fighter import Fighter
 from recalculate_fov import recalculate_fov
@@ -17,11 +15,15 @@ from entities.restore_entity import restore_entity
 
 
 class GameEngine:
+    """
+    This is the main game engine class, that manages the game and its actions.
+    """
     def __init__(self):
+        """ Set the game engine's attributes """
         self.characters: Optional[arcade.SpriteList] = None
         self.dungeon_sprites: Optional[arcade.SpriteList] = None
         self.entities: Optional[arcade.SpriteList] = None
-        self.player: Optional[arcade.Sprite] = None
+        self.player: Optional[Entity] = None
         self.game_map: Optional[GameMap] = None
         self.messages = []
         self.action_queue = []
@@ -74,21 +76,25 @@ class GameEngine:
             [self.dungeon_sprites, self.entities],
         )
 
-    def get_entity_dict(self, entity):
-        name = entity.__class__.__name__
-        return {name: entity.get_dict()}
-
     def get_dict(self):
+        """
+        Get a dictionary object for the entire game. Used in serializing
+        the game state for saving to disk or sending over the network.
+        """
 
-        player_dict = self.get_entity_dict(self.player)
+        def get_entity_dict(entity: Entity):
+            name = entity.__class__.__name__
+            return {name: entity.get_dict()}
+
+        player_dict = get_entity_dict(self.player)
 
         dungeon_dict = []
         for sprite in self.dungeon_sprites:
-            dungeon_dict.append(self.get_entity_dict(sprite))
+            dungeon_dict.append(get_entity_dict(sprite))
 
         entity_dict = []
         for sprite in self.entities:
-            entity_dict.append(self.get_entity_dict(sprite))
+            entity_dict.append(get_entity_dict(sprite))
 
         result = {'player': player_dict,
                   'dungeon': dungeon_dict,
@@ -96,7 +102,10 @@ class GameEngine:
         return result
 
     def restore_from_dict(self, data):
-
+        """
+        Restore this object from a dictionary object. Used in recreating a game from a
+        saved state, or from over the network.
+        """
         self.dungeon_sprites = arcade.SpriteList(
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
@@ -119,10 +128,15 @@ class GameEngine:
             self.dungeon_sprites.append(entity)
 
     def grid_click(self, grid_x, grid_y):
+        """ Handle a click on the grid """
+
+        # Loop through anyone that has registered a grid-select handler
         for f in self.grid_select_handlers:
             results = f(grid_x, grid_y)
             if results:
                 self.action_queue.extend(results)
+
+        # Clear the handler queue
         self.grid_select_handlers = []
 
     def move_player(self, cx: int, cy: int):
@@ -175,12 +189,16 @@ class GameEngine:
         return full_results
 
     def dying(self, target: Entity):
+        """
+        Handle event of an entity dying
+        """
         target.color = colors["dying"]
         # target.visible_color = colors["dying"]
         target.is_dead = True
         if target is self.player:
             results = [{"message": "Player has died!"}]
         else:
+            # If a monster dies, set up a message and add a delay
             results = [
                 {"message": f"{target.name} has been killed!"},
                 {"delay": {"time": DEATH_DELAY, "action": {"dead": target}}},
@@ -188,12 +206,20 @@ class GameEngine:
         return results
 
     def pick_up(self):
+        """
+        Handle a pick-up item entity request.
+        """
+        # Get all the entities at this location
         entities = arcade.get_sprites_at_exact_point(
             self.player.position, self.entities
         )
+        # For each entity
         for entity in entities:
+            # Make sure it is an entity so type-checker is happy
             if isinstance(entity, Entity):
+                # If entity is an item...
                 if entity.item:
+                    # Try and get it. (Inventory might be full.)
                     results = self.player.inventory.add_item(entity)
                     return results
             else:
@@ -201,6 +227,10 @@ class GameEngine:
         return None
 
     def process_action_queue(self, delta_time: float):
+        """
+        Process the action queue, kind of a dispatch-center for the
+        game.
+        """
         new_action_queue = []
         for action in self.action_queue:
             if "enemy_turn" in action:
