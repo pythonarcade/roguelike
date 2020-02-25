@@ -6,6 +6,7 @@ pytest
 coveralls
 flake8
 pytest-cov
+pytest-mock
 pre-commit
 arcade
 pyglet
