@@ -44,7 +44,9 @@ class FireballScroll(Entity):
                     results.extend(result)
 
     def click(self, x, y):
-        print("Click!", x, y)
+        """
+        Process a click with where we should place the fireball
+        """
         results = []
         self.apply_damage(x, y, 10, results)
 
@@ -60,5 +62,7 @@ class FireballScroll(Entity):
         self.apply_damage(x + 1, y + 1, 8, results)
 
         self.game_engine.player.inventory.remove_item(self)
+        self.game_engine.game_state = NORMAL
+
         results.extend([{"enemy_turn": True}])
         return results

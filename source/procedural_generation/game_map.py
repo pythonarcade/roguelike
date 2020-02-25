@@ -69,9 +69,10 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
 
 
 class GameMap:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, dungeon_level: int = 1):
         self.map_width = width
         self.map_height = height
+        self.dungeon_level = dungeon_level
         self.tiles = [
             [TILE_WALL for _ in range(self.map_height)] for _ in range(self.map_width)
         ]
@@ -84,6 +85,8 @@ class GameMap:
     ):
         rooms = []
         num_rooms = 0
+        center_of_last_room_x = None
+        center_of_last_room_y = None
 
         for r in range(MAX_ROOMS):
             # random width and height
@@ -120,6 +123,8 @@ class GameMap:
 
                     # center coordinates of previous room
                     (prev_x, prev_y) = rooms[num_rooms - 1].center()
+                    center_of_last_room_x = new_x
+                    center_of_last_room_y = new_y
 
                     # flip a coin (random number that is either 0 or 1)
                     if randint(0, 1) == 1:
@@ -138,6 +143,8 @@ class GameMap:
                 # finally, append the new room to the list
                 rooms.append(new_room)
                 num_rooms += 1
+
+        self.tiles[center_of_last_room_x][center_of_last_room_y] = TILE_STAIRS_DOWN
 
     def create_room(self, room):
         # go through the tiles in the rectangle and make them passable

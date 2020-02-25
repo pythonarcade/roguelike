@@ -46,10 +46,15 @@ class MyGame(arcade.Window):
         self.game_engine.setup()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        """
+        Handle mouse-down events
+        """
+        # If we are currently in a 'select location' state, process
         if self.game_engine.game_state == SELECT_LOCATION:
+            # Grab grid location
             grid_x, grid_y = pixel_to_char(x, y)
+            # Notify game engine
             self.game_engine.grid_click(grid_x, grid_y)
-        self.game_engine.game_state = NORMAL
 
     def on_draw(self):
         """
@@ -136,14 +141,19 @@ class MyGame(arcade.Window):
             print(e)
 
     def on_key_press(self, key: int, modifiers: int):
-        """ Manage keyboard input """
+        """ Manage key-down events """
+
+        # Clear the timer for auto-repeat of movement
         self.time_since_last_move_check = None
+
         if key in KEYMAP_UP:
             self.up_pressed = True
         elif key == arcade.key.SPACE:
             self.game_engine.game_state = SELECT_LOCATION
         elif key == arcade.key.ESCAPE:
             self.game_engine.game_state = NORMAL
+
+        # Movement
         elif key in KEYMAP_DOWN:
             self.down_pressed = True
         elif key in KEYMAP_LEFT:
@@ -158,8 +168,12 @@ class MyGame(arcade.Window):
             self.down_left_pressed = True
         elif key in KEYMAP_DOWN_RIGHT:
             self.down_right_pressed = True
+
+        # Item management
         elif key in KEYMAP_PICKUP:
             self.game_engine.action_queue.extend([{"pickup": True}])
+        elif key in KEYMAP_DROP_ITEM:
+            self.game_engine.action_queue.extend([{"drop_item": True}])
         elif key in KEYMAP_SELECT_ITEM_1:
             self.game_engine.action_queue.extend([{"select_item": 1}])
         elif key in KEYMAP_SELECT_ITEM_2:
@@ -182,12 +196,15 @@ class MyGame(arcade.Window):
             self.game_engine.action_queue.extend([{"select_item": 0}])
         elif key in KEYMAP_USE_ITEM:
             self.game_engine.action_queue.extend([{"use_item": True}])
-        elif key in KEYMAP_DROP_ITEM:
-            self.game_engine.action_queue.extend([{"drop_item": True}])
+
+        # Save/load
         elif key == arcade.key.S:
             self.save()
         elif key == arcade.key.L:
             self.load()
+
+        elif key in KEYMAP_USE_STAIRS:
+            self.game_engine.action_queue.extend([{"use_stairs": True}])
 
     def on_key_release(self, key: int, modifiers: int):
         """Called when the user releases a key. """
@@ -210,8 +227,15 @@ class MyGame(arcade.Window):
             self.down_right_pressed = False
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """ Handle mouse motion, mostly just used for mouse-over text. """
+
+        # Get current mouse position. Used elsewhere when we need it.
         self.mouse_position = x, y
+
+        # Get the sprites at the current location
         sprite_list = arcade.get_sprites_at_point((x, y), self.game_engine.entities)
+
+        # See if any sprite we are hovering over deserves a mouse-over text
         self.mouse_over_text = None
         for sprite in sprite_list:
             if isinstance(sprite, Entity):
@@ -223,6 +247,7 @@ class MyGame(arcade.Window):
                 raise TypeError("Sprite is not an instance of Entity class.")
 
     def save(self):
+        """ Save the current game to disk. """
         game_dict = self.game_engine.get_dict()
 
         with open("game_same.json", "w") as write_file:
@@ -231,21 +256,31 @@ class MyGame(arcade.Window):
         results = [{"message": "Game has been saved"}]
         self.game_engine.action_queue.extend(results)
 
-
     def load(self):
+        """ Load the game from disk. """
         with open("game_same.json", "r") as read_file:
             data = json.load(read_file)
 
         self.game_engine.restore_from_dict(data)
 
     def check_for_player_movement(self):
+        """
+        Figure out if we should move the player or not based on keys currently
+        held down.
+        """
+
+        # Player is dead, don't move her.
         if self.game_engine.player.is_dead:
             return
 
+        # Reset the movement clock used for holding the key down for repeated movement.
         self.time_since_last_move_check = 0
+
+        # cx and cy are the delta in movement. Start with no movement.
         cx = 0
         cy = 0
 
+        # Adjust delta of movement based on keys pressed
         if self.up_pressed or self.up_left_pressed or self.up_right_pressed:
             cy += 1
         if self.down_pressed or self.down_left_pressed or self.down_right_pressed:
@@ -256,10 +291,12 @@ class MyGame(arcade.Window):
         if self.right_pressed or self.down_right_pressed or self.up_right_pressed:
             cx += 1
 
+        # If we are trying to move, pass that request to the game_engine
         if cx or cy:
             self.game_engine.move_player(cx, cy)
 
     def on_update(self, delta_time: float):
+        """ Manage regular updates for the game """
 
         # --- Manage continuous movement while direction keys are held down
 
@@ -275,11 +312,12 @@ class MyGame(arcade.Window):
         ):
             self.check_for_player_movement()
 
+        # --- Process the action queue
         self.game_engine.process_action_queue(delta_time)
 
 
 def main():
-    """ Main method """
+    """ Main method for starting the rogue-like game """
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window.setup()
     arcade.run()

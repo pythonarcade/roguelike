@@ -1,7 +1,12 @@
+"""
+Entities are Sprites with extra attributes set up for
+the game
+"""
 import math
 from constants import *
 from util import char_to_pixel
 
+# Load  the textures our sprites use on game start-up.
 textures = arcade.load_spritesheet(
     ":resources:images/spritesheets/codepage_437.png",
     sprite_width=SPRITE_WIDTH,
@@ -12,7 +17,7 @@ textures = arcade.load_spritesheet(
 
 
 class Entity(arcade.Sprite):
-    """ Character Sprite on Screen """
+    """ On-screen sprite represented by some Code Page 437 character """
 
     def __init__(
         self,
@@ -30,16 +35,21 @@ class Entity(arcade.Sprite):
         item=None,
     ):
         super().__init__(scale=SPRITE_SCALE)
+
+        # Set the internal variables, before we try setting via the
+        # setter.
         self._x = 0
         self._y = 0
         self._char_value = 0
 
         self.x = x
         self.y = y
+        self.char = char
+
+        self.color = color
         self.visible_color = visible_color
         self.not_visible_color = not_visible_color
-        self.color = color
-        self.char = char
+
         self.name = name
         self.blocks = blocks
         self.block_sight = False
@@ -48,10 +58,12 @@ class Entity(arcade.Sprite):
         self.item = item
         self.inventory = inventory
 
+        # Fighters have HP and can do damage
         self.fighter = fighter
         if self.fighter:
             self.fighter.owner = self
 
+        # Any entity with AI to move around gets one of these
         self.ai = ai
         if self.ai:
             self.ai.owner = self
@@ -82,6 +94,10 @@ class Entity(arcade.Sprite):
         return result
 
     def restore_from_dict(self, result):
+        """
+        Fill in the fields for this entity based on a dict. Used in serializing
+        the object to disk or over a network.
+        """
         from entities.fighter import Fighter
         from entities.ai import BasicMonster
         from entities.item import Item
@@ -111,12 +127,15 @@ class Entity(arcade.Sprite):
             self.inventory = Inventory()
             self.inventory.restore_from_dict(result['inventory'])
 
-    def move(self, dx, dy):
+    def move(self, delta_x, delta_y):
         # Move the entity by a given amount
-        self.x += dx
-        self.y += dy
+        self.x += delta_x
+        self.y += delta_y
 
     def distance_to(self, other):
+        """
+        Find the distance to another sprite
+        """
         dx = other.x - self.x
         dy = other.y - self.y
         return math.sqrt(dx ** 2 + dy ** 2)
