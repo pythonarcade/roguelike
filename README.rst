@@ -23,4 +23,20 @@ Keybindings
 * Use and item with ``U``
 * Drop an item with ``D``
 
+Tests
+-----
+
+To test install requirements
+
+``pip install -r requirements``
+
+and the package itself
+
+``pip install -e .``
+
+run tests
+
+``pytest``
+
+
 Contact the Maintainer: paul@cravenfamily.com

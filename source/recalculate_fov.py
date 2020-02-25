@@ -47,6 +47,7 @@ def recalculate_fov(char_x: int, char_y: int, radius: int, sprite_lists: List[ar
                     pixel_point, sprite_list
                 )
                 # checks += 1
+                sprite: Entity
                 for sprite in sprites_at_point:
                     sprite.is_visible = True
                     if sprite.block_sight:
