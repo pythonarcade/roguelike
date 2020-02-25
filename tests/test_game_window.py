@@ -1,6 +1,14 @@
 from unittest.mock import call, Mock
 
-from constants import NORMAL, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, SELECT_LOCATION
+from constants import (
+    NORMAL,
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    SCREEN_TITLE,
+    SELECT_LOCATION,
+    STATUS_PANEL_HEIGHT,
+    colors,
+)
 from game_window import main, MyGame
 
 
@@ -10,7 +18,7 @@ def test_main(mocker):
 
     main()
 
-    assert mock_game.call_args == call(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    mock_game.assert_called_once_with(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     mock_game.return_value.setup.assert_called_once()
     mock_run.assert_called_once()
 
@@ -72,3 +80,44 @@ class TestMyGame:
             *mock_pixel_to_char.return_value
         )
         assert window.game_engine.game_state == NORMAL
+
+    def test_on_draw_in_normal_state_with_mouse_not_over_text_no_selected_item_and_no_messages_in_queue(self, mocker):
+        mock_arcade = mocker.patch("game_window.arcade")
+        mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
+        mock_gl = mocker.patch("game_window.gl")
+        mock_engine = mocker.patch("game_window.GameEngine")
+        mock_engine.return_value.player.inventory.capacity = 2
+        mock_engine.return_value.selected_item = None
+        mock_hp = mock_engine.return_value.player.fighter.hp
+        mock_max_hp = mock_engine.return_value.player.fighter.max_hp
+        mock_item = Mock()
+        mock_item.configure_mock(name="Holy Hand Grenade")
+        mock_engine.return_value.player.inventory.items = [mock_item, None]
+        window = MyGame(100, 100, "foo")
+        window.game_engine.game_state = NORMAL
+
+        window.on_draw()
+
+        mock_arcade.start_render.assert_called_once()
+        mock_engine.return_value.dungeon_sprites.draw.called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.entities.draw.called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.characters.draw.called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_arcade.draw_xywh_rectangle_filled.called_once_with(
+            0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
+        )
+        assert mock_arcade.draw_text.call_args_list == [
+            call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"],),
+            call("1: Holy Hand Grenade", 0.0, 40, (0, 0, 0, 255)),
+            call("2: ", 360.0, 40, (0, 0, 0, 255)),
+        ]
+        mock_draw_status_bar.assert_called_once_with(
+            65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
+        )
+        mock_arcade.draw_lrtb_rectangle_outline.assert_not_called()
+
