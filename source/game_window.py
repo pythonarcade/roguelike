@@ -228,6 +228,9 @@ class MyGame(arcade.Window):
         with open("game_same.json", "w") as write_file:
             json.dump(game_dict, write_file)
 
+        results = [{"message": "Game has been saved"}]
+        self.game_engine.action_queue.extend(results)
+
 
     def load(self):
         with open("game_same.json", "r") as read_file:

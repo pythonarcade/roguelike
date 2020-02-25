@@ -62,6 +62,7 @@ class Entity(arcade.Sprite):
         result['y'] = self.y
         result['visible_color'] = self.visible_color
         result['not_visible_color'] = self.not_visible_color
+        result['alpha'] = self.alpha
         result['color'] = self.color
         result['char'] = self.char
         result['name'] = self.name
@@ -91,6 +92,7 @@ class Entity(arcade.Sprite):
         self.visible_color = result['visible_color']
         self.not_visible_color = result['not_visible_color']
         self.color = result['color']
+        self.alpha = result['alpha']
         self.char = result['char']
         self.name = result['name']
         self.blocks = result['blocks']

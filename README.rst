@@ -22,6 +22,8 @@ Keybindings
 * Select an item with the numbers ``1`` - ``5``
 * Use and item with ``U``
 * Drop an item with ``D``
+* Save game with ``S``
+* Load game with ``L``
 
 Tests
 -----
