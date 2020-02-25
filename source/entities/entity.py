@@ -69,9 +69,23 @@ class Entity(arcade.Sprite):
         result['block_sight'] = self.block_sight
         result['is_visible'] = self.is_visible
         result['is_dead'] = self.is_dead
+        if self.ai:
+            result['ai'] = True
+        if self.fighter:
+            result['fighter'] = self.fighter.get_dict()
+        if self.item:
+            result['item'] = True
+        if self.inventory:
+            result['inventory'] = self.inventory.get_dict()
+
         return result
 
     def restore_from_dict(self, result):
+        from entities.fighter import Fighter
+        from entities.ai import BasicMonster
+        from entities.item import Item
+        from entities.inventory import Inventory
+
         self.x = result['x']
         self.y = result['y']
         self.visible_color = result['visible_color']
@@ -83,6 +97,17 @@ class Entity(arcade.Sprite):
         self.block_sight = result['block_sight']
         self.is_visible = result['is_visible']
         self.is_dead = result['is_dead']
+        if 'item' in result:
+            self.item = Item()
+        if 'ai' in result:
+            self.ai = BasicMonster()
+        self.inventory = None
+        if 'fighter' in result:
+            self.fighter = Fighter()
+            self.fighter.restore_from_dict(result['fighter'])
+        if 'inventory' in result:
+            self.inventory = Inventory()
+            self.inventory.restore_from_dict(result['inventory'])
 
     def move(self, dx, dy):
         # Move the entity by a given amount

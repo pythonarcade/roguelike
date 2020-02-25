@@ -224,7 +224,6 @@ class MyGame(arcade.Window):
 
     def save(self):
         game_dict = self.game_engine.get_dict()
-        print(game_dict)
 
         with open("game_same.json", "w") as write_file:
             json.dump(game_dict, write_file)
@@ -235,7 +234,6 @@ class MyGame(arcade.Window):
             data = json.load(read_file)
 
         self.game_engine.restore_from_dict(data)
-        print(data)
 
     def check_for_player_movement(self):
         if self.game_engine.player.is_dead:

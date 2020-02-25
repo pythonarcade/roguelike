@@ -1,7 +1,7 @@
 from typing import Optional
 
 from constants import *
-from inventory import Inventory
+from entities.inventory import Inventory
 from entities.entity import Entity
 from entities.potion import Potion
 from entities.fireball_scroll import FireballScroll
@@ -13,6 +13,7 @@ from entities.fighter import Fighter
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites
+from entities.restore_entity import restore_entity
 
 class GameEngine:
     def __init__(self):
@@ -113,21 +114,7 @@ class GameEngine:
                 self.dungeon_sprites.append(entity)
 
         for entity_dict in data['entities']:
-            entity_name = list(entity_dict.keys())[0]
-            if entity_name == 'Potion':
-                entity = Potion()
-            elif entity_name == 'FireballScroll':
-                entity = FireballScroll()
-            elif entity_name == 'LightningScroll':
-                entity = LightningScroll()
-            elif entity_name == 'Orc':
-                entity = Orc()
-            elif entity_name == 'Troll':
-                entity = Troll()
-            else:
-                print(f"Error, don't know how to restore {entity_name}.")
-
-            entity.restore_from_dict(entity_dict[entity_name])
+            entity = restore_entity(entity_dict)
             self.dungeon_sprites.append(entity)
 
     def grid_click(self, grid_x, grid_y):
