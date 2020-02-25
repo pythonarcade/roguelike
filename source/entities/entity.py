@@ -117,11 +117,14 @@ class Entity(arcade.Sprite):
         self.is_dead = result['is_dead']
         if 'item' in result:
             self.item = Item()
+            print(f"Restore item {self.name}")
         if 'ai' in result:
             self.ai = BasicMonster()
+            self.ai.owner = self
         self.inventory = None
         if 'fighter' in result:
             self.fighter = Fighter()
+            self.fighter.owner = self
             self.fighter.restore_from_dict(result['fighter'])
         if 'inventory' in result:
             self.inventory = Inventory()

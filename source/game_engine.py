@@ -58,6 +58,9 @@ class GameEngine:
         )
         self.characters.append(self.player)
 
+        self.setup_level()
+
+    def setup_level(self):
         # --- Create map
         # Size of the map
         map_width = MAP_WIDTH
@@ -123,7 +126,7 @@ class GameEngine:
 
         for entity_dict in data['entities']:
             entity = restore_entity(entity_dict)
-            self.dungeon_sprites.append(entity)
+            self.entities.append(entity)
 
     def grid_click(self, grid_x, grid_y):
         """ Handle a click on the grid """
@@ -211,7 +214,8 @@ class GameEngine:
         # For each entity
         for entity in entities:
             if isinstance(entity, Stairs):
-                return [{"message": "You haven't learned how to take the stairs yet."}]
+                self.setup_level()
+                return [{"message": "You went down a level."}]
 
         return [{"message": "There are no stairs here"}]
 
@@ -223,6 +227,7 @@ class GameEngine:
         entities = arcade.get_sprites_at_exact_point(
             self.player.position, self.entities
         )
+        print(f"There are {len(entities)} items")
         # For each entity
         for entity in entities:
             # Make sure it is an entity so type-checker is happy
@@ -232,6 +237,8 @@ class GameEngine:
                     # Try and get it. (Inventory might be full.)
                     results = self.player.inventory.add_item(entity)
                     return results
+                else:
+                    print(f"Can't get {entity.name}")
             else:
                 raise ValueError("Sprite is not an instance of Entity.")
         return None
