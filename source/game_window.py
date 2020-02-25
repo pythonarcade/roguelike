@@ -203,6 +203,9 @@ class MyGame(arcade.Window):
         elif key == arcade.key.L:
             self.load()
 
+        elif key in KEYMAP_USE_STAIRS:
+            self.game_engine.action_queue.extend([{"use_stairs": True}])
+
     def on_key_release(self, key: int, modifiers: int):
         """Called when the user releases a key. """
 

@@ -10,7 +10,7 @@ from entities.fireball_scroll import FireballScroll
 from entities.potion import Potion
 from entities.orc import Orc
 from entities.troll import Troll
-
+from entities.stairs import Stairs
 
 def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
 
@@ -31,6 +31,12 @@ def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
             elif game_map[x][y] == TILE_FLOOR:
                 sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
                 sprite.name = "Ground"
+                sprite.block_sight = False
+                sprite.visible_color = colors["light_ground"]
+                sprite.not_visible_color = colors["dark_ground"]
+            elif game_map[x][y] == TILE_STAIRS_DOWN:
+                sprite = Stairs(x, y, STAIRS_DOWN_CHAR, arcade.csscolor.WHITE)
+                sprite.name = "Stairs Down"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]
                 sprite.not_visible_color = colors["dark_ground"]

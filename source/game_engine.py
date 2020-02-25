@@ -4,6 +4,7 @@ Define the game engine
 from typing import Optional
 
 from constants import *
+from entities.stairs import Stairs
 from entities.inventory import Inventory
 from entities.entity import Entity
 from procedural_generation.game_map import GameMap
@@ -117,11 +118,8 @@ class GameEngine:
         self.player.restore_from_dict(player_dict['Entity'])
 
         for entity_dict in data['dungeon']:
-            entity_name = list(entity_dict.keys())[0]
-            if entity_name == 'Entity':
-                entity = Entity()
-                entity.restore_from_dict(entity_dict[entity_name])
-                self.dungeon_sprites.append(entity)
+            entity = restore_entity(entity_dict)
+            self.dungeon_sprites.append(entity)
 
         for entity_dict in data['entities']:
             entity = restore_entity(entity_dict)
@@ -204,6 +202,18 @@ class GameEngine:
                 {"delay": {"time": DEATH_DELAY, "action": {"dead": target}}},
             ]
         return results
+
+    def use_stairs(self):
+        # Get all the entities at this location
+        entities = arcade.get_sprites_at_exact_point(
+            self.player.position, self.dungeon_sprites
+        )
+        # For each entity
+        for entity in entities:
+            if isinstance(entity, Stairs):
+                return [{"message": "You haven't learned how to take the stairs yet."}]
+
+        return [{"message": "There are no stairs here"}]
 
     def pick_up(self):
         """
@@ -292,6 +302,11 @@ class GameEngine:
                         new_action_queue.extend(
                             [{"message": f"You dropped the {item.name}."}]
                         )
+
+            if "use_stairs" in action:
+                result = self.use_stairs()
+                if result:
+                    new_action_queue.extend(result)
 
         # Reload the action queue with new items
         self.action_queue = new_action_queue
