@@ -79,7 +79,6 @@ class TestMyGame:
         mock_engine.return_value.grid_click.assert_called_once_with(
             *mock_pixel_to_char.return_value
         )
-        assert window.game_engine.game_state == NORMAL
 
     def test_on_draw_in_normal_state_with_mouse_not_over_text_no_selected_item_and_no_messages_in_queue(self, mocker):
         mock_arcade = mocker.patch("game_window.arcade")
