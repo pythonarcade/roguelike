@@ -11,7 +11,7 @@ class LightningScroll(Entity):
         super().__init__(
             x=x,
             y=y,
-            char="S",
+            texture_id=SCROLL_TEXTURE_ID,
             color=colors["transparent"],
             visible_color=colors["potion"],
             name="Lightning Scroll",

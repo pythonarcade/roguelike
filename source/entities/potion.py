@@ -1,4 +1,5 @@
 from entities.entity import Entity
+from themes.code_page_437_constants import *
 from constants import colors
 from entities.item import Item
 
@@ -8,7 +9,7 @@ class Potion(Entity):
         super().__init__(
             x,
             y,
-            char="!",
+            texture_id=POTION_TEXTURE_ID,
             color=colors["transparent"],
             visible_color=colors["potion"],
             name="Healing Potion",

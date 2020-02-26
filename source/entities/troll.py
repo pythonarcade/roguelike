@@ -1,7 +1,7 @@
 from entities.entity import Entity
 from entities.fighter import Fighter
 from entities.ai import BasicMonster
-from constants import colors
+from themes.code_page_437_constants import *
 
 
 class Troll(Entity):
@@ -11,7 +11,7 @@ class Troll(Entity):
         super().__init__(
             x=x,
             y=y,
-            char="T",
+            texture_id=TROLL_TEXTURE_ID,
             color=colors["transparent"],
             visible_color=colors["darker_green"],
             not_visible_color=colors["transparent"],

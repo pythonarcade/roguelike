@@ -6,7 +6,7 @@ class Stairs(Entity):
     def __init__(self,
                  x: int = 0,
                  y: int = 0,
-                 char: str = "X",
+                 texture_id: int = 0,
                  color=arcade.csscolor.WHITE,
                  visible_color=arcade.csscolor.WHITE,
                  not_visible_color=arcade.csscolor.WHITE,
@@ -17,7 +17,7 @@ class Stairs(Entity):
                  inventory=None,
                  item=None,
                  floor: int = 0):
-        super().__init__(x, y, char, color, visible_color, not_visible_color, name, blocks, fighter, ai, inventory, item)
+        super().__init__(x, y, texture_id, color, visible_color, not_visible_color, name, blocks, fighter, ai, inventory, item)
         self.floor = floor
 
     def get_dict(self):

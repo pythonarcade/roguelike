@@ -50,7 +50,7 @@ class GameEngine:
         self.player = Entity(
             x=0,
             y=0,
-            char="@",
+            texture_id=PLAYER_TEXTURE_ID,
             color=arcade.csscolor.WHITE,
             fighter=fighter_component,
             name="Player",
@@ -264,7 +264,7 @@ class GameEngine:
                     new_action_queue.extend(new_actions)
             if "dead" in action:
                 target = action["dead"]
-                target.char = "X"
+                target.texture_id = DEAD_BODY_TEXTURE_ID
                 target.color = colors["dead_body"]
                 target.visible_color = colors["dead_body"]
                 target.blocks = False

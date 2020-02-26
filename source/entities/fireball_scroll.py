@@ -1,4 +1,5 @@
 from constants import *
+from themes.code_page_437_constants import *
 from entities.item import Item
 from entities.entity import Entity
 from util import char_to_pixel
@@ -11,7 +12,7 @@ class FireballScroll(Entity):
         super().__init__(
             x=x,
             y=y,
-            char="S",
+            texture_id=SCROLL_TEXTURE_ID,
             color=colors["transparent"],
             visible_color=colors["potion"],
             name="Fireball Scroll",

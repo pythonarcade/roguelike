@@ -22,20 +22,20 @@ def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
             sprite = None
             # print(f"{game_map[x][y]} ", end="")
             if game_map[x][y] == TILE_WALL:
-                sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
+                sprite = Entity(x, y, WALL_TEXTURE_ID, arcade.csscolor.BLACK)
                 sprite.name = "Wall"
                 sprite.block_sight = True
                 sprite.blocks = True
                 sprite.visible_color = colors["light_wall"]
                 sprite.not_visible_color = colors["dark_wall"]
             elif game_map[x][y] == TILE_FLOOR:
-                sprite = Entity(x, y, WALL_CHAR, arcade.csscolor.BLACK)
+                sprite = Entity(x, y, WALL_TEXTURE_ID, arcade.csscolor.BLACK)
                 sprite.name = "Ground"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]
                 sprite.not_visible_color = colors["dark_ground"]
             elif game_map[x][y] == TILE_STAIRS_DOWN:
-                sprite = Stairs(x, y, STAIRS_DOWN_CHAR, arcade.csscolor.WHITE)
+                sprite = Stairs(x, y, STAIRS_DOWN_TEXTURE_ID, arcade.csscolor.WHITE)
                 sprite.name = "Stairs Down"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]
