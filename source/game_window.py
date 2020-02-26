@@ -247,7 +247,7 @@ class MyGame(arcade.Window):
         """ Save the current game to disk. """
         game_dict = self.game_engine.get_dict()
 
-        with open("game_same.json", "w") as write_file:
+        with open("game_save.json", "w") as write_file:
             json.dump(game_dict, write_file)
 
         results = [{"message": "Game has been saved"}]
@@ -255,7 +255,7 @@ class MyGame(arcade.Window):
 
     def load(self):
         """ Load the game from disk. """
-        with open("game_same.json", "r") as read_file:
+        with open("game_save.json", "r") as read_file:
             data = json.load(read_file)
 
         self.game_engine.restore_from_dict(data)
