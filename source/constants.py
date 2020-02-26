@@ -37,11 +37,14 @@ KEYMAP_SELECT_ITEM_9 = [arcade.key.KEY_9]
 KEYMAP_SELECT_ITEM_0 = [arcade.key.KEY_0]
 KEYMAP_USE_ITEM = [arcade.key.U]
 KEYMAP_DROP_ITEM = [arcade.key.D]
+KEYMAP_CHARACTER_SCREEN = [arcade.key.C]
 KEYMAP_USE_STAIRS = [arcade.key.ENTER]
+KEYMAP_CANCEL = [arcade.key.ESCAPE]
 
 # Game States
 NORMAL = 1
 SELECT_LOCATION = 2
+CHARACTER_SCREEN = 3
 
 # Tile Types
 TILE_EMPTY = 0

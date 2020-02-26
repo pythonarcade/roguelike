@@ -118,6 +118,41 @@ class MyGame(arcade.Window):
             2,
         )
 
+    def draw_character_screen(self):
+        arcade.draw_xywh_rectangle_filled(
+            0,
+            0,
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            colors["status_panel_background"],
+        )
+
+        spacing = 1.8
+        y_value = SCREEN_HEIGHT - 50
+        x_value = 10
+
+        text_size = 24
+        text = "Character Screen"
+        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+        y_value -= text_size * spacing
+        text_size = 20
+        text = f"Attack: {self.game_engine.player.fighter.power}"
+        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+        y_value -= text_size * spacing
+        text = f"Defense: {self.game_engine.player.fighter.defense}"
+        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+        y_value -= text_size * spacing
+        text = f"Level: {self.game_engine.player.fighter.level}"
+        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+        y_value -= text_size * spacing
+        text = f"HP: {self.game_engine.player.fighter.hp} / {self.game_engine.player.fighter.max_hp}"
+        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+
     def handle_and_draw_messages(self):
         # Check message queue. Limit to 2 lines
         while len(self.game_engine.messages) > 2:
@@ -168,6 +203,8 @@ class MyGame(arcade.Window):
             self.draw_in_normal_state()
         elif self.game_engine.game_state == SELECT_LOCATION:
             self.draw_in_select_location_state()
+        elif self.game_engine.game_state == CHARACTER_SCREEN:
+            self.draw_character_screen()
 
         # except Exception as e:
         #     print("Draw exception:", e)
@@ -177,12 +214,12 @@ class MyGame(arcade.Window):
 
         # Clear the timer for auto-repeat of movement
         self.time_since_last_move_check = None
-
         if key in KEYMAP_UP:
             self.up_pressed = True
-        elif key == arcade.key.SPACE:
-            self.game_engine.game_state = SELECT_LOCATION
-        elif key == arcade.key.ESCAPE:
+        elif key in KEYMAP_CHARACTER_SCREEN:
+            self.game_engine.game_state = CHARACTER_SCREEN
+            print("Open character screen")
+        elif key in KEYMAP_CANCEL:
             self.game_engine.game_state = NORMAL
 
         # Movement

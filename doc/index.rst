@@ -11,6 +11,8 @@ Keybindings
 * Drop an item with ``D``
 * Save game with ``S``
 * Load game with ``L``
+* Bring up the character screen with ``C``
+* Cancel grid selection, character screen, etc. with ``Esc``
 
 Other notes
 -----------
