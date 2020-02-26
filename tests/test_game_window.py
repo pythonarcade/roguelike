@@ -1,3 +1,5 @@
+from unittest.mock import call, Mock
+
 import pytest
 
 from constants import (
@@ -13,6 +15,8 @@ from constants import (
 )
 
 from game_window import main, MyGame
+
+
 @pytest.fixture()
 def mock_arcade(mocker):
     return mocker.patch("game_window.arcade")
@@ -36,8 +40,6 @@ def test_main(mocker, mock_arcade):
     mock_game.assert_called_once_with(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     mock_game.return_value.setup.assert_called_once()
     mock_arcade.run.assert_called_once()
-
-
 
 
 class TestMyGame:
@@ -222,4 +224,3 @@ class TestMyGame:
             mock_arcade.color.LIGHT_BLUE,
             2,
         )
-from unittest.mock import call, Mock
