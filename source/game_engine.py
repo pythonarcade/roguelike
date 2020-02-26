@@ -47,7 +47,7 @@ class GameEngine:
         )
 
         # Create player
-        fighter_component = Fighter(hp=30, defense=2, power=5)
+        fighter_component = Fighter(hp=30, defense=2, power=5, level=1)
         self.player = Entity(
             x=0,
             y=0,
@@ -244,6 +244,16 @@ class GameEngine:
             else:
                 raise ValueError("Sprite is not an instance of Entity.")
         return None
+
+    def check_experience_level(self):
+        if self.player.fighter.level < len(EXPERIENCE_PER_LEVEL):
+            xp_to_next_level = EXPERIENCE_PER_LEVEL[self.player.fighter.level - 1]
+            if self.player.fighter.current_xp >= xp_to_next_level:
+                self.player.fighter.level += 1
+                self.player.fighter.max_hp += 5
+                self.player.fighter.hp += 5
+                self.player.inventory.capacity += 1
+                self.action_queue.extend([{"message": "Level up!!!"}])
 
     def process_action_queue(self, delta_time: float):
         """

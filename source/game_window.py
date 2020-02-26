@@ -53,8 +53,15 @@ class MyGame(arcade.Window):
         text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
         arcade.draw_text(text, 0, 0, colors["status_panel_text"])
 
-        text = f"XP: {self.game_engine.player.fighter.current_xp:,}"
+        if self.game_engine.player.fighter.level < len(EXPERIENCE_PER_LEVEL):
+            xp_to_next_level = EXPERIENCE_PER_LEVEL[self.game_engine.player.fighter.level-1]
+            text = f"XP: {self.game_engine.player.fighter.current_xp:,}/{xp_to_next_level:,}"
+        else:
+            text = f"XP: {self.game_engine.player.fighter.current_xp:,}"
         arcade.draw_text(text, 100, 0, colors["status_panel_text"])
+
+        text = f"Level: {self.game_engine.player.fighter.level}"
+        arcade.draw_text(text, 200, 0, colors["status_panel_text"])
 
         size = 65
         margin = 2
@@ -119,7 +126,7 @@ class MyGame(arcade.Window):
         # Draw messages
         y = 20
         for message in self.game_engine.messages:
-            arcade.draw_text(message, 200, y, colors["status_panel_text"])
+            arcade.draw_text(message, 300, y, colors["status_panel_text"])
             y -= 20
 
     def draw_sprites_and_status_panel(self):
@@ -152,18 +159,18 @@ class MyGame(arcade.Window):
         """
         Render the screen.
         """
-        try:
-            arcade.start_render()
+        # try:
+        arcade.start_render()
 
-            self.draw_sprites_and_status_panel()
+        self.draw_sprites_and_status_panel()
 
-            if self.game_engine.game_state == NORMAL:
-                self.draw_in_normal_state()
-            elif self.game_engine.game_state == SELECT_LOCATION:
-                self.draw_in_select_location_state()
+        if self.game_engine.game_state == NORMAL:
+            self.draw_in_normal_state()
+        elif self.game_engine.game_state == SELECT_LOCATION:
+            self.draw_in_select_location_state()
 
-        except Exception as e:
-            print("Draw exception:", e)
+        # except Exception as e:
+        #     print("Draw exception:", e)
 
     def on_key_press(self, key: int, modifiers: int):
         """ Manage key-down events """
@@ -339,6 +346,7 @@ class MyGame(arcade.Window):
 
         # --- Process the action queue
         self.game_engine.process_action_queue(delta_time)
+        self.game_engine.check_experience_level()
 
 
 def main():

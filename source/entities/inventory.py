@@ -7,8 +7,22 @@ from entities.restore_entity import restore_entity
 
 class Inventory:
     def __init__(self, capacity: int = 0):
+        self._capacity = 0
+        self.items = []
         self.capacity = capacity
+
         self.items: List[Optional[Entity]] = [None for _ in range(self.capacity)]
+
+    @property
+    def capacity(self):
+        """ How many items can we hold """
+        return self._capacity
+
+    @capacity.setter
+    def capacity(self, value):
+        self._capacity = value
+        while len(self.items) < self.capacity:
+            self.items.append(None)
 
     def get_dict(self):
         result = {}

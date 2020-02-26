@@ -8,23 +8,25 @@ from entities.entity import Entity
 class Fighter:
     """ Manage fighting player or NPC """
 
-    def __init__(self, hp=0, defense=0, power=0, xp_reward=0, current_xp=0):
-        self.max_hp = hp
-        self.hp = hp
-        self.defense = defense
-        self.power = power
+    def __init__(self, hp=0, defense=0, power=0, xp_reward=0, current_xp=0, level=0):
+        self.max_hp: int = hp
+        self.hp: int = hp
+        self.defense: int = defense
+        self.power: int = power
         self.owner: Optional[Entity] = None
-        self.xp_reward = xp_reward
-        self.current_xp = current_xp
+        self.xp_reward: int = xp_reward
+        self.current_xp: int = current_xp
+        self.level: int = level
 
     def get_dict(self):
-        result = {}
-        result['max_hp'] = self.max_hp
-        result['hp'] = self.hp
-        result['defense'] = self.defense
-        result['power'] = self.power
-        result['xp_reward'] = self.xp_reward
-        result['current_xp'] = self.current_xp
+        result = {'max_hp': self.max_hp,
+                  'hp': self.hp,
+                  'defense': self.defense,
+                  'power': self.power,
+                  'xp_reward': self.xp_reward,
+                  'current_xp': self.current_xp,
+                  'level': self.level
+                  }
         return result
 
     def restore_from_dict(self, result):
@@ -34,6 +36,7 @@ class Fighter:
         self.power = result['power']
         self.xp_reward = result['xp_reward']
         self.current_xp = result['current_xp']
+        self.level = result['level']
 
     def take_damage(self, amount):
         results = []
