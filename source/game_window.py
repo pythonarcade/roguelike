@@ -107,6 +107,21 @@ class MyGame(arcade.Window):
             2,
         )
 
+    def draw_sprites_and_status_panel(self):
+        # Draw the sprites
+        self.game_engine.dungeon_sprites.draw(filter=gl.GL_NEAREST)
+        self.game_engine.entities.draw(filter=gl.GL_NEAREST)
+        self.game_engine.characters.draw(filter=gl.GL_NEAREST)
+
+        # Draw the status panel
+        arcade.draw_xywh_rectangle_filled(
+            0,
+            0,
+            SCREEN_WIDTH,
+            STATUS_PANEL_HEIGHT,
+            colors["status_panel_background"],
+        )
+
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """
         Handle mouse-down events
@@ -125,19 +140,7 @@ class MyGame(arcade.Window):
         try:
             arcade.start_render()
 
-            # Draw the sprites
-            self.game_engine.dungeon_sprites.draw(filter=gl.GL_NEAREST)
-            self.game_engine.entities.draw(filter=gl.GL_NEAREST)
-            self.game_engine.characters.draw(filter=gl.GL_NEAREST)
-
-            # Draw the status panel
-            arcade.draw_xywh_rectangle_filled(
-                0,
-                0,
-                SCREEN_WIDTH,
-                STATUS_PANEL_HEIGHT,
-                colors["status_panel_background"],
-            )
+            self.draw_sprites_and_status_panel()
 
             if self.game_engine.game_state == NORMAL:
                 self.draw_in_normal_state()

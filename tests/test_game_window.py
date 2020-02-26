@@ -8,6 +8,8 @@ from constants import (
     SELECT_LOCATION,
     STATUS_PANEL_HEIGHT,
     colors,
+    SPRITE_WIDTH,
+    SPRITE_HEIGHT,
 )
 from game_window import main, MyGame
 
@@ -81,10 +83,32 @@ class TestMyGame:
             *mock_pixel_to_char.return_value
         )
 
-    def test_on_draw_in_normal_state(self, mocker):
+    def test_draw_sprites_and_status_bar(self, mocker):
         mock_arcade = mocker.patch("game_window.arcade")
         mock_gl = mocker.patch("game_window.gl")
         mock_engine = mocker.patch("game_window.GameEngine")
+        window = MyGame(100, 100, "foo")
+
+        window.draw_sprites_and_status_panel()
+
+        mock_engine.return_value.dungeon_sprites.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.entities.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.characters.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
+            0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
+        )
+
+    def test_on_draw_in_normal_state(self, mocker):
+        mock_arcade = mocker.patch("game_window.arcade")
+        mock_draw_sprites_and_status_panel = mocker.patch(
+            "game_window.MyGame.draw_sprites_and_status_panel"
+        )
         mock_draw_in_normal_state = mocker.patch(
             "game_window.MyGame.draw_in_normal_state"
         )
@@ -94,24 +118,14 @@ class TestMyGame:
         window.on_draw()
 
         mock_arcade.start_render.assert_called_once()
-        mock_engine.return_value.dungeon_sprites.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.entities.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.characters.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
-            0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
-        )
+        mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_normal_state.assert_called_once()
 
     def test_on_draw_in_select_location_state(self, mocker):
         mock_arcade = mocker.patch("game_window.arcade")
-        mock_gl = mocker.patch("game_window.gl")
-        mock_engine = mocker.patch("game_window.GameEngine")
+        mock_draw_sprites_and_status_panel = mocker.patch(
+            "game_window.MyGame.draw_sprites_and_status_panel"
+        )
         mock_draw_in_select_location_state = mocker.patch(
             "game_window.MyGame.draw_in_select_location_state"
         )
@@ -121,18 +135,7 @@ class TestMyGame:
         window.on_draw()
 
         mock_arcade.start_render.assert_called_once()
-        mock_engine.return_value.dungeon_sprites.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.entities.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.characters.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
-            0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
-        )
+        mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_select_location_state.assert_called_once()
 
     def test_draw_in_normal_state_with_mouse_not_over_text_no_selected_item_and_no_messages_in_queue(
@@ -161,3 +164,28 @@ class TestMyGame:
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
         mock_arcade.draw_lrtb_rectangle_outline.assert_not_called()
+
+    def test_draw_in_select_location_state(self, mocker):
+        mock_arcade = mocker.patch("game_window.arcade")
+        mock_pixel_to_char = mocker.patch("game_window.pixel_to_char")
+        mock_grid_coordinates = Mock(), Mock()
+        mock_pixel_to_char.return_value = mock_grid_coordinates
+        mock_char_to_pixel = mocker.patch("game_window.char_to_pixel")
+        mock_center_coordinates = Mock(), Mock()
+        mock_char_to_pixel.return_value = mock_center_coordinates
+        window = MyGame(100, 100, "foo")
+        mock_mouse_position = Mock(), Mock()
+        window.mouse_position = mock_mouse_position
+
+        window.draw_in_select_location_state()
+
+        mock_pixel_to_char.assert_called_once_with(*mock_mouse_position)
+        mock_char_to_pixel.assert_called_once_with(*mock_grid_coordinates)
+        mock_arcade.draw_rectangle_outline.assert_called_once_with(
+            mock_center_coordinates[0],
+            mock_center_coordinates[1],
+            SPRITE_WIDTH,
+            SPRITE_HEIGHT,
+            mock_arcade.color.LIGHT_BLUE,
+            2,
+        )
