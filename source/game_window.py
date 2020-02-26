@@ -1,6 +1,8 @@
 """
 Main Game Engine
 """
+from typing import Optional, Tuple
+
 import arcade
 import json
 import pyglet.gl as gl
@@ -36,7 +38,7 @@ class MyGame(arcade.Window):
         self.time_since_last_move_check = 0
 
         self.mouse_over_text = None
-        self.mouse_position = None
+        self.mouse_position: Optional[Tuple[float, float]] = None
 
         arcade.set_background_color(arcade.color.BLACK)
 
