@@ -3,6 +3,7 @@ from typing import List
 import arcade
 
 from constants import *
+from themes.current_theme import *
 
 from entities.entity import Entity
 from entities.lightning_scroll import LightningScroll
@@ -12,8 +13,9 @@ from entities.orc import Orc
 from entities.troll import Troll
 from entities.stairs import Stairs
 
-def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
 
+def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
+    """ Take a grid of numbers and convert to sprites. """
     sprite_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=16)
 
     # Take the tiles and make sprites out of them
@@ -22,20 +24,20 @@ def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
             sprite = None
             # print(f"{game_map[x][y]} ", end="")
             if game_map[x][y] == TILE_WALL:
-                sprite = Entity(x, y, WALL_TEXTURE_ID, arcade.csscolor.BLACK)
+                sprite = Entity(x, y, WALL_TEXTURE_ID, colors['transparent'])
                 sprite.name = "Wall"
                 sprite.block_sight = True
                 sprite.blocks = True
                 sprite.visible_color = colors["light_wall"]
                 sprite.not_visible_color = colors["dark_wall"]
             elif game_map[x][y] == TILE_FLOOR:
-                sprite = Entity(x, y, WALL_TEXTURE_ID, arcade.csscolor.BLACK)
+                sprite = Entity(x, y, FLOOR_TEXTURE_ID, colors['transparent'])
                 sprite.name = "Ground"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]
                 sprite.not_visible_color = colors["dark_ground"]
             elif game_map[x][y] == TILE_STAIRS_DOWN:
-                sprite = Stairs(x, y, STAIRS_DOWN_TEXTURE_ID, arcade.csscolor.WHITE)
+                sprite = Stairs(x, y, STAIRS_DOWN_TEXTURE_ID, colors['transparent'])
                 sprite.name = "Stairs Down"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]

@@ -13,7 +13,7 @@ class Troll(Entity):
             y=y,
             texture_id=TROLL_TEXTURE_ID,
             color=colors["transparent"],
-            visible_color=colors["darker_green"],
+            visible_color=colors["monster"],
             not_visible_color=colors["transparent"],
             name=f"Troll",
             blocks=True,

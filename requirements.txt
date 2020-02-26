@@ -10,3 +10,4 @@ pytest-mock
 pre-commit
 arcade
 pyglet
+mypy

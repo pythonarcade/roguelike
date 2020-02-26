@@ -1,6 +1,5 @@
 from entities.entity import Entity
 from themes.current_theme import *
-from constants import colors
 from entities.item import Item
 
 

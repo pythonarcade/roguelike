@@ -1,13 +1,15 @@
 import arcade.key
-from themes.current_theme import *
+from themes.current_theme import SPRITE_SCALE
+from themes.current_theme import SPRITE_WIDTH
+from themes.current_theme import SPRITE_HEIGHT
 
 SCREEN_TITLE = "RogueLike"
-MAP_HEIGHT = 35
-MAP_WIDTH = 120
+MAP_HEIGHT = 37
+MAP_WIDTH = 90
 
 STATUS_PANEL_HEIGHT = 65
 SCREEN_WIDTH = int(SPRITE_WIDTH * MAP_WIDTH * SPRITE_SCALE)
-SCREEN_HEIGHT = int(SPRITE_HEIGHT * MAP_HEIGHT * SPRITE_SCALE + STATUS_PANEL_HEIGHT)
+SCREEN_HEIGHT = int(SPRITE_HEIGHT * MAP_HEIGHT * SPRITE_SCALE + STATUS_PANEL_HEIGHT) + 20
 
 FOV_RADIUS = 10
 DEATH_DELAY = 0.5

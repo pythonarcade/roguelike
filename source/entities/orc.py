@@ -13,7 +13,7 @@ class Orc(Entity):
             y=y,
             texture_id=ORC_TEXTURE_ID,
             color=colors["transparent"],
-            visible_color=colors["desaturated_green"],
+            visible_color=colors["monster"],
             not_visible_color=colors["transparent"],
             name=f"Orc",
             blocks=True,

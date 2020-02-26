@@ -3,7 +3,7 @@ Draw a status bar
 """
 import arcade
 
-from constants import *
+from themes.current_theme import colors
 
 
 def draw_status_bar(center_x, center_y, width, height, current_value, max_value):

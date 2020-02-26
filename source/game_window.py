@@ -13,6 +13,7 @@ from status_bar import draw_status_bar
 from game_engine import GameEngine
 from util import pixel_to_char
 from util import char_to_pixel
+from themes.current_theme import *
 
 
 class MyGame(arcade.Window):
@@ -40,7 +41,8 @@ class MyGame(arcade.Window):
         self.mouse_over_text = None
         self.mouse_position: Optional[Tuple[float, float]] = None
 
-        arcade.set_background_color(arcade.color.BLACK)
+        print("Background, ", colors['background'])
+        arcade.set_background_color(colors['background'])
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -157,7 +159,7 @@ class MyGame(arcade.Window):
                 self.draw_in_select_location_state()
 
         except Exception as e:
-            print(e)
+            print("Draw exception:", e)
 
     def on_key_press(self, key: int, modifiers: int):
         """ Manage key-down events """

@@ -3,6 +3,7 @@ SPRITE_WIDTH = 9
 SPRITE_HEIGHT = 16
 
 WALL_TEXTURE_ID = 219
+FLOOR_TEXTURE_ID = 219
 STAIRS_DOWN_TEXTURE_ID = 25
 PLAYER_TEXTURE_ID = ord("@")
 POTION_TEXTURE_ID = ord("!")
@@ -12,6 +13,8 @@ SCROLL_TEXTURE_ID = ord("S")
 DEAD_BODY_TEXTURE_ID = ord("X")
 
 colors = {
+    "background": (0, 0, 0, 255),
+    "player": (255, 255, 255, 255),
     "dark_wall": (0, 0, 100, 255),
     "dark_ground": (50, 50, 150, 255),
     "light_wall": (130, 110, 50, 255),

@@ -4,11 +4,12 @@ Define the game engine
 from typing import Optional
 
 from constants import *
+from themes.current_theme import *
 from entities.stairs import Stairs
 from entities.inventory import Inventory
 from entities.entity import Entity
-from procedural_generation.game_map import GameMap
 from entities.fighter import Fighter
+from procedural_generation.game_map import GameMap
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites
@@ -51,7 +52,7 @@ class GameEngine:
             x=0,
             y=0,
             texture_id=PLAYER_TEXTURE_ID,
-            color=arcade.csscolor.WHITE,
+            color=colors['player'],
             fighter=fighter_component,
             name="Player",
             inventory=Inventory(capacity=5),

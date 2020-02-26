@@ -2,6 +2,7 @@ import math
 
 from typing import Optional
 from constants import *
+from themes.current_theme import *
 from entities.item import Item
 from entities.entity import Entity
 
