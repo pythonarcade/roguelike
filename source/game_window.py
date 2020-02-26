@@ -47,7 +47,7 @@ class MyGame(arcade.Window):
 
         self.game_engine.setup()
 
-    def draw_in_normal_state(self):
+    def draw_hp_and_status_bar(self):
         text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
         arcade.draw_text(text, 0, 0, colors["status_panel_text"])
         size = 65
@@ -60,6 +60,8 @@ class MyGame(arcade.Window):
             self.game_engine.player.fighter.hp,
             self.game_engine.player.fighter.max_hp,
         )
+
+    def draw_inventory(self):
         capacity = self.game_engine.player.inventory.capacity
         selected_item = self.game_engine.selected_item
 
@@ -78,21 +80,17 @@ class MyGame(arcade.Window):
             text = f"{i + 1}: {item_name}"
             arcade.draw_text(text, x, y, colors["status_panel_text"])
 
-        # Check message queue. Limit to 2 lines
-        while len(self.game_engine.messages) > 2:
-            self.game_engine.messages.pop(0)
-
-        # Draw messages
-        y = 20
-        for message in self.game_engine.messages:
-            arcade.draw_text(message, 200, y, colors["status_panel_text"])
-            y -= 20
-
-        # Draw mouse-over text
+    def draw_mouse_over_text(self):
         if self.mouse_over_text:
             x, y = self.mouse_position
             arcade.draw_xywh_rectangle_filled(x, y, 100, 16, arcade.color.BLACK)
             arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
+
+    def draw_in_normal_state(self):
+        self.draw_hp_and_status_bar()
+        self.draw_inventory()
+        self.handle_and_draw_messages()
+        self.draw_mouse_over_text()
 
     def draw_in_select_location_state(self):
         mouse_x, mouse_y = self.mouse_position
@@ -106,6 +104,17 @@ class MyGame(arcade.Window):
             arcade.color.LIGHT_BLUE,
             2,
         )
+
+    def handle_and_draw_messages(self):
+        # Check message queue. Limit to 2 lines
+        while len(self.game_engine.messages) > 2:
+            self.game_engine.messages.pop(0)
+
+        # Draw messages
+        y = 20
+        for message in self.game_engine.messages:
+            arcade.draw_text(message, 200, y, colors["status_panel_text"])
+            y -= 20
 
     def draw_sprites_and_status_panel(self):
         # Draw the sprites
