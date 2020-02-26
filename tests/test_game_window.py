@@ -62,7 +62,7 @@ class TestMyGame:
         mock_arcade.set_background_color.assert_called_once_with(
             mock_arcade.color.BLACK
         )
-        
+
     def test_setup(self, mock_arcade, mock_engine):
         window = MyGame(100, 100, "foo")
 
@@ -82,7 +82,7 @@ class TestMyGame:
         assert window.game_engine.game_state == NORMAL
 
     def test_on_mouse_press_in_select_location_state(
-            self, mock_engine, mock_pixel_to_char
+        self, mock_engine, mock_pixel_to_char
     ):
         mock_pixel_to_char.return_value = (Mock(), Mock())
         window = MyGame(100, 100, "foo")
@@ -188,8 +188,12 @@ class TestMyGame:
     def test_draw_in_normal_state(self, mocker, mock_arcade, mock_engine):
         mock_draw_hp = mocker.patch("game_window.MyGame.draw_hp_and_status_bar")
         mock_draw_inventory = mocker.patch("game_window.MyGame.draw_inventory")
-        mock_handle_and_draw_messages = mocker.patch("game_window.MyGame.handle_and_draw_messages")
-        mock_draw_mouse_over_text = mocker.patch("game_window.MyGame.draw_mouse_over_text")
+        mock_handle_and_draw_messages = mocker.patch(
+            "game_window.MyGame.handle_and_draw_messages"
+        )
+        mock_draw_mouse_over_text = mocker.patch(
+            "game_window.MyGame.draw_mouse_over_text"
+        )
 
         window = MyGame(100, 100, "foo")
 
@@ -201,7 +205,7 @@ class TestMyGame:
         mock_draw_mouse_over_text.assert_called_once()
 
     def test_draw_in_select_location_state(
-            self, mocker, mock_arcade, mock_pixel_to_char
+        self, mocker, mock_arcade, mock_pixel_to_char
     ):
         mock_grid_coordinates = Mock(), Mock()
         mock_pixel_to_char.return_value = mock_grid_coordinates
