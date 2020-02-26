@@ -4,6 +4,7 @@ Define the game engine
 from typing import Optional
 
 from constants import *
+from entities.stairs import Stairs
 from entities.inventory import Inventory
 from entities.entity import Entity
 from procedural_generation.game_map import GameMap
@@ -57,6 +58,9 @@ class GameEngine:
         )
         self.characters.append(self.player)
 
+        self.setup_level()
+
+    def setup_level(self):
         # --- Create map
         # Size of the map
         map_width = MAP_WIDTH
@@ -117,15 +121,12 @@ class GameEngine:
         self.player.restore_from_dict(player_dict['Entity'])
 
         for entity_dict in data['dungeon']:
-            entity_name = list(entity_dict.keys())[0]
-            if entity_name == 'Entity':
-                entity = Entity()
-                entity.restore_from_dict(entity_dict[entity_name])
-                self.dungeon_sprites.append(entity)
+            entity = restore_entity(entity_dict)
+            self.dungeon_sprites.append(entity)
 
         for entity_dict in data['entities']:
             entity = restore_entity(entity_dict)
-            self.dungeon_sprites.append(entity)
+            self.entities.append(entity)
 
     def grid_click(self, grid_x, grid_y):
         """ Handle a click on the grid """
@@ -205,6 +206,19 @@ class GameEngine:
             ]
         return results
 
+    def use_stairs(self):
+        # Get all the entities at this location
+        entities = arcade.get_sprites_at_exact_point(
+            self.player.position, self.dungeon_sprites
+        )
+        # For each entity
+        for entity in entities:
+            if isinstance(entity, Stairs):
+                self.setup_level()
+                return [{"message": "You went down a level."}]
+
+        return [{"message": "There are no stairs here"}]
+
     def pick_up(self):
         """
         Handle a pick-up item entity request.
@@ -213,6 +227,7 @@ class GameEngine:
         entities = arcade.get_sprites_at_exact_point(
             self.player.position, self.entities
         )
+        print(f"There are {len(entities)} items")
         # For each entity
         for entity in entities:
             # Make sure it is an entity so type-checker is happy
@@ -222,6 +237,8 @@ class GameEngine:
                     # Try and get it. (Inventory might be full.)
                     results = self.player.inventory.add_item(entity)
                     return results
+                else:
+                    print(f"Can't get {entity.name}")
             else:
                 raise ValueError("Sprite is not an instance of Entity.")
         return None
@@ -292,6 +309,11 @@ class GameEngine:
                         new_action_queue.extend(
                             [{"message": f"You dropped the {item.name}."}]
                         )
+
+            if "use_stairs" in action:
+                result = self.use_stairs()
+                if result:
+                    new_action_queue.extend(result)
 
         # Reload the action queue with new items
         self.action_queue = new_action_queue

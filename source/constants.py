@@ -1,18 +1,14 @@
 import arcade.key
+from themes.code_page_437_constants import *
 
 SCREEN_TITLE = "RogueLike"
 MAP_HEIGHT = 35
 MAP_WIDTH = 120
 
-SPRITE_SCALE = 1
-SPRITE_WIDTH = 9
-SPRITE_HEIGHT = 16
-
 STATUS_PANEL_HEIGHT = 65
 SCREEN_WIDTH = int(SPRITE_WIDTH * MAP_WIDTH * SPRITE_SCALE)
 SCREEN_HEIGHT = int(SPRITE_HEIGHT * MAP_HEIGHT * SPRITE_SCALE + STATUS_PANEL_HEIGHT)
 
-WALL_CHAR = chr(219)
 FOV_RADIUS = 10
 DEATH_DELAY = 0.5
 
@@ -39,6 +35,7 @@ KEYMAP_SELECT_ITEM_9 = [arcade.key.KEY_9]
 KEYMAP_SELECT_ITEM_0 = [arcade.key.KEY_0]
 KEYMAP_USE_ITEM = [arcade.key.U]
 KEYMAP_DROP_ITEM = [arcade.key.D]
+KEYMAP_USE_STAIRS = [arcade.key.ENTER]
 
 # Game States
 NORMAL = 1
@@ -53,20 +50,5 @@ TILE_TROLL = 4
 TILE_LIGHTNING_SCROLL = 5
 TILE_FIREBALL_SCROLL = 6
 TILE_HEALING_POTION = 7
+TILE_STAIRS_DOWN = 8
 
-colors = {
-    "dark_wall": (0, 0, 100, 255),
-    "dark_ground": (50, 50, 150, 255),
-    "light_wall": (130, 110, 50, 255),
-    "light_ground": (200, 180, 50, 255),
-    "status_panel_background": (200, 180, 50, 255),
-    "status_panel_text": (0, 0, 0, 255),
-    "desaturated_green": (63, 127, 63, 255),
-    "darker_green": (0, 127, 0, 255),
-    "potion": (108, 0, 160, 255),
-    "dying": (200, 0, 0, 255),
-    "dead_body": (127, 0, 0, 255),
-    "transparent": (0, 0, 0, 0),
-    "status_bar_background": (80, 0, 0, 255),
-    "status_bar_foreground": (255, 0, 0, 255),
-}

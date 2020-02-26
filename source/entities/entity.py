@@ -4,16 +4,8 @@ the game
 """
 import math
 from constants import *
+from themes.code_page_437_textures import textures
 from util import char_to_pixel
-
-# Load  the textures our sprites use on game start-up.
-textures = arcade.load_spritesheet(
-    ":resources:images/spritesheets/codepage_437.png",
-    sprite_width=SPRITE_WIDTH,
-    sprite_height=SPRITE_HEIGHT,
-    columns=32,
-    count=8 * 32,
-)
 
 
 class Entity(arcade.Sprite):
@@ -117,11 +109,14 @@ class Entity(arcade.Sprite):
         self.is_dead = result['is_dead']
         if 'item' in result:
             self.item = Item()
+            print(f"Restore item {self.name}")
         if 'ai' in result:
             self.ai = BasicMonster()
+            self.ai.owner = self
         self.inventory = None
         if 'fighter' in result:
             self.fighter = Fighter()
+            self.fighter.owner = self
             self.fighter.restore_from_dict(result['fighter'])
         if 'inventory' in result:
             self.inventory = Inventory()

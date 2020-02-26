@@ -45,6 +45,66 @@ class MyGame(arcade.Window):
 
         self.game_engine.setup()
 
+    def draw_in_normal_state(self):
+        text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
+        arcade.draw_text(text, 0, 0, colors["status_panel_text"])
+        size = 65
+        margin = 2
+        draw_status_bar(
+            size / 2 + margin,
+            24,
+            size,
+            10,
+            self.game_engine.player.fighter.hp,
+            self.game_engine.player.fighter.max_hp,
+        )
+        capacity = self.game_engine.player.inventory.capacity
+        selected_item = self.game_engine.selected_item
+
+        field_width = SCREEN_WIDTH / (capacity + 1)
+        for i in range(capacity):
+            y = 40
+            x = i * field_width
+            if i == selected_item:
+                arcade.draw_lrtb_rectangle_outline(
+                    x - 1, x + field_width - 5, y + 20, y, arcade.color.BLACK, 2
+                )
+            if self.game_engine.player.inventory.items[i]:
+                item_name = self.game_engine.player.inventory.items[i].name
+            else:
+                item_name = ""
+            text = f"{i + 1}: {item_name}"
+            arcade.draw_text(text, x, y, colors["status_panel_text"])
+
+        # Check message queue. Limit to 2 lines
+        while len(self.game_engine.messages) > 2:
+            self.game_engine.messages.pop(0)
+
+        # Draw messages
+        y = 20
+        for message in self.game_engine.messages:
+            arcade.draw_text(message, 200, y, colors["status_panel_text"])
+            y -= 20
+
+        # Draw mouse-over text
+        if self.mouse_over_text:
+            x, y = self.mouse_position
+            arcade.draw_xywh_rectangle_filled(x, y, 100, 16, arcade.color.BLACK)
+            arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
+
+    def draw_in_select_location_state(self):
+        mouse_x, mouse_y = self.mouse_position
+        grid_x, grid_y = pixel_to_char(mouse_x, mouse_y)
+        center_x, center_y = char_to_pixel(grid_x, grid_y)
+        arcade.draw_rectangle_outline(
+            center_x,
+            center_y,
+            SPRITE_WIDTH,
+            SPRITE_HEIGHT,
+            arcade.color.LIGHT_BLUE,
+            2,
+        )
+
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """
         Handle mouse-down events
@@ -78,64 +138,9 @@ class MyGame(arcade.Window):
             )
 
             if self.game_engine.game_state == NORMAL:
-                text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
-                arcade.draw_text(text, 0, 0, colors["status_panel_text"])
-                size = 65
-                margin = 2
-                draw_status_bar(
-                    size / 2 + margin,
-                    24,
-                    size,
-                    10,
-                    self.game_engine.player.fighter.hp,
-                    self.game_engine.player.fighter.max_hp,
-                )
-                capacity = self.game_engine.player.inventory.capacity
-                selected_item = self.game_engine.selected_item
-
-                field_width = SCREEN_WIDTH / (capacity + 1)
-                for i in range(capacity):
-                    y = 40
-                    x = i * field_width
-                    if i == selected_item:
-                        arcade.draw_lrtb_rectangle_outline(
-                            x - 1, x + field_width - 5, y + 20, y, arcade.color.BLACK, 2
-                        )
-                    if self.game_engine.player.inventory.items[i]:
-                        item_name = self.game_engine.player.inventory.items[i].name
-                    else:
-                        item_name = ""
-                    text = f"{i+1}: {item_name}"
-                    arcade.draw_text(text, x, y, colors["status_panel_text"])
-
-                # Check message queue. Limit to 2 lines
-                while len(self.game_engine.messages) > 2:
-                    self.game_engine.messages.pop(0)
-
-                # Draw messages
-                y = 20
-                for message in self.game_engine.messages:
-                    arcade.draw_text(message, 200, y, colors["status_panel_text"])
-                    y -= 20
-
-                # Draw mouse-over text
-                if self.mouse_over_text:
-                    x, y = self.mouse_position
-                    arcade.draw_xywh_rectangle_filled(x, y, 100, 16, arcade.color.BLACK)
-                    arcade.draw_text(self.mouse_over_text, x, y, arcade.csscolor.WHITE)
-
+                self.draw_in_normal_state()
             elif self.game_engine.game_state == SELECT_LOCATION:
-                mouse_x, mouse_y = self.mouse_position
-                grid_x, grid_y = pixel_to_char(mouse_x, mouse_y)
-                center_x, center_y = char_to_pixel(grid_x, grid_y)
-                arcade.draw_rectangle_outline(
-                    center_x,
-                    center_y,
-                    SPRITE_WIDTH,
-                    SPRITE_HEIGHT,
-                    arcade.color.LIGHT_BLUE,
-                    2,
-                )
+                self.draw_in_select_location_state()
 
         except Exception as e:
             print(e)
@@ -203,6 +208,9 @@ class MyGame(arcade.Window):
         elif key == arcade.key.L:
             self.load()
 
+        elif key in KEYMAP_USE_STAIRS:
+            self.game_engine.action_queue.extend([{"use_stairs": True}])
+
     def on_key_release(self, key: int, modifiers: int):
         """Called when the user releases a key. """
 
@@ -248,7 +256,7 @@ class MyGame(arcade.Window):
         game_dict = self.game_engine.get_dict()
 
         with open("game_save.json", "w") as write_file:
-            json.dump(game_dict, write_file)
+            json.dump(game_dict, write_file, indent=4, sort_keys=True)
 
         results = [{"message": "Game has been saved"}]
         self.game_engine.action_queue.extend(results)
