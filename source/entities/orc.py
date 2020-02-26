@@ -6,7 +6,7 @@ from themes.current_theme import *
 
 class Orc(Entity):
     def __init__(self, x: int = 0, y: int = 0):
-        fighter_component = Fighter(hp=10, defense=0, power=3)
+        fighter_component = Fighter(hp=10, defense=0, power=3, xp_reward=35)
         ai_component = BasicMonster()
         super().__init__(
             x=x,
@@ -18,5 +18,5 @@ class Orc(Entity):
             name=f"Orc",
             blocks=True,
             fighter=fighter_component,
-            ai=ai_component,
+            ai=ai_component
         )

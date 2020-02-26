@@ -52,6 +52,10 @@ class MyGame(arcade.Window):
     def draw_hp_and_status_bar(self):
         text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
         arcade.draw_text(text, 0, 0, colors["status_panel_text"])
+
+        text = f"XP: {self.game_engine.player.fighter.current_xp:,}"
+        arcade.draw_text(text, 100, 0, colors["status_panel_text"])
+
         size = 65
         margin = 2
         draw_status_bar(

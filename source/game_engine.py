@@ -173,10 +173,11 @@ class GameEngine:
             # Can't move that way, but there is a monster there.
             # Attack it.
             target = blocking_entity_sprites[0]
-            results = self.player.fighter.attack(target)
-            self.action_queue.extend(results)
-            results = [{"enemy_turn": True}]
-            self.action_queue.extend(results)
+            if target.fighter and not target.is_dead:
+                results = self.player.fighter.attack(target)
+                self.action_queue.extend(results)
+                results = [{"enemy_turn": True}]
+                self.action_queue.extend(results)
 
     def move_enemies(self):
         """ Process enemy movement. """
