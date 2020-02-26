@@ -1,7 +1,7 @@
 from entities.entity import Entity
 from entities.fighter import Fighter
 from entities.ai import BasicMonster
-from themes.code_page_437_constants import *
+from themes.current_theme import *
 
 
 class Troll(Entity):

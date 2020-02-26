@@ -4,12 +4,12 @@ the game
 """
 import math
 from constants import *
-from themes.code_page_437_textures import textures
+from themes.current_theme import textures
 from util import char_to_pixel
 
 
 class Entity(arcade.Sprite):
-    """ On-screen sprite represented by some Code Page 437 character """
+    """ On-screen sprite """
 
     def __init__(
         self,

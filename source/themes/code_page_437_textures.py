@@ -1,5 +1,5 @@
 import arcade
-from themes.code_page_437_constants import *
+from themes.current_theme import *
 
 # Load  the textures our sprites use on game start-up.
 textures = arcade.load_spritesheet(

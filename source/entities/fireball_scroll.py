@@ -1,5 +1,5 @@
 from constants import *
-from themes.code_page_437_constants import *
+from themes.current_theme import *
 from entities.item import Item
 from entities.entity import Entity
 from util import char_to_pixel

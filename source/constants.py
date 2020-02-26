@@ -1,5 +1,5 @@
 import arcade.key
-from themes.code_page_437_constants import *
+from themes.current_theme import *
 
 SCREEN_TITLE = "RogueLike"
 MAP_HEIGHT = 35
