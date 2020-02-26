@@ -23,7 +23,7 @@ class Entity(arcade.Sprite):
         self,
         x: int = 0,
         y: int = 0,
-        char: str = "X",
+        texture_id: int = 0,
         color=arcade.csscolor.WHITE,
         visible_color=arcade.csscolor.WHITE,
         not_visible_color=arcade.csscolor.WHITE,
@@ -40,11 +40,11 @@ class Entity(arcade.Sprite):
         # setter.
         self._x = 0
         self._y = 0
-        self._char_value = 0
+        self._texture_id = 0
 
         self.x = x
         self.y = y
-        self.char = char
+        self.texture_id = texture_id
 
         self.color = color
         self.visible_color = visible_color
@@ -141,24 +141,14 @@ class Entity(arcade.Sprite):
         return math.sqrt(dx ** 2 + dy ** 2)
 
     @property
-    def char(self):
-        """ Character of the item """
-        return chr(self._char_value)
-
-    @char.setter
-    def char(self, value):
-        self._char_value = ord(value)
-        self.texture = textures[self._char_value]
-
-    @property
-    def char_value(self):
-        """ Character of the item """
+    def texture_id(self):
+        """ Texture id of the item """
         return self._char_value
 
-    @char_value.setter
-    def char_value(self, value):
-        self._char_value = value
-        self.texture = textures[self._char_value]
+    @texture_id.setter
+    def texture_id(self, value):
+        self._texture_id = value
+        self.texture = textures[self._texture_id]
 
     @property
     def x(self):
