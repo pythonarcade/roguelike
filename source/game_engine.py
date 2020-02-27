@@ -44,6 +44,8 @@ class GameEngine:
         self.selected_item: Optional[int] = None
         self.game_state = NORMAL
         self.grid_select_handlers = []
+        self.walk_sound = arcade.load_sound("sounds/footstep00.ogg")
+        self.player_hit_monster = arcade.load_sound("sounds/hitHelmet4.ogg")
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -197,6 +199,8 @@ class GameEngine:
             self.player.x += cx
             self.player.y += cy
 
+            self.walk_sound.play()
+
             # Figure out our field-of-view
             recalculate_fov(
                 self.player.x,
@@ -215,6 +219,7 @@ class GameEngine:
             target = blocking_entity_sprites[0]
             if target.fighter and not target.is_dead:
                 results = self.player.fighter.attack(target)
+                arcade.play_sound(self.player_hit_monster)
                 self.action_queue.extend(results)
                 results = [{"enemy_turn": True}]
                 self.action_queue.extend(results)
