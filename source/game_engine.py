@@ -17,6 +17,14 @@ from map_to_sprites import creatures_to_sprites
 from entities.restore_entity import restore_entity
 
 
+class GameLevel:
+    def __init__(self):
+        self.dungeon_sprites: Optional[arcade.SpriteList] = None
+        self.entities: Optional[arcade.SpriteList] = None
+        self.creatures: Optional[arcade.SpriteList] = None
+        self.level: int = 0
+
+
 class GameEngine:
     """
     This is the main game engine class, that manages the game and its actions.
@@ -24,9 +32,11 @@ class GameEngine:
     def __init__(self):
         """ Set the game engine's attributes """
         self.characters: Optional[arcade.SpriteList] = None
-        self.dungeon_sprites: Optional[arcade.SpriteList] = None
-        self.entities: Optional[arcade.SpriteList] = None
-        self.creatures: Optional[arcade.SpriteList] = None
+
+        self.levels = []
+        self.cur_level_index = 0
+        self.cur_level = None
+
         self.player: Optional[Entity] = None
         self.game_map: Optional[GameMap] = None
         self.messages = []
@@ -41,15 +51,6 @@ class GameEngine:
         # Set game state
         # Create sprite lists
         self.characters = arcade.SpriteList()
-        self.dungeon_sprites = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-        self.entities = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-        self.creatures = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
 
         # Create player
         fighter_component = Fighter(hp=30, defense=2, power=5, level=1)
@@ -64,28 +65,35 @@ class GameEngine:
         )
         self.characters.append(self.player)
 
-        self.setup_level()
+        self.cur_level = self.setup_level(1)
+        self.levels.append(self.cur_level)
 
-    def setup_level(self):
+
+    def setup_level(self, level_number):
         # --- Create map
         # Size of the map
         map_width = MAP_WIDTH
         map_height = MAP_HEIGHT
 
-        self.game_map = GameMap(map_width, map_height)
-        self.game_map.make_map(player=self.player)
+        level = GameLevel()
 
-        self.dungeon_sprites = map_to_sprites(self.game_map.tiles)
-        self.entities = map_to_sprites(self.game_map.entities)
-        self.creatures = creatures_to_sprites(self.game_map.creatures)
+        self.game_map = GameMap(map_width, map_height)
+        self.game_map.make_map(player=self.player, level=level)
+
+        level.dungeon_sprites = map_to_sprites(self.game_map.tiles)
+        level.entities = map_to_sprites(self.game_map.entities)
+        level.creatures = creatures_to_sprites(self.game_map.creatures)
+        level.level = level_number
 
         # Set field of view
         recalculate_fov(
             self.player.x,
             self.player.y,
             FOV_RADIUS,
-            [self.dungeon_sprites, self.entities, self.creatures],
+            [level.dungeon_sprites, level.entities, level.creatures],
         )
+
+        return level
 
     def get_dict(self):
         """
@@ -99,23 +107,30 @@ class GameEngine:
 
         player_dict = get_entity_dict(self.player)
 
-        dungeon_dict = []
-        for sprite in self.dungeon_sprites:
-            dungeon_dict.append(get_entity_dict(sprite))
+        levels_dict = []
+        for level in self.levels:
 
-        entity_dict = []
-        for sprite in self.entities:
-            entity_dict.append(get_entity_dict(sprite))
+            dungeon_dict = []
+            for sprite in level.dungeon_sprites:
+                dungeon_dict.append(get_entity_dict(sprite))
 
-        creature_dict = []
-        for sprite in self.creatures:
-            creature_dict.append(get_entity_dict(sprite))
+            entity_dict = []
+            for sprite in level.entities:
+                entity_dict.append(get_entity_dict(sprite))
+
+            creature_dict = []
+            for sprite in level.creatures:
+                creature_dict.append(get_entity_dict(sprite))
+
+            level_dict = {'dungeon': dungeon_dict,
+                          'entities': entity_dict,
+                          'creatures': creature_dict}
+            levels_dict.append(level_dict)
 
 
         result = {'player': player_dict,
-                  'dungeon': dungeon_dict,
-                  'entities': entity_dict,
-                  'creatures': creature_dict}
+                  'levels': levels_dict}
+
         return result
 
     def restore_from_dict(self, data):
@@ -123,30 +138,36 @@ class GameEngine:
         Restore this object from a dictionary object. Used in recreating a game from a
         saved state, or from over the network.
         """
-        self.dungeon_sprites = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-        self.entities = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-        self.creatures = arcade.SpriteList(
-            use_spatial_hash=True, spatial_hash_cell_size=16
-        )
-
         player_dict = data['player']
         self.player.restore_from_dict(player_dict['Entity'])
 
-        for entity_dict in data['dungeon']:
-            entity = restore_entity(entity_dict)
-            self.dungeon_sprites.append(entity)
+        for level_dict in data['levels']:
+            level = GameLevel()
+            level.dungeon_sprites = arcade.SpriteList(
+                use_spatial_hash=True, spatial_hash_cell_size=16
+            )
+            level.entities = arcade.SpriteList(
+                use_spatial_hash=True, spatial_hash_cell_size=16
+            )
+            level.creatures = arcade.SpriteList(
+                use_spatial_hash=True, spatial_hash_cell_size=16
+            )
 
-        for entity_dict in data['entities']:
-            entity = restore_entity(entity_dict)
-            self.entities.append(entity)
+            for entity_dict in level_dict['dungeon']:
+                entity = restore_entity(entity_dict)
+                level.dungeon_sprites.append(entity)
 
-        for creature_dict in data['creatures']:
-            creature = restore_entity(creature_dict)
-            self.creatures.append(creature)
+            for entity_dict in level_dict['entities']:
+                entity = restore_entity(entity_dict)
+                level.entities.append(entity)
+
+            for creature_dict in level_dict['creatures']:
+                creature = restore_entity(creature_dict)
+                level.creatures.append(creature)
+
+            self.levels.append(level)
+
+        self.cur_level = self.levels[-1]
 
     def grid_click(self, grid_x, grid_y):
         """ Handle a click on the grid """
@@ -168,8 +189,8 @@ class GameEngine:
         ny = self.player.y + cy
 
         # See if there are walls or blocking entities there
-        blocking_dungeon_sprites = get_blocking_sprites(nx, ny, self.dungeon_sprites)
-        blocking_entity_sprites = get_blocking_sprites(nx, ny, self.creatures)
+        blocking_dungeon_sprites = get_blocking_sprites(nx, ny, self.cur_level.dungeon_sprites)
+        blocking_entity_sprites = get_blocking_sprites(nx, ny, self.cur_level.creatures)
 
         if not blocking_dungeon_sprites and not blocking_entity_sprites:
             # Nothing is blocking us, we can move
@@ -181,7 +202,7 @@ class GameEngine:
                 self.player.x,
                 self.player.y,
                 FOV_RADIUS,
-                [self.dungeon_sprites, self.creatures, self.entities],
+                [self.cur_level.dungeon_sprites, self.cur_level.creatures, self.cur_level.entities],
             )
 
             # Let the enemies move
@@ -201,11 +222,11 @@ class GameEngine:
     def move_enemies(self):
         """ Process enemy movement. """
         full_results = []
-        for creature in self.creatures:
+        for creature in self.cur_level.creatures:
             if creature.ai:
                 results = creature.ai.take_turn(
                     target=self.player,
-                    sprite_lists=[self.dungeon_sprites, self.creatures],
+                    sprite_lists=[self.cur_level.dungeon_sprites, self.cur_level.creatures],
                 )
                 full_results.extend(results)
         return full_results
@@ -230,12 +251,14 @@ class GameEngine:
     def use_stairs(self):
         # Get all the entities at this location
         entities = arcade.get_sprites_at_exact_point(
-            self.player.position, self.dungeon_sprites
+            self.player.position, self.cur_level.dungeon_sprites
         )
         # For each entity
         for entity in entities:
             if isinstance(entity, Stairs):
-                self.setup_level()
+                level = self.setup_level(self.cur_level.level + 1)
+                self.cur_level = level
+                self.levels.append(level)
                 return [{"message": "You went down a level."}]
 
         return [{"message": "There are no stairs here"}]
@@ -246,7 +269,7 @@ class GameEngine:
         """
         # Get all the entities at this location
         entities = arcade.get_sprites_at_exact_point(
-            self.player.position, self.entities
+            self.player.position, self.cur_level.entities
         )
         print(f"There are {len(entities)} items")
         # For each entity
