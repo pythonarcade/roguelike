@@ -9,7 +9,6 @@ from entities.entity import Entity
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 6
 MAX_ROOMS = 35
-MAX_MONSTERS_PER_ROOM = 3
 MAX_ITEMS_PER_ROOM = 2
 
 
@@ -36,12 +35,19 @@ class Rect:
         )
 
 
-def place_entities(room, creatures, entities, max_monsters_per_room, max_items_per_room):
+def place_entities(room, creatures, entities, max_items_per_room, level):
     """ Place monsters and items """
     # Get a random number of monsters
     number_of_items = randint(0, max_items_per_room)
 
-    combos = [[], [1], [1, 1], [1, 1, 1], [2]]
+    if level == 1:
+        combos = [[], [1], [1, 1], [1, 1, 1], [2]]
+    elif level == 2:
+        combos = [[], [1, 1], [1, 1, 1], [2], [1, 2]]
+    else:
+        combos = [[], [1, 1, 1], [2], [1, 2], [1, 1, 2]]
+
+
     monster_choice = choice(combos)
     for challenge_level in monster_choice:
         # Choose a random location in the room
@@ -82,7 +88,7 @@ class GameMap:
         ]
 
     def make_map(
-        self, player: Entity,
+        self, player: Entity, level: int
     ):
         rooms = []
         num_rooms = 0
@@ -141,7 +147,8 @@ class GameMap:
                     new_room,
                     self.creatures,
                     self.entities,
-                    MAX_MONSTERS_PER_ROOM, MAX_ITEMS_PER_ROOM
+                    MAX_ITEMS_PER_ROOM,
+                    level
                 )
 
                 # finally, append the new room to the list

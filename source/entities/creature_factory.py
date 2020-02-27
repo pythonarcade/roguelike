@@ -38,7 +38,6 @@ def make_monster_sprite(monster_dict):
     sprite.fighter.xp_reward = int(monster_dict['XP'])
     sprite.blocks = True
     sprite.name = monster_dict['Name']
-    print(f"Made a {sprite.name}.")
     return sprite
 
 # m = get_random_monster_by_challenge(1)
