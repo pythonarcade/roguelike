@@ -150,7 +150,7 @@ class TestMyGame:
     #
     #     window.on_draw()  # should not raise
 
-    def test_draw_hp_and_status_bar(self, mocker, mock_arcade, mock_engine):
+    def test_draw_hp_and_status_bar_for_fifth_level(self, mocker, mock_arcade, mock_engine):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
         mock_engine.return_value.player.fighter.level = 5
         mock_engine.return_value.player.fighter.current_xp = 5001
@@ -168,6 +168,26 @@ class TestMyGame:
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
+
+    def test_draw_hp_and_status_bar_for_fourth_level(self, mocker, mock_arcade, mock_engine):
+        mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
+        mock_engine.return_value.player.fighter.level = 4
+        mock_engine.return_value.player.fighter.current_xp = 4999
+        mock_hp = mock_engine.return_value.player.fighter.hp
+        mock_max_hp = mock_engine.return_value.player.fighter.max_hp
+        window = MyGame(100, 100, "foo")
+
+        window.draw_hp_and_status_bar()
+
+        assert mock_arcade.draw_text.call_args_list == [
+            call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
+            call("XP: 4,999/5,000", 100, 0, (0, 0, 0, 255)),
+            call("Level: 4", 200, 0, (0, 0, 0, 255)),
+        ]
+        mock_draw_status_bar.assert_called_once_with(
+            65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
+        )
+
 
     def test_draw_inventory_no_selected_item(self, mock_arcade, mock_engine):
         mock_engine.return_value.player.inventory.capacity = 2
