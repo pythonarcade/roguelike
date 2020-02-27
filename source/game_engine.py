@@ -25,6 +25,7 @@ class GameEngine:
         self.characters: Optional[arcade.SpriteList] = None
         self.dungeon_sprites: Optional[arcade.SpriteList] = None
         self.entities: Optional[arcade.SpriteList] = None
+        self.creatures: Optional[arcade.SpriteList] = None
         self.player: Optional[Entity] = None
         self.game_map: Optional[GameMap] = None
         self.messages = []
@@ -43,6 +44,9 @@ class GameEngine:
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
         self.entities = arcade.SpriteList(
+            use_spatial_hash=True, spatial_hash_cell_size=16
+        )
+        self.creatures = arcade.SpriteList(
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
 
@@ -72,13 +76,14 @@ class GameEngine:
 
         self.dungeon_sprites = map_to_sprites(self.game_map.tiles)
         self.entities = map_to_sprites(self.game_map.entities)
+        self.creatures = map_to_sprites(self.game_map.creatures)
 
         # Set field of view
         recalculate_fov(
             self.player.x,
             self.player.y,
             FOV_RADIUS,
-            [self.dungeon_sprites, self.entities],
+            [self.dungeon_sprites, self.entities, self.creatures],
         )
 
     def get_dict(self):
@@ -101,9 +106,15 @@ class GameEngine:
         for sprite in self.entities:
             entity_dict.append(get_entity_dict(sprite))
 
+        creature_dict = []
+        for sprite in self.creatures:
+            creature_dict.append(get_entity_dict(sprite))
+
+
         result = {'player': player_dict,
                   'dungeon': dungeon_dict,
-                  'entities': entity_dict}
+                  'entities': entity_dict,
+                  'creatures': creature_dict}
         return result
 
     def restore_from_dict(self, data):
@@ -117,6 +128,9 @@ class GameEngine:
         self.entities = arcade.SpriteList(
             use_spatial_hash=True, spatial_hash_cell_size=16
         )
+        self.creatures = arcade.SpriteList(
+            use_spatial_hash=True, spatial_hash_cell_size=16
+        )
 
         player_dict = data['player']
         self.player.restore_from_dict(player_dict['Entity'])
@@ -128,6 +142,10 @@ class GameEngine:
         for entity_dict in data['entities']:
             entity = restore_entity(entity_dict)
             self.entities.append(entity)
+
+        for creature_dict in data['creatures']:
+            creature = restore_entity(creature_dict)
+            self.creatures.append(creature)
 
     def grid_click(self, grid_x, grid_y):
         """ Handle a click on the grid """
@@ -150,7 +168,7 @@ class GameEngine:
 
         # See if there are walls or blocking entities there
         blocking_dungeon_sprites = get_blocking_sprites(nx, ny, self.dungeon_sprites)
-        blocking_entity_sprites = get_blocking_sprites(nx, ny, self.entities)
+        blocking_entity_sprites = get_blocking_sprites(nx, ny, self.creatures)
 
         if not blocking_dungeon_sprites and not blocking_entity_sprites:
             # Nothing is blocking us, we can move
@@ -162,7 +180,7 @@ class GameEngine:
                 self.player.x,
                 self.player.y,
                 FOV_RADIUS,
-                [self.dungeon_sprites, self.entities],
+                [self.dungeon_sprites, self.creatures, self.entities],
             )
 
             # Let the enemies move
@@ -182,11 +200,11 @@ class GameEngine:
     def move_enemies(self):
         """ Process enemy movement. """
         full_results = []
-        for entity in self.entities:
-            if entity.ai:
-                results = entity.ai.take_turn(
+        for creature in self.creatures:
+            if creature.ai:
+                results = creature.ai.take_turn(
                     target=self.player,
-                    sprite_lists=[self.dungeon_sprites, self.entities],
+                    sprite_lists=[self.dungeon_sprites, self.creatures],
                 )
                 full_results.extend(results)
         return full_results
@@ -258,8 +276,7 @@ class GameEngine:
 
     def process_action_queue(self, delta_time: float):
         """
-        Process the action queue, kind of a dispatch-center for the
-        game.
+        Process the action queue, kind of a dispatch-center for the game.
         """
         new_action_queue = []
         for action in self.action_queue:

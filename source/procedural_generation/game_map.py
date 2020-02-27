@@ -36,7 +36,7 @@ class Rect:
         )
 
 
-def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
+def place_entities(room, creatures, entities, max_monsters_per_room, max_items_per_room):
     """ Place monsters and items """
     # Get a random number of monsters
     number_of_monsters = randint(0, max_monsters_per_room)
@@ -48,11 +48,11 @@ def place_entities(room, entities, max_monsters_per_room, max_items_per_room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         # Check if an entity is already in that location
-        if not entities[x][y]:
+        if not creatures[x][y]:
             if randint(0, 100) < 80:
-                entities[x][y] = TILE_ORC
+                creatures[x][y] = TILE_ORC
             else:
-                entities[x][y] = TILE_TROLL
+                creatures[x][y] = TILE_TROLL
 
     for i in range(number_of_items):
         x = randint(room.x1 + 1, room.x2 - 1)
@@ -77,6 +77,9 @@ class GameMap:
             [TILE_WALL for _ in range(self.map_height)] for _ in range(self.map_width)
         ]
         self.entities = [
+            [TILE_EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
+        ]
+        self.creatures = [
             [TILE_EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
         ]
 
@@ -137,7 +140,10 @@ class GameMap:
                         self.create_h_tunnel(prev_x, new_x, new_y)
 
                 place_entities(
-                    new_room, self.entities, MAX_MONSTERS_PER_ROOM, MAX_ITEMS_PER_ROOM
+                    new_room,
+                    self.creatures,
+                    self.entities,
+                    MAX_MONSTERS_PER_ROOM, MAX_ITEMS_PER_ROOM
                 )
 
                 # finally, append the new room to the list

@@ -211,6 +211,7 @@ class MyGame(arcade.Window):
         # Draw the sprites
         self.game_engine.dungeon_sprites.draw(filter=gl.GL_NEAREST)
         self.game_engine.entities.draw(filter=gl.GL_NEAREST)
+        self.game_engine.creatures.draw(filter=gl.GL_NEAREST)
         self.game_engine.characters.draw(filter=gl.GL_NEAREST)
 
         # Draw the status panel
@@ -365,7 +366,7 @@ class MyGame(arcade.Window):
         self.mouse_position = x, y
 
         # Get the sprites at the current location
-        sprite_list = arcade.get_sprites_at_point((x, y), self.game_engine.entities)
+        sprite_list = arcade.get_sprites_at_point((x, y), self.game_engine.creatures)
 
         # See if any sprite we are hovering over deserves a mouse-over text
         self.mouse_over_text = None
