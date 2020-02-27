@@ -106,6 +106,11 @@ class MyGame(arcade.Window):
         self.draw_mouse_over_text()
 
     def draw_in_select_location_state(self):
+
+        # If mouse hasn't been over the window yet, return None
+        if self.mouse_position is None:
+            return
+
         mouse_x, mouse_y = self.mouse_position
         grid_x, grid_y = pixel_to_char(mouse_x, mouse_y)
         center_x, center_y = char_to_pixel(grid_x, grid_y)

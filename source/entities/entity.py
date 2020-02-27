@@ -68,7 +68,7 @@ class Entity(arcade.Sprite):
         result['not_visible_color'] = self.not_visible_color
         result['alpha'] = self.alpha
         result['color'] = self.color
-        result['char'] = self.char
+        result['texture_id'] = self.texture_id
         result['name'] = self.name
         result['blocks'] = self.blocks
         result['block_sight'] = self.block_sight
@@ -101,7 +101,7 @@ class Entity(arcade.Sprite):
         self.not_visible_color = result['not_visible_color']
         self.color = result['color']
         self.alpha = result['alpha']
-        self.char = result['char']
+        self.texture_id = result['texture_id']
         self.name = result['name']
         self.blocks = result['blocks']
         self.block_sight = result['block_sight']
@@ -138,7 +138,7 @@ class Entity(arcade.Sprite):
     @property
     def texture_id(self):
         """ Texture id of the item """
-        return self._char_value
+        return self._texture_id
 
     @texture_id.setter
     def texture_id(self, value):
