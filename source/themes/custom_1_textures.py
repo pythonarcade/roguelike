@@ -1,15 +1,21 @@
+import pathlib
+
 from arcade import load_texture
 from themes.current_theme import *
 
-# Load  the textures our sprites use on game start-up.
-textures = []
+assets_path = pathlib.Path(__file__).resolve().parent / "custom_1"
 
-textures.append(load_texture("themes/custom_1/floor.png"))
-textures.append(load_texture("themes/custom_1/player.png"))
-textures.append(load_texture("themes/custom_1/orc.png"))
-textures.append(load_texture("themes/custom_1/troll.png"))
-textures.append(load_texture("themes/custom_1/wall.png"))
-textures.append(load_texture("themes/custom_1/red_potion.png"))
-textures.append(load_texture("themes/custom_1/scroll.png"))
-textures.append(load_texture("themes/custom_1/dead_body.png"))
-textures.append(load_texture("themes/custom_1/stairs_down.png"))
+filenames = [
+    "floor.png",
+    "player.png",
+    "orc.png",
+    "troll.png",
+    "wall.png",
+    "red_potion.png",
+    "scroll.png",
+    "dead_body.png",
+    "stairs_down.png",
+]
+
+# Load  the textures our sprites use on game start-up.
+textures = [load_texture(str(assets_path / filename)) for filename in filenames]

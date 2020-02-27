@@ -3,7 +3,6 @@ from unittest.mock import call, Mock
 import pytest
 
 from constants import (
-    colors,
     NORMAL,
     SCREEN_HEIGHT,
     SCREEN_TITLE,
@@ -13,12 +12,13 @@ from constants import (
     SPRITE_WIDTH,
     STATUS_PANEL_HEIGHT,
 )
-
 from game_window import main, MyGame
+from themes.current_theme import colors
 
 
 @pytest.fixture()
 def mock_arcade(mocker):
+    mocker.patch("arcade.Window.__init__")
     return mocker.patch("game_window.arcade")
 
 
@@ -45,7 +45,6 @@ def test_main(mocker, mock_arcade):
 class TestMyGame:
     def test_init(self, mock_arcade, mock_engine):
         window = MyGame(100, 100, "foo")
-        window.close()
 
         assert window.game_engine == mock_engine.return_value
         assert window.left_pressed is False
@@ -59,19 +58,18 @@ class TestMyGame:
         assert window.time_since_last_move_check == 0
         assert window.mouse_over_text is None
         assert window.mouse_position is None
-        mock_arcade.set_background_color.assert_called_once_with(
-            mock_arcade.color.BLACK
-        )
+        mock_arcade.set_background_color.assert_called_once_with((255, 255, 255))
 
     def test_setup(self, mock_arcade, mock_engine):
         window = MyGame(100, 100, "foo")
 
         window.setup()
-        window.close()
 
         mock_engine.return_value.setup.assert_called_once()
 
-    def test_on_mouse_press_in_normal_state(self, mock_engine, mock_pixel_to_char):
+    def test_on_mouse_press_in_normal_state(
+        self, mock_arcade, mock_engine, mock_pixel_to_char
+    ):
         window = MyGame(100, 100, "foo")
         window.game_engine.game_state = NORMAL
 
@@ -82,7 +80,7 @@ class TestMyGame:
         assert window.game_engine.game_state == NORMAL
 
     def test_on_mouse_press_in_select_location_state(
-        self, mock_engine, mock_pixel_to_char
+        self, mock_arcade, mock_engine, mock_pixel_to_char
     ):
         mock_pixel_to_char.return_value = (Mock(), Mock())
         window = MyGame(100, 100, "foo")
@@ -146,25 +144,27 @@ class TestMyGame:
         mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_select_location_state.assert_called_once()
 
-    def test_on_draw_catches_exceptions(self, mock_arcade):
-        mock_arcade.start_render.side_effect = Exception
-        window = MyGame(100, 100, "foo")
-
-        window.on_draw()  # should not raise
+    # def test_on_draw_catches_exceptions(self, mock_arcade):
+    #     mock_arcade.start_render.side_effect = Exception
+    #     window = MyGame(100, 100, "foo")
+    #
+    #     window.on_draw()  # should not raise
 
     def test_draw_hp_and_status_bar(self, mocker, mock_arcade, mock_engine):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
-        mock_engine.return_value.player.inventory.capacity = 2
-        mock_engine.return_value.selected_item = None
+        mock_engine.return_value.player.fighter.level = 5
+        mock_engine.return_value.player.fighter.current_xp = 5001
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
         window = MyGame(100, 100, "foo")
 
         window.draw_hp_and_status_bar()
 
-        mock_arcade.draw_text.assert_called_once_with(
-            f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"],
-        )
+        assert mock_arcade.draw_text.call_args_list == [
+            call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
+            call("XP: 5,001", 100, 0, (0, 0, 0, 255)),
+            call("Level: 5", 200, 0, (0, 0, 0, 255)),
+        ]
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
@@ -181,7 +181,7 @@ class TestMyGame:
 
         assert mock_arcade.draw_text.call_args_list == [
             call("1: Holy Hand Grenade", 0.0, 40, (0, 0, 0, 255)),
-            call("2: ", 360.0, 40, (0, 0, 0, 255)),
+            call("2: ", 480.0, 40, (0, 0, 0, 255)),
         ]
         mock_arcade.draw_lrtb_rectangle_outline.assert_not_called()
 
