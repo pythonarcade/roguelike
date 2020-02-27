@@ -246,13 +246,14 @@ class GameEngine:
         return None
 
     def check_experience_level(self):
+        """
+        See if the player should level up
+        """
         if self.player.fighter.level < len(EXPERIENCE_PER_LEVEL):
             xp_to_next_level = EXPERIENCE_PER_LEVEL[self.player.fighter.level - 1]
             if self.player.fighter.current_xp >= xp_to_next_level:
+                self.player.fighter.ability_points += 1
                 self.player.fighter.level += 1
-                self.player.fighter.max_hp += 5
-                self.player.fighter.hp += 5
-                self.player.inventory.capacity += 1
                 self.action_queue.extend([{"message": "Level up!!!"}])
 
     def process_action_queue(self, delta_time: float):
@@ -280,6 +281,9 @@ class GameEngine:
                 target.color = colors["dead_body"]
                 target.visible_color = colors["dead_body"]
                 target.blocks = False
+                if target is not self.player:
+                    self.player.fighter.current_xp += target.fighter.xp_reward
+
             if "delay" in action:
                 target = action["delay"]
                 target["time"] -= delta_time

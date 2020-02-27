@@ -41,6 +41,8 @@ class MyGame(arcade.Window):
         self.mouse_over_text = None
         self.mouse_position: Optional[Tuple[float, float]] = None
 
+        self.character_sheet_buttons = arcade.SpriteList()
+
         print("Background, ", colors['background'])
         arcade.set_background_color(colors['background'])
 
@@ -48,6 +50,35 @@ class MyGame(arcade.Window):
         """ Set up the game here. Call this function to restart the game. """
 
         self.game_engine.setup()
+
+        spacing = 37
+        y_value = SCREEN_HEIGHT - 75
+        sprite = arcade.Sprite("images/plus_button.png")
+        sprite.center_x = 200
+        sprite.center_y = y_value
+        sprite.name = "attack"
+        self.character_sheet_buttons.append(sprite)
+
+        y_value -= spacing
+        sprite = arcade.Sprite("images/plus_button.png")
+        sprite.center_x = 200
+        sprite.center_y = y_value
+        sprite.name = "defense"
+        self.character_sheet_buttons.append(sprite)
+
+        y_value -= spacing
+        sprite = arcade.Sprite("images/plus_button.png")
+        sprite.center_x = 200
+        sprite.center_y = y_value
+        sprite.name = "hp"
+        self.character_sheet_buttons.append(sprite)
+
+        y_value -= spacing
+        sprite = arcade.Sprite("images/plus_button.png")
+        sprite.center_x = 200
+        sprite.center_y = y_value
+        sprite.name = "capacity"
+        self.character_sheet_buttons.append(sprite)
 
     def draw_hp_and_status_bar(self):
         text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
@@ -150,12 +181,19 @@ class MyGame(arcade.Window):
         arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
 
         y_value -= text_size * spacing
-        text = f"Level: {self.game_engine.player.fighter.level}"
+        text = f"HP: {self.game_engine.player.fighter.hp} / {self.game_engine.player.fighter.max_hp}"
         arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
 
         y_value -= text_size * spacing
-        text = f"HP: {self.game_engine.player.fighter.hp} / {self.game_engine.player.fighter.max_hp}"
+        text = f"Max Inventory: {self.game_engine.player.inventory.capacity}"
         arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+        y_value -= text_size * spacing
+        text = f"Level: {self.game_engine.player.fighter.level}"
+        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+
+        if self.game_engine.player.fighter.ability_points > 0:
+            self.character_sheet_buttons.draw()
 
 
     def handle_and_draw_messages(self):
@@ -184,6 +222,23 @@ class MyGame(arcade.Window):
             colors["status_panel_background"],
         )
 
+    def handle_character_screen_click(self, x, y):
+        if self.game_engine.player.fighter.ability_points > 0:
+            sprites_clicked = arcade.get_sprites_at_point((x, y), self.character_sheet_buttons)
+            for sprite in sprites_clicked:
+                if sprite.name == "attack":
+                    self.game_engine.player.fighter.power += 1
+                    self.game_engine.player.fighter.ability_points -= 1
+                elif sprite.name == "defense":
+                    self.game_engine.player.fighter.defense += 1
+                    self.game_engine.player.fighter.ability_points -= 1
+                elif sprite.name == "hp":
+                    self.game_engine.player.fighter.gp += 5
+                    self.game_engine.player.fighter.ability_points -= 1
+                elif sprite.name == "capacity":
+                    self.game_engine.player.fighter.gp += 5
+                    self.game_engine.player.fighter.ability_points -= 1
+
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """
         Handle mouse-down events
@@ -194,6 +249,9 @@ class MyGame(arcade.Window):
             grid_x, grid_y = pixel_to_char(x, y)
             # Notify game engine
             self.game_engine.grid_click(grid_x, grid_y)
+
+        if self.game_engine.game_state == CHARACTER_SCREEN:
+            self.handle_character_screen_click(x, y)
 
     def on_draw(self):
         """
