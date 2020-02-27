@@ -29,7 +29,7 @@ class FireballScroll(Entity):
     def apply_damage(self, grid_x, grid_y, amount, results):
         pixel_x, pixel_y = char_to_pixel(grid_x, grid_y)
         sprites = arcade.get_sprites_at_point(
-            (pixel_x, pixel_y), self.game_engine.entities
+            (pixel_x, pixel_y), self.game_engine.creatures
         )
         for sprite in sprites:
             if sprite.fighter and not sprite.is_dead:

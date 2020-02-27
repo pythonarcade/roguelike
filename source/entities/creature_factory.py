@@ -1,5 +1,10 @@
 import random
 import csv
+from entities.entity import Entity
+from arcade import load_texture
+from entities.ai import BasicMonster
+from entities.fighter import Fighter
+
 
 def load_creatures(filename):
     monsters = []
@@ -11,26 +16,31 @@ def load_creatures(filename):
     return monsters
 
 
-monsters = load_creatures("creatures.tsv")
-
-def convert_to_restore_dict(monster):
-    converted = {}
-    converted['texture'] = int(monster['Texture'])
-    converted['name'] = monster['Name']
-    converted['fighter'] = {
-                "defense": int(monster['Defense']),
-                "hp": int(monster['HP']),
-                "max_hp": int(monster['HP']),
-                "power": int(monster['Attack']),
-                "xp_reward": int(monster['XP']),
-            },
-    return converted
+monsters = load_creatures("entities/creatures.tsv")
 
 def get_random_monster_by_challenge(challenge):
     filtered_monsters = [monster for monster in monsters if int(monster['Challenge']) == challenge]
+    if len(filtered_monsters) == 0:
+        raise ValueError(f"Error, no creatures for challenge level {challenge}.")
     m1 = random.choice(filtered_monsters)
-    m2 = convert_to_restore_dict(m1)
-    return m2
+    return m1
 
-m = get_random_monster_by_challenge(1)
-print(m)
+def make_monster_sprite(monster_dict):
+    sprite = Entity()
+    sprite.texture = load_texture(monster_dict['Texture'])
+    sprite.ai = BasicMonster()
+    sprite.ai.owner = sprite
+    sprite.fighter = Fighter()
+    sprite.fighter.owner = sprite
+    sprite.fighter.hp = int(monster_dict['HP'])
+    sprite.fighter.power = int(monster_dict['Attack'])
+    sprite.fighter.defense = int(monster_dict['Defense'])
+    sprite.fighter.xp_reward = int(monster_dict['XP'])
+    sprite.blocks = True
+    sprite.name = monster_dict['Name']
+    print(f"Made a {sprite.name}.")
+    return sprite
+
+# m = get_random_monster_by_challenge(1)
+# print(m)
+# e = make_monster_sprite(m)

@@ -1,7 +1,5 @@
 from entities.potion import Potion
 from entities.fireball_scroll import FireballScroll
-from entities.orc import Orc
-from entities.troll import Troll
 from entities.stairs import Stairs
 from entities.lightning_scroll import LightningScroll
 from entities.entity import Entity
@@ -18,10 +16,6 @@ def restore_entity(entity_dict):
         entity = FireballScroll()
     elif entity_name == 'LightningScroll':
         entity = LightningScroll()
-    elif entity_name == 'Orc':
-        entity = Orc()
-    elif entity_name == 'Troll':
-        entity = Troll()
     elif entity_name == 'Stairs':
         entity = Stairs()
     else:

@@ -19,11 +19,13 @@ from themes.current_theme import *
 class MyGame(arcade.Window):
     """
     Main application class.
+    Manage the GUI
     """
 
     def __init__(self, width: int, height: int, title: str):
         super().__init__(width, height, title, antialiasing=False)
 
+        # Main game engine, where the game is managed
         self.game_engine = GameEngine()
 
         # Track the current state of what key is pressed
@@ -36,14 +38,17 @@ class MyGame(arcade.Window):
         self.down_left_pressed = False
         self.down_right_pressed = False
 
+        # Used for auto-repeat of moves
         self.time_since_last_move_check = 0
 
-        self.mouse_over_text = None
+        # Where is the mouse?
         self.mouse_position: Optional[Tuple[float, float]] = None
 
+        self.mouse_over_text = None
+
+        # These are sprites that appear as buttons on the character sheet.
         self.character_sheet_buttons = arcade.SpriteList()
 
-        print("Background, ", colors['background'])
         arcade.set_background_color(colors['background'])
 
     def setup(self):
@@ -258,7 +263,6 @@ class MyGame(arcade.Window):
         """
         Render the screen.
         """
-        # try:
         arcade.start_render()
 
         self.draw_sprites_and_status_panel()
@@ -269,9 +273,6 @@ class MyGame(arcade.Window):
             self.draw_in_select_location_state()
         elif self.game_engine.game_state == CHARACTER_SCREEN:
             self.draw_character_screen()
-
-        # except Exception as e:
-        #     print("Draw exception:", e)
 
     def on_key_press(self, key: int, modifiers: int):
         """ Manage key-down events """

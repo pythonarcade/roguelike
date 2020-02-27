@@ -1,6 +1,6 @@
 Name	Attack	Defense	HP	XP	Challenge	Texture
-Orc	3	0	10	35	1	2
-"Troll"	4	1	16	100	2	3
-"Goblin"	4	0	8	35	1	8
-"Giant Rat"	2	0	1	10	1	9
-Bugbear	3	2	16	100	2	10
+Orc	3	0	10	35	1	themes/custom_1/orc.png
+Troll	4	1	16	100	2	themes/custom_1/troll.png
+Goblin	4	0	8	35	1	themes/custom_1/goblin.png
+Giant Rat	3	0	1	10	1	themes/custom_1/rat.png
+Bugbear	3	2	16	100	2	themes/custom_1/bugbear.png

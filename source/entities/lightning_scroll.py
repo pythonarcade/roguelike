@@ -23,7 +23,7 @@ class LightningScroll(Entity):
         # Find the closest enemy
         closest_distance: Optional[float] = None
         closest_entity: Optional[Entity] = None
-        for entity in game_engine.entities:
+        for entity in game_engine.creatures:
             print(f"Entity: {entity.name} {entity.is_visible}")
             if entity.is_visible and entity.fighter and not entity.is_dead:
                 x1 = game_engine.player.x

@@ -13,6 +13,7 @@ from procedural_generation.game_map import GameMap
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites
+from map_to_sprites import creatures_to_sprites
 from entities.restore_entity import restore_entity
 
 
@@ -76,7 +77,7 @@ class GameEngine:
 
         self.dungeon_sprites = map_to_sprites(self.game_map.tiles)
         self.entities = map_to_sprites(self.game_map.entities)
-        self.creatures = map_to_sprites(self.game_map.creatures)
+        self.creatures = creatures_to_sprites(self.game_map.creatures)
 
         # Set field of view
         recalculate_fov(

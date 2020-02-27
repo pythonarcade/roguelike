@@ -1,5 +1,5 @@
 from random import randint
-
+from random import choice
 from constants import *
 
 
@@ -39,20 +39,18 @@ class Rect:
 def place_entities(room, creatures, entities, max_monsters_per_room, max_items_per_room):
     """ Place monsters and items """
     # Get a random number of monsters
-    number_of_monsters = randint(0, max_monsters_per_room)
     number_of_items = randint(0, max_items_per_room)
 
-    for i in range(number_of_monsters):
+    combos = [[], [1], [1, 1], [1, 1, 1], [2]]
+    monster_choice = choice(combos)
+    for challenge_level in monster_choice:
         # Choose a random location in the room
         x = randint(room.x1 + 1, room.x2 - 1)
         y = randint(room.y1 + 1, room.y2 - 1)
 
         # Check if an entity is already in that location
         if not creatures[x][y]:
-            if randint(0, 100) < 80:
-                creatures[x][y] = TILE_ORC
-            else:
-                creatures[x][y] = TILE_TROLL
+            creatures[x][y] = challenge_level
 
     for i in range(number_of_items):
         x = randint(room.x1 + 1, room.x2 - 1)
