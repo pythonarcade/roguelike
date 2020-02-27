@@ -89,7 +89,7 @@ class MyGame(arcade.Window):
         text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"
         arcade.draw_text(text, 0, 0, colors["status_panel_text"])
 
-        if self.game_engine.player.fighter.level < len(EXPERIENCE_PER_LEVEL):
+        if self.game_engine.player.fighter.level <= len(EXPERIENCE_PER_LEVEL):
             xp_to_next_level = EXPERIENCE_PER_LEVEL[self.game_engine.player.fighter.level-1]
             text = f"XP: {self.game_engine.player.fighter.current_xp:,}/{xp_to_next_level:,}"
         else:
