@@ -11,7 +11,7 @@ from constants import (
     SPRITE_HEIGHT,
     SPRITE_WIDTH,
     STATUS_PANEL_HEIGHT,
-)
+    EXPERIENCE_PER_LEVEL)
 from game_window import main, MyGame
 from themes.current_theme import colors
 
@@ -155,8 +155,10 @@ class TestMyGame:
 
     def test_draw_hp_and_status_bar_for_fifth_level(self, mocker, mock_arcade, mock_engine):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
-        mock_engine.return_value.player.fighter.level = 5
-        mock_engine.return_value.player.fighter.current_xp = 2001
+        lvl = len(EXPERIENCE_PER_LEVEL) + 1
+        mock_engine.return_value.player.fighter.level = lvl
+        xp = EXPERIENCE_PER_LEVEL[-1] + 1
+        mock_engine.return_value.player.fighter.current_xp = xp
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
         window = MyGame(100, 100, "foo")
@@ -165,8 +167,8 @@ class TestMyGame:
 
         assert mock_arcade.draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
-            call("XP: 2,001", 100, 0, (0, 0, 0, 255)),
-            call("Level: 5", 200, 0, (0, 0, 0, 255)),
+            call(f"XP: {xp:,}", 100, 0, (0, 0, 0, 255)),
+            call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
         ]
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
@@ -174,8 +176,10 @@ class TestMyGame:
 
     def test_draw_hp_and_status_bar_for_fourth_level(self, mocker, mock_arcade, mock_engine):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
-        mock_engine.return_value.player.fighter.level = 4
-        mock_engine.return_value.player.fighter.current_xp = 1999
+        lvl = len(EXPERIENCE_PER_LEVEL)
+        mock_engine.return_value.player.fighter.level = lvl
+        xp = EXPERIENCE_PER_LEVEL[-1] - 1
+        mock_engine.return_value.player.fighter.current_xp = xp
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
         window = MyGame(100, 100, "foo")
@@ -184,8 +188,8 @@ class TestMyGame:
 
         assert mock_arcade.draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
-            call("XP: 1,999/2,000", 100, 0, (0, 0, 0, 255)),
-            call("Level: 4", 200, 0, (0, 0, 0, 255)),
+            call(f"XP: {xp:,}/{xp + 1:,}", 100, 0, (0, 0, 0, 255)),
+            call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
         ]
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
