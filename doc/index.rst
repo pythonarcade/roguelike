@@ -1,13 +1,29 @@
 Python Arcade Library Rogue-Like
 ================================
 
-This is a rogue-like adventure written in Python using the Arcade library.
-It is designed to be a springboard for creating your own rogue-like.
+.. image:: screenshot.png
+    :width: 75%
+
+
+This is a `rogue-like`_ adventure written in the `Python computer language`_
+using the `Arcade Library`_.
+
+.. _rogue-like: https://en.wikipedia.org/wiki/Roguelike
+.. _Python computer language: https://www.python.org/
+.. _Arcade Library: https://arcade.academy
+
+Use this code to hack away at creating your own adventure game!
 
 .. toctree::
 
+    install
     keybindings
     features
     code_docs
 
+Other links:
+
+* `Source on GitHub <https://github.com/pythonarcade/roguelike>`_
+* `Arcade Library`_
+* `License (MIT) <https://github.com/pythonarcade/roguelike/blob/master/license.rst>`_
 

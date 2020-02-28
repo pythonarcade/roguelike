@@ -1,6 +1,7 @@
 from pathlib import Path
 import random
 import csv
+from themes.current_theme import colors
 from entities.entity import Entity
 from arcade import load_texture
 from entities.ai import BasicMonster
@@ -36,6 +37,7 @@ def make_monster_sprite(monster_dict):
     sprite.fighter.power = int(monster_dict['Attack'])
     sprite.fighter.defense = int(monster_dict['Defense'])
     sprite.fighter.xp_reward = int(monster_dict['XP'])
+    sprite.not_visible_color = colors['transparent']
     sprite.blocks = True
     sprite.name = monster_dict['Name']
     return sprite
