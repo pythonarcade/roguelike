@@ -44,8 +44,12 @@ class GameEngine:
         self.selected_item: Optional[int] = None
         self.game_state = NORMAL
         self.grid_select_handlers = []
-        self.walk_sound = arcade.load_sound("sounds/footstep00.ogg")
-        self.player_hit_monster = arcade.load_sound("sounds/hitHelmet4.ogg")
+
+        self.walk_sound = arcade.load_sound("sounds/footstep04.ogg")
+        self.player_hit_monster_sound = arcade.load_sound("sounds/hitHelmet4.ogg")
+        self.get_scroll_sound = arcade.load_sound("sounds/bookFlip2.ogg")
+        self.get_potion_sound = arcade.load_sound("sounds/sinkWater1.ogg")
+        self.level_up_sound = arcade.load_sound("sounds/powerUp1.ogg")
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -219,7 +223,7 @@ class GameEngine:
             target = blocking_entity_sprites[0]
             if target.fighter and not target.is_dead:
                 results = self.player.fighter.attack(target)
-                arcade.play_sound(self.player_hit_monster)
+                arcade.play_sound(self.player_hit_monster_sound)
                 self.action_queue.extend(results)
                 results = [{"enemy_turn": True}]
                 self.action_queue.extend(results)
@@ -285,6 +289,10 @@ class GameEngine:
                 if entity.item:
                     # Try and get it. (Inventory might be full.)
                     results = self.player.inventory.add_item(entity)
+                    if "Potion" in entity.name:
+                        arcade.play_sound(self.get_potion_sound)
+                    elif "Scroll" in entity.name:
+                        arcade.play_sound(self.get_scroll_sound)
                     return results
                 else:
                     print(f"Can't get {entity.name}")
@@ -302,6 +310,7 @@ class GameEngine:
                 self.player.fighter.ability_points += 1
                 self.player.fighter.level += 1
                 self.action_queue.extend([{"message": "Level up!!!"}])
+                arcade.play_sound(self.level_up_sound)
 
     def process_action_queue(self, delta_time: float):
         """

@@ -1,5 +1,5 @@
 """
-Main Game Engine
+Main Window Manager.
 """
 from typing import Optional, Tuple
 
@@ -239,10 +239,10 @@ class MyGame(arcade.Window):
                     self.game_engine.player.fighter.defense += 1
                     self.game_engine.player.fighter.ability_points -= 1
                 elif sprite.name == "hp":
-                    self.game_engine.player.fighter.hp += 5
+                    self.game_engine.player.fighter.max_hp += 5
                     self.game_engine.player.fighter.ability_points -= 1
                 elif sprite.name == "capacity":
-                    self.game_engine.player.fighter.gp += 5
+                    self.game_engine.player.inventory.capacity += 1
                     self.game_engine.player.fighter.ability_points -= 1
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
