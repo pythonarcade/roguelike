@@ -25,6 +25,7 @@ RELEASE = VERSION
 # serve to show the default.
 
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath('../source'))
 
 # -- General configuration ------------------------------------------------
 
@@ -62,9 +63,9 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "PyPi Package Example"
-copyright_text = "2019, Paul Vincent Craven"
-author = "Paul Vincent Craven"
+project = "Python Arcade Rogue-Like"
+copyright_text = "2020, Arcade Academy"
+author = "Arcade Academy"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -218,7 +219,7 @@ html_static_path = ["_static"]
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "pypi_package_example_doc"
+htmlhelp_basename = "python_arcade_doc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
