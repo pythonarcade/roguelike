@@ -17,7 +17,7 @@ Use this code to hack away at creating your own adventure game!
 .. toctree::
 
     install
-    keybindings
+    how_to_play
     features
     code_docs
 
