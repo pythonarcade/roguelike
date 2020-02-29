@@ -58,14 +58,26 @@ class TestMyGame:
         assert window.time_since_last_move_check == 0
         assert window.mouse_over_text is None
         assert window.mouse_position is None
+        assert window.character_sheet_buttons == mock_arcade.SpriteList.return_value
         mock_arcade.set_background_color.assert_called_once_with((255, 255, 255))
 
-    def test_setup(self, mock_arcade, mock_engine):
+    def test_setup(self, mocker, mock_arcade, mock_engine):
         window = MyGame(100, 100, "foo")
+        mock_sprites = [Mock() for _ in range(4)]
+        mock_arcade.Sprite.side_effect = mock_sprites
 
         window.setup()
 
         mock_engine.return_value.setup.assert_called_once()
+        sprite_names = ["attack", "defense", "hp", "capacity"]
+        centre_ys = [602, 565, 528, 491]
+        for mock_sprite, name, centre_y in zip(mock_sprites, sprite_names, centre_ys):
+            assert mock_sprite.name == name
+            assert mock_sprite.center_x == 200
+            assert mock_sprite.center_y == centre_y
+        assert mock_arcade.SpriteList.return_value.append.call_args_list == [
+            call(mock_sprite) for mock_sprite in mock_sprites
+        ]
 
     def test_on_mouse_press_in_normal_state(
         self, mock_arcade, mock_engine, mock_pixel_to_char
@@ -194,7 +206,6 @@ class TestMyGame:
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
-
 
     def test_draw_inventory_no_selected_item(self, mock_arcade, mock_engine):
         mock_engine.return_value.player.inventory.capacity = 2
