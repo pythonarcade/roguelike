@@ -56,34 +56,15 @@ class MyGame(arcade.Window):
 
         self.game_engine.setup()
 
-        spacing = 37
-        y_value = SCREEN_HEIGHT - 75
-        sprite = arcade.Sprite("images/plus_button.png")
-        sprite.center_x = 200
-        sprite.center_y = y_value
-        sprite.name = "attack"
-        self.character_sheet_buttons.append(sprite)
-
-        y_value -= spacing
-        sprite = arcade.Sprite("images/plus_button.png")
-        sprite.center_x = 200
-        sprite.center_y = y_value
-        sprite.name = "defense"
-        self.character_sheet_buttons.append(sprite)
-
-        y_value -= spacing
-        sprite = arcade.Sprite("images/plus_button.png")
-        sprite.center_x = 200
-        sprite.center_y = y_value
-        sprite.name = "hp"
-        self.character_sheet_buttons.append(sprite)
-
-        y_value -= spacing
-        sprite = arcade.Sprite("images/plus_button.png")
-        sprite.center_x = 200
-        sprite.center_y = y_value
-        sprite.name = "capacity"
-        self.character_sheet_buttons.append(sprite)
+        for button_name, y_value in zip(
+                ["attack", "defense", "hp", "capacity"],
+                range(SCREEN_HEIGHT - 75, 490, -37)
+        ):
+            sprite = arcade.Sprite("images/plus_button.png")
+            sprite.center_x = 200
+            sprite.center_y = y_value
+            sprite.name = button_name
+            self.character_sheet_buttons.append(sprite)
 
     def draw_hp_and_status_bar(self):
         text = f"HP: {self.game_engine.player.fighter.hp}/{self.game_engine.player.fighter.max_hp}"

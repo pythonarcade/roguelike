@@ -11,7 +11,7 @@ from constants import (
     SPRITE_HEIGHT,
     SPRITE_WIDTH,
     STATUS_PANEL_HEIGHT,
-)
+    EXPERIENCE_PER_LEVEL)
 from game_window import main, MyGame
 from themes.current_theme import colors
 
@@ -58,14 +58,26 @@ class TestMyGame:
         assert window.time_since_last_move_check == 0
         assert window.mouse_over_text is None
         assert window.mouse_position is None
+        assert window.character_sheet_buttons == mock_arcade.SpriteList.return_value
         mock_arcade.set_background_color.assert_called_once_with((255, 255, 255))
 
-    def test_setup(self, mock_arcade, mock_engine):
+    def test_setup(self, mocker, mock_arcade, mock_engine):
         window = MyGame(100, 100, "foo")
+        mock_sprites = [Mock() for _ in range(4)]
+        mock_arcade.Sprite.side_effect = mock_sprites
 
         window.setup()
 
         mock_engine.return_value.setup.assert_called_once()
+        sprite_names = ["attack", "defense", "hp", "capacity"]
+        centre_ys = [602, 565, 528, 491]
+        for mock_sprite, name, centre_y in zip(mock_sprites, sprite_names, centre_ys):
+            assert mock_sprite.name == name
+            assert mock_sprite.center_x == 200
+            assert mock_sprite.center_y == centre_y
+        assert mock_arcade.SpriteList.return_value.append.call_args_list == [
+            call(mock_sprite) for mock_sprite in mock_sprites
+        ]
 
     def test_on_mouse_press_in_normal_state(
         self, mock_arcade, mock_engine, mock_pixel_to_char
@@ -155,8 +167,10 @@ class TestMyGame:
 
     def test_draw_hp_and_status_bar_for_fifth_level(self, mocker, mock_arcade, mock_engine):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
-        mock_engine.return_value.player.fighter.level = 5
-        mock_engine.return_value.player.fighter.current_xp = 2001
+        lvl = len(EXPERIENCE_PER_LEVEL) + 1
+        mock_engine.return_value.player.fighter.level = lvl
+        xp = EXPERIENCE_PER_LEVEL[-1] + 1
+        mock_engine.return_value.player.fighter.current_xp = xp
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
         window = MyGame(100, 100, "foo")
@@ -165,8 +179,8 @@ class TestMyGame:
 
         assert mock_arcade.draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
-            call("XP: 2,001", 100, 0, (0, 0, 0, 255)),
-            call("Level: 5", 200, 0, (0, 0, 0, 255)),
+            call(f"XP: {xp:,}", 100, 0, (0, 0, 0, 255)),
+            call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
         ]
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
@@ -174,8 +188,10 @@ class TestMyGame:
 
     def test_draw_hp_and_status_bar_for_fourth_level(self, mocker, mock_arcade, mock_engine):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
-        mock_engine.return_value.player.fighter.level = 4
-        mock_engine.return_value.player.fighter.current_xp = 1999
+        lvl = len(EXPERIENCE_PER_LEVEL)
+        mock_engine.return_value.player.fighter.level = lvl
+        xp = EXPERIENCE_PER_LEVEL[-1] - 1
+        mock_engine.return_value.player.fighter.current_xp = xp
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
         window = MyGame(100, 100, "foo")
@@ -184,13 +200,12 @@ class TestMyGame:
 
         assert mock_arcade.draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
-            call("XP: 1,999/2,000", 100, 0, (0, 0, 0, 255)),
-            call("Level: 4", 200, 0, (0, 0, 0, 255)),
+            call(f"XP: {xp:,}/{xp + 1:,}", 100, 0, (0, 0, 0, 255)),
+            call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
         ]
         mock_draw_status_bar.assert_called_once_with(
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
-
 
     def test_draw_inventory_no_selected_item(self, mock_arcade, mock_engine):
         mock_engine.return_value.player.inventory.capacity = 2
