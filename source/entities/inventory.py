@@ -61,10 +61,16 @@ class Inventory:
             results.append(
                 {"message": "You cannot carry any more, your inventory is full"}
             )
+            results.append({"play_sound": "error"})
         else:
             results.append({"message": f"You pick up the {item.name}!"})
+            if "Potion" in item.name:
+                results.append({"play_sound": "pickup_potion"})
+            if "Scroll" in item.name:
+                results.append({"play_sound": "pickup_scroll"})
+
             item.remove_from_sprite_lists()
-            results.extend({"enemy_turn": True})
+            results.append({"enemy_turn": True})
 
         return results
 

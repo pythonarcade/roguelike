@@ -4,6 +4,7 @@ Basic artificial intelligence for monsters.
 Ok, it isn't real AI, more like a placeholder.
 """
 from entities.astar import astar
+import random
 
 
 class BasicMonster:
@@ -33,11 +34,13 @@ class BasicMonster:
 
                 # If there is a path, move towards the user
                 if result:
+                    monster_delay_sound = random.randrange(20) * 0.01 + 0.05
                     point = result[1]
                     x, y = point
                     monster.x = x
                     monster.y = y
                     # print(f"Move to ({x}, {y})")
+                    results.append({"delay": {"time": monster_delay_sound, "action": {"play_sound": "monster_walk"}}})
             elif target.fighter.hp > 0:
                 # We are next to the user, fight them.
                 attack_results = monster.fighter.attack(target)

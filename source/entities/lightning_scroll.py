@@ -18,6 +18,8 @@ class LightningScroll(Entity):
             name="Lightning Scroll",
             item=Item(),
         )
+        self.my_sound = arcade.load_sound("sounds/laser3.ogg")
+
 
     def use(self, game_engine: "GameEngine"):
         # Find the closest enemy
@@ -37,6 +39,7 @@ class LightningScroll(Entity):
 
         # If we've got a closest enemy, zap them.
         if closest_entity:
+            arcade.play_sound(self.my_sound)
             damage = 15
             results = [
                 {"enemy_turn": True},

@@ -3,6 +3,7 @@ Fighter class manages any entity, including the player, that can fight.
 """
 from typing import Optional
 from entities.entity import Entity
+import random
 
 
 class Fighter:
@@ -59,6 +60,13 @@ class Fighter:
             raise ValueError("Beating a dead horse exception.")
 
         damage = self.power - target.fighter.defense
+
+        # Character will have a level, don't make a noise for the character.
+        if self.level == 0:
+            monster_delay_sound = random.randrange(20) * 0.01 + 0.05
+            results.append({"delay": {"time": monster_delay_sound, "action": {"play_sound": "monster_attack"}}})
+            print("Monster attack queued")
+
         if damage > 0:
             results.append(
                 {
@@ -73,4 +81,5 @@ class Fighter:
                 }
             )
 
+        print("Returning from attack: ", results)
         return results

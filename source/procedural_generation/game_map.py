@@ -41,11 +41,11 @@ def place_entities(room, creatures, entities, max_items_per_room, level):
     number_of_items = randint(0, max_items_per_room)
 
     if level == 1:
-        combos = [[], [1], [1, 1], [1, 1, 1], [2]]
+        combos = [[], [1], [1], [1, 1], [1, 1, 1], [2]]
     elif level == 2:
         combos = [[], [1, 1], [1, 1, 1], [2], [1, 2]]
     else:
-        combos = [[], [1, 1, 1], [2], [1, 2], [1, 1, 2]]
+        combos = [[], [1, 1, 1], [2], [1, 2], [1, 2], [1, 2, 1]]
 
 
     monster_choice = choice(combos)

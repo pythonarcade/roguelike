@@ -18,6 +18,8 @@ class FireballScroll(Entity):
             name="Fireball Scroll",
             item=Item(),
         )
+        self.sound = arcade.load_sound("sounds/explosion2.ogg")
+
 
     def use(self, game_engine: "GameEngine"):
         print("Use")
@@ -61,6 +63,8 @@ class FireballScroll(Entity):
         self.apply_damage(x - 1, y + 1, 8, results)
         self.apply_damage(x, y + 1, 8, results)
         self.apply_damage(x + 1, y + 1, 8, results)
+
+        arcade.play_sound(self.sound)
 
         self.game_engine.player.inventory.remove_item(self)
         self.game_engine.game_state = NORMAL

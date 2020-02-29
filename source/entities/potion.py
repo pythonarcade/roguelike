@@ -21,4 +21,4 @@ class Potion(Entity):
             game_engine.player.fighter.hp = game_engine.player.fighter.max_hp
         game_engine.player.inventory.remove_item(self)
 
-        return [{"enemy_turn": True}]
+        return [{"enemy_turn": True}, {"play_sound": "heal"}]

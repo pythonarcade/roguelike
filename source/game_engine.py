@@ -45,11 +45,18 @@ class GameEngine:
         self.game_state = NORMAL
         self.grid_select_handlers = []
 
-        self.walk_sound = arcade.load_sound("sounds/footstep04.ogg")
-        self.player_hit_monster_sound = arcade.load_sound("sounds/hitHelmet4.ogg")
+        self.walk_sound = arcade.load_sound("sounds/footstep_concrete_002.ogg")
+        self.player_hit_monster_sound = arcade.load_sound("sounds/impactPunch_heavy_004.ogg")
+        self.monster_attack_sound = arcade.load_sound("sounds/impactPunch_heavy_001.ogg")
         self.get_scroll_sound = arcade.load_sound("sounds/bookFlip2.ogg")
         self.get_potion_sound = arcade.load_sound("sounds/sinkWater1.ogg")
         self.level_up_sound = arcade.load_sound("sounds/powerUp1.ogg")
+        self.monster_death = arcade.load_sound("sounds/knifeSlice.ogg")
+        self.monster_walk_sound = arcade.load_sound("sounds/footstep04.ogg")
+        self.pickup_potion_sound = arcade.load_sound("sounds/sinkWater1.ogg")
+        self.pickup_scroll_sound = arcade.load_sound("sounds/bookFlip2.ogg")
+        self.error_sound = arcade.load_sound("sounds/error5.ogg")
+        self.heal_sound = arcade.load_sound("sounds/secret4.ogg")
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -84,7 +91,7 @@ class GameEngine:
         level = GameLevel()
 
         self.game_map = GameMap(map_width, map_height)
-        self.game_map.make_map(player=self.player, level=level)
+        self.game_map.make_map(player=self.player, level=level_number)
 
         level.dungeon_sprites = map_to_sprites(self.game_map.tiles)
         level.entities = map_to_sprites(self.game_map.entities)
@@ -289,10 +296,6 @@ class GameEngine:
                 if entity.item:
                     # Try and get it. (Inventory might be full.)
                     results = self.player.inventory.add_item(entity)
-                    if "Potion" in entity.name:
-                        arcade.play_sound(self.get_potion_sound)
-                    elif "Scroll" in entity.name:
-                        arcade.play_sound(self.get_scroll_sound)
                     return results
                 else:
                     print(f"Can't get {entity.name}")
@@ -328,6 +331,7 @@ class GameEngine:
             if "dying" in action:
                 target = action["dying"]
                 new_actions = self.dying(target)
+                arcade.play_sound(self.monster_death)
                 if new_actions:
                     new_action_queue.extend(new_actions)
             if "dead" in action:
@@ -358,6 +362,23 @@ class GameEngine:
                     if self.selected_item != item_number - 1:
                         self.selected_item = item_number - 1
                         new_action_queue.extend({"enemy_turn": True})
+
+            if "play_sound" in action:
+                target = action["play_sound"]
+                if target == "monster_walk":
+                    arcade.play_sound(self.monster_walk_sound)
+                elif target == "monster_attack":
+                    arcade.play_sound(self.monster_attack_sound)
+                elif target == "pickup_potion":
+                    arcade.play_sound(self.pickup_potion_sound)
+                elif target == "pickup_scroll":
+                    arcade.play_sound(self.pickup_scroll_sound)
+                elif target == "heal":
+                    arcade.play_sound(self.heal_sound)
+                elif target == "error":
+                    arcade.play_sound(self.error_sound)
+                else:
+                    print(f"Warning, unknown sound trigger {target}.")
 
             if "use_item" in action:
                 item_number = self.selected_item
