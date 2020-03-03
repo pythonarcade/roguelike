@@ -11,7 +11,8 @@ from constants import (
     SPRITE_HEIGHT,
     SPRITE_WIDTH,
     STATUS_PANEL_HEIGHT,
-    EXPERIENCE_PER_LEVEL)
+    EXPERIENCE_PER_LEVEL,
+)
 from game_window import main, MyGame
 from themes.current_theme import colors
 
@@ -20,6 +21,21 @@ from themes.current_theme import colors
 def mock_arcade(mocker):
     mocker.patch("arcade.Window.__init__")
     return mocker.patch("game_window.arcade")
+
+
+@pytest.fixture()
+def mock_draw_text(mock_arcade):
+    return mock_arcade.draw_text
+
+
+@pytest.fixture()
+def mock_draw_lrtb_rectangle_outline(mock_arcade):
+    return mock_arcade.draw_lrtb_rectangle_outline
+
+
+@pytest.fixture()
+def window(mock_arcade):
+    return MyGame(100, 100, "foo")
 
 
 @pytest.fixture()
@@ -43,9 +59,7 @@ def test_main(mocker, mock_arcade):
 
 
 class TestMyGame:
-    def test_init(self, mock_arcade, mock_engine):
-        window = MyGame(100, 100, "foo")
-
+    def test_init(self, mock_arcade, mock_engine, window):
         assert window.game_engine == mock_engine.return_value
         assert window.left_pressed is False
         assert window.right_pressed is False
@@ -61,8 +75,7 @@ class TestMyGame:
         assert window.character_sheet_buttons == mock_arcade.SpriteList.return_value
         mock_arcade.set_background_color.assert_called_once_with((255, 255, 255))
 
-    def test_setup(self, mocker, mock_arcade, mock_engine):
-        window = MyGame(100, 100, "foo")
+    def test_setup(self, mock_arcade, mock_engine, window):
         mock_sprites = [Mock() for _ in range(4)]
         mock_arcade.Sprite.side_effect = mock_sprites
 
@@ -80,9 +93,8 @@ class TestMyGame:
         ]
 
     def test_on_mouse_press_in_normal_state(
-        self, mock_arcade, mock_engine, mock_pixel_to_char
+        self, mock_arcade, mock_engine, mock_pixel_to_char, window
     ):
-        window = MyGame(100, 100, "foo")
         window.game_engine.game_state = NORMAL
 
         window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
@@ -92,10 +104,9 @@ class TestMyGame:
         assert window.game_engine.game_state == NORMAL
 
     def test_on_mouse_press_in_select_location_state(
-        self, mock_arcade, mock_engine, mock_pixel_to_char
+        self, mock_arcade, mock_engine, mock_pixel_to_char, window
     ):
         mock_pixel_to_char.return_value = (Mock(), Mock())
-        window = MyGame(100, 100, "foo")
         window.game_engine.game_state = SELECT_LOCATION
 
         window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
@@ -105,9 +116,10 @@ class TestMyGame:
             *mock_pixel_to_char.return_value
         )
 
-    def test_draw_sprites_and_status_panel(self, mocker, mock_arcade, mock_engine):
+    def test_draw_sprites_and_status_panel(
+        self, mocker, mock_arcade, mock_engine, window
+    ):
         mock_gl = mocker.patch("game_window.gl")
-        window = MyGame(100, 100, "foo")
 
         window.draw_sprites_and_status_panel()
 
@@ -127,14 +139,13 @@ class TestMyGame:
             0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
         )
 
-    def test_on_draw_in_normal_state(self, mocker, mock_arcade):
+    def test_on_draw_in_normal_state(self, mocker, mock_arcade, window):
         mock_draw_sprites_and_status_panel = mocker.patch(
             "game_window.MyGame.draw_sprites_and_status_panel"
         )
         mock_draw_in_normal_state = mocker.patch(
             "game_window.MyGame.draw_in_normal_state"
         )
-        window = MyGame(100, 100, "foo")
         window.game_engine.game_state = NORMAL
 
         window.on_draw()
@@ -143,14 +154,13 @@ class TestMyGame:
         mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_normal_state.assert_called_once()
 
-    def test_on_draw_in_select_location_state(self, mocker, mock_arcade):
+    def test_on_draw_in_select_location_state(self, mocker, mock_arcade, window):
         mock_draw_sprites_and_status_panel = mocker.patch(
             "game_window.MyGame.draw_sprites_and_status_panel"
         )
         mock_draw_in_select_location_state = mocker.patch(
             "game_window.MyGame.draw_in_select_location_state"
         )
-        window = MyGame(100, 100, "foo")
         window.game_engine.game_state = SELECT_LOCATION
 
         window.on_draw()
@@ -159,13 +169,9 @@ class TestMyGame:
         mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_select_location_state.assert_called_once()
 
-    # def test_on_draw_catches_exceptions(self, mock_arcade):
-    #     mock_arcade.start_render.side_effect = Exception
-    #     window = MyGame(100, 100, "foo")
-    #
-    #     window.on_draw()  # should not raise
-
-    def test_draw_hp_and_status_bar_for_fifth_level(self, mocker, mock_arcade, mock_engine):
+    def test_draw_hp_and_status_bar_for_fifth_level(
+        self, mocker, mock_arcade, mock_draw_text, mock_engine, window
+    ):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
         lvl = len(EXPERIENCE_PER_LEVEL) + 1
         mock_engine.return_value.player.fighter.level = lvl
@@ -173,11 +179,10 @@ class TestMyGame:
         mock_engine.return_value.player.fighter.current_xp = xp
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
-        window = MyGame(100, 100, "foo")
 
         window.draw_hp_and_status_bar()
 
-        assert mock_arcade.draw_text.call_args_list == [
+        assert mock_draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
             call(f"XP: {xp:,}", 100, 0, (0, 0, 0, 255)),
             call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
@@ -186,7 +191,9 @@ class TestMyGame:
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
 
-    def test_draw_hp_and_status_bar_for_fourth_level(self, mocker, mock_arcade, mock_engine):
+    def test_draw_hp_and_status_bar_for_fourth_level(
+        self, mocker, mock_arcade, mock_draw_text, mock_engine, window
+    ):
         mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
         lvl = len(EXPERIENCE_PER_LEVEL)
         mock_engine.return_value.player.fighter.level = lvl
@@ -194,11 +201,10 @@ class TestMyGame:
         mock_engine.return_value.player.fighter.current_xp = xp
         mock_hp = mock_engine.return_value.player.fighter.hp
         mock_max_hp = mock_engine.return_value.player.fighter.max_hp
-        window = MyGame(100, 100, "foo")
 
         window.draw_hp_and_status_bar()
 
-        assert mock_arcade.draw_text.call_args_list == [
+        assert mock_draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
             call(f"XP: {xp:,}/{xp + 1:,}", 100, 0, (0, 0, 0, 255)),
             call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
@@ -207,23 +213,57 @@ class TestMyGame:
             65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
 
-    def test_draw_inventory_no_selected_item(self, mock_arcade, mock_engine):
+    def test_draw_inventory_no_selected_item(
+        self,
+        mock_arcade,
+        mock_draw_lrtb_rectangle_outline,
+        mock_draw_text,
+        mock_engine,
+        window,
+    ):
         mock_engine.return_value.player.inventory.capacity = 2
         mock_engine.return_value.selected_item = None
         mock_item = Mock()
         mock_item.configure_mock(name="Holy Hand Grenade")
         mock_engine.return_value.player.inventory.items = [mock_item, None]
-        window = MyGame(100, 100, "foo")
-
         window.draw_inventory()
 
-        assert mock_arcade.draw_text.call_args_list == [
+        assert mock_draw_text.call_args_list == [
             call("1: Holy Hand Grenade", 0.0, 40, (0, 0, 0, 255)),
             call("2: ", 480.0, 40, (0, 0, 0, 255)),
         ]
-        mock_arcade.draw_lrtb_rectangle_outline.assert_not_called()
+        mock_draw_lrtb_rectangle_outline.assert_not_called()
 
-    def test_draw_in_normal_state(self, mocker, mock_arcade, mock_engine):
+    def test_draw_inventory_with_selected_item(
+        self,
+        mock_arcade,
+        mock_draw_lrtb_rectangle_outline,
+        mock_draw_text,
+        mock_engine,
+        window,
+    ):
+        mock_engine.return_value.player.inventory.capacity = 2
+        mock_engine.return_value.selected_item = 1
+        mock_item = Mock()
+        mock_item.configure_mock(name="Holy Hand Grenade")
+        mock_engine.return_value.player.inventory.items = [mock_item, None]
+        ordering_manager = Mock()
+        ordering_manager.attach_mock(mock_draw_text, "draw_text")
+        ordering_manager.attach_mock(
+            mock_draw_lrtb_rectangle_outline, "draw_lrtb_rectangle_outline"
+        )
+
+        window.draw_inventory()
+
+        assert ordering_manager.method_calls == [
+            call.draw_text("1: Holy Hand Grenade", 0.0, 40, (0, 0, 0, 255)),
+            call.draw_lrtb_rectangle_outline(
+                479.0, 955.0, 60, 40, mock_arcade.color.BLACK, 2
+            ),
+            call.draw_text("2: ", 480.0, 40, (0, 0, 0, 255)),
+        ]
+
+    def test_draw_in_normal_state(self, mocker, mock_arcade, mock_engine, window):
         mock_draw_hp = mocker.patch("game_window.MyGame.draw_hp_and_status_bar")
         mock_draw_inventory = mocker.patch("game_window.MyGame.draw_inventory")
         mock_handle_and_draw_messages = mocker.patch(
@@ -233,8 +273,6 @@ class TestMyGame:
             "game_window.MyGame.draw_mouse_over_text"
         )
 
-        window = MyGame(100, 100, "foo")
-
         window.draw_in_normal_state()
 
         mock_draw_hp.assert_called_once()
@@ -243,14 +281,13 @@ class TestMyGame:
         mock_draw_mouse_over_text.assert_called_once()
 
     def test_draw_in_select_location_state(
-        self, mocker, mock_arcade, mock_pixel_to_char
+        self, mocker, mock_arcade, mock_pixel_to_char, window
     ):
         mock_grid_coordinates = Mock(), Mock()
         mock_pixel_to_char.return_value = mock_grid_coordinates
         mock_char_to_pixel = mocker.patch("game_window.char_to_pixel")
         mock_center_coordinates = Mock(), Mock()
         mock_char_to_pixel.return_value = mock_center_coordinates
-        window = MyGame(100, 100, "foo")
         mock_mouse_position = Mock(), Mock()
         window.mouse_position = mock_mouse_position
 
