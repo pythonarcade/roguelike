@@ -263,6 +263,32 @@ class TestMyGame:
             call.draw_text("2: ", 480.0, 40, (0, 0, 0, 255)),
         ]
 
+    def test_draw_mouse_over_text_when_it_is_there(
+        self, mock_arcade, mock_draw_text, mock_engine, window,
+    ):
+        window.mouse_over_text = "foo"
+        mock_mouse_position = (Mock(), Mock())
+        window.mouse_position = mock_mouse_position
+
+        window.draw_mouse_over_text()
+
+        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
+            *mock_mouse_position, 100, 16, mock_arcade.color.BLACK
+        )
+        mock_draw_text.assert_called_once_with(
+            "foo", *mock_mouse_position, mock_arcade.csscolor.WHITE
+        )
+
+    def test_draw_mouse_over_text_when_it_is_not_there(
+        self, mock_arcade, mock_draw_text, mock_engine, window,
+    ):
+        window.mouse_over_text = None
+
+        window.draw_mouse_over_text()
+
+        mock_arcade.draw_xywh_rectangle_filled.assert_not_called()
+        mock_draw_text.assert_not_called()
+
     def test_draw_in_normal_state(self, mocker, mock_arcade, mock_engine, window):
         mock_draw_hp = mocker.patch("game_window.MyGame.draw_hp_and_status_bar")
         mock_draw_inventory = mocker.patch("game_window.MyGame.draw_inventory")
@@ -280,7 +306,7 @@ class TestMyGame:
         mock_handle_and_draw_messages.assert_called_once()
         mock_draw_mouse_over_text.assert_called_once()
 
-    def test_draw_in_select_location_state(
+    def test_draw_in_select_location_state_with_mouse_position(
         self, mocker, mock_arcade, mock_pixel_to_char, window
     ):
         mock_grid_coordinates = Mock(), Mock()
@@ -303,3 +329,12 @@ class TestMyGame:
             mock_arcade.color.LIGHT_BLUE,
             2,
         )
+
+    def test_draw_in_select_location_state_without_mouse_position(
+        self, mock_arcade, mock_pixel_to_char, window
+    ):
+        window.mouse_position = None
+
+        window.draw_in_select_location_state()
+
+        mock_pixel_to_char.assert_not_called()
