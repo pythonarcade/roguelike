@@ -44,7 +44,7 @@ class MyGame(arcade.Window):
         # Where is the mouse?
         self.mouse_position: Optional[Tuple[float, float]] = None
 
-        self.mouse_over_text = None
+        self.mouse_over_text: Optional[str] = None
 
         # These are sprites that appear as buttons on the character sheet.
         self.character_sheet_buttons = arcade.SpriteList()
@@ -180,7 +180,6 @@ class MyGame(arcade.Window):
 
         if self.game_engine.player.fighter.ability_points > 0:
             self.character_sheet_buttons.draw()
-
 
     def handle_and_draw_messages(self):
         # Check message queue. Limit to 2 lines
