@@ -37,6 +37,7 @@ sys.path.insert(0, os.path.abspath('../source'))
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx_autodoc_typehints",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
@@ -45,6 +46,11 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
 ]
+
+autodoc_default_options = {
+    "special-members": "__init__",
+}
+
 
 spelling_word_list_filename = "wordlist.txt"
 

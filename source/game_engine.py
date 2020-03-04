@@ -19,6 +19,7 @@ from entities.restore_entity import restore_entity
 
 class GameLevel:
     def __init__(self):
+        """ Initialize level instance. """
         self.dungeon_sprites: Optional[arcade.SpriteList] = None
         self.entities: Optional[arcade.SpriteList] = None
         self.creatures: Optional[arcade.SpriteList] = None
@@ -81,8 +82,11 @@ class GameEngine:
         self.cur_level = self.setup_level(1)
         self.levels.append(self.cur_level)
 
+    def setup_level(self, level_number: int) -> GameLevel:
+        """
 
-    def setup_level(self, level_number):
+        :param level_number:
+        """
         # --- Create map
         # Size of the map
         map_width = MAP_WIDTH
@@ -140,17 +144,19 @@ class GameEngine:
                           'creatures': creature_dict}
             levels_dict.append(level_dict)
 
-
         result = {'player': player_dict,
                   'levels': levels_dict}
 
         return result
 
-    def restore_from_dict(self, data):
+    def restore_from_dict(self, data: dict):
         """
         Restore this object from a dictionary object. Used in recreating a game from a
         saved state, or from over the network.
+
+        :param data:
         """
+
         player_dict = data['player']
         self.player.restore_from_dict(player_dict['Entity'])
 
@@ -195,7 +201,12 @@ class GameEngine:
         self.grid_select_handlers = []
 
     def move_player(self, cx: int, cy: int):
-        """ Process player movement """
+        """
+        Process player movement
+
+        :param cx:
+        :param cy:
+        """
 
         # See what grid location we'd move to
         nx = self.player.x + cx
@@ -247,10 +258,13 @@ class GameEngine:
                 full_results.extend(results)
         return full_results
 
-    def dying(self, target: Entity):
+    def dying(self, target: Entity) -> list:
         """
         Handle event of an entity dying
+
+        :param target:
         """
+
         target.color = colors["dying"]
         # target.visible_color = colors["dying"]
         target.is_dead = True
@@ -318,7 +332,10 @@ class GameEngine:
     def process_action_queue(self, delta_time: float):
         """
         Process the action queue, kind of a dispatch-center for the game.
+
+        :param delta_time:
         """
+
         new_action_queue = []
         for action in self.action_queue:
             if "enemy_turn" in action:
