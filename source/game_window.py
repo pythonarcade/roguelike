@@ -23,6 +23,12 @@ class MyGame(arcade.Window):
     """
 
     def __init__(self, width: int, height: int, title: str):
+        """
+
+        :param width:
+        :param height:
+        :param title:
+        """
         super().__init__(width, height, title, antialiasing=False)
 
         # Main game engine, where the game is managed
@@ -228,7 +234,13 @@ class MyGame(arcade.Window):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """
         Handle mouse-down events
+
+        :param x:
+        :param y:
+        :param button:
+        :param modifiers:
         """
+
         # If we are currently in a 'select location' state, process
         if self.game_engine.game_state == SELECT_LOCATION:
             # Grab grid location
@@ -255,7 +267,12 @@ class MyGame(arcade.Window):
             self.draw_character_screen()
 
     def on_key_press(self, key: int, modifiers: int):
-        """ Manage key-down events """
+        """
+        Manage key-down events
+
+        :param key:
+        :param modifiers:
+        """
 
         # Clear the timer for auto-repeat of movement
         self.time_since_last_move_check = None
@@ -321,8 +338,12 @@ class MyGame(arcade.Window):
             self.game_engine.action_queue.extend([{"use_stairs": True}])
 
     def on_key_release(self, key: int, modifiers: int):
-        """Called when the user releases a key. """
+        """
+        Called when the user releases a key.
 
+        :param key:
+        :param modifiers:
+        """
         if key in KEYMAP_UP:
             self.up_pressed = False
         elif key in KEYMAP_DOWN:
@@ -410,7 +431,13 @@ class MyGame(arcade.Window):
             self.game_engine.move_player(cx, cy)
 
     def on_update(self, delta_time: float):
-        """ Manage regular updates for the game """
+        """
+        Manage regular updates for the game
+
+        :param delta_time:
+        """
+
+
 
         # --- Manage continuous movement while direction keys are held down
 
