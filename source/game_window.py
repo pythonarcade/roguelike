@@ -13,7 +13,7 @@ from status_bar import draw_status_bar
 from game_engine import GameEngine
 from util import pixel_to_char
 from util import char_to_pixel
-from themes.current_theme import *
+from themes.current_theme import colors
 
 
 class MyGame(arcade.Window):
@@ -165,24 +165,18 @@ class MyGame(arcade.Window):
 
         y_value -= text_size * spacing
         text_size = 20
-        text = f"Attack: {self.game_engine.player.fighter.power}"
-        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
 
-        y_value -= text_size * spacing
-        text = f"Defense: {self.game_engine.player.fighter.defense}"
-        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+        texts = [
+            f"Attack: {self.game_engine.player.fighter.power}",
+            f"Defense: {self.game_engine.player.fighter.defense}",
+            f"HP: {self.game_engine.player.fighter.hp} / {self.game_engine.player.fighter.max_hp}",
+            f"Max Inventory: {self.game_engine.player.inventory.capacity}",
+            f"Level: {self.game_engine.player.fighter.level}",
+        ]
 
-        y_value -= text_size * spacing
-        text = f"HP: {self.game_engine.player.fighter.hp} / {self.game_engine.player.fighter.max_hp}"
-        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
-
-        y_value -= text_size * spacing
-        text = f"Max Inventory: {self.game_engine.player.inventory.capacity}"
-        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
-
-        y_value -= text_size * spacing
-        text = f"Level: {self.game_engine.player.fighter.level}"
-        arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+        for text in texts:
+            arcade.draw_text(text, x_value, y_value, colors['status_panel_text'], text_size)
+            y_value -= text_size * spacing
 
         if self.game_engine.player.fighter.ability_points > 0:
             self.character_sheet_buttons.draw()
