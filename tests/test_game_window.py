@@ -97,82 +97,27 @@ class TestMyGame:
             call(mock_sprite) for mock_sprite in mock_sprites
         ]
 
-    def test_on_mouse_press_in_normal_state(
-        self, mock_arcade, mock_engine, mock_pixel_to_char, window
+    def test_draw_hp_and_status_bar_for_fourth_level(
+        self, mocker, mock_arcade, mock_draw_text, mock_player, window
     ):
-        window.game_engine.game_state = NORMAL
+        mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
+        lvl = len(EXPERIENCE_PER_LEVEL)
+        mock_player.fighter.level = lvl
+        xp = EXPERIENCE_PER_LEVEL[-1] - 1
+        mock_player.fighter.current_xp = xp
+        mock_hp = mock_player.fighter.hp
+        mock_max_hp = mock_player.fighter.max_hp
 
-        window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
+        window.draw_hp_and_status_bar()
 
-        mock_pixel_to_char.assert_not_called()
-        mock_engine.return_value.grid_click.assert_not_called()
-        assert window.game_engine.game_state == NORMAL
-
-    def test_on_mouse_press_in_select_location_state(
-        self, mock_arcade, mock_engine, mock_pixel_to_char, window
-    ):
-        mock_pixel_to_char.return_value = (Mock(), Mock())
-        window.game_engine.game_state = SELECT_LOCATION
-
-        window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
-
-        mock_pixel_to_char.asser_called_once_with(1.1, 4.2)
-        mock_engine.return_value.grid_click.assert_called_once_with(
-            *mock_pixel_to_char.return_value
+        assert mock_draw_text.call_args_list == [
+            call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
+            call(f"XP: {xp:,}/{xp + 1:,}", 100, 0, (0, 0, 0, 255)),
+            call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
+        ]
+        mock_draw_status_bar.assert_called_once_with(
+            65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
         )
-
-    def test_draw_sprites_and_status_panel(
-        self, mocker, mock_arcade, mock_engine, window
-    ):
-        mock_gl = mocker.patch("game_window.gl")
-
-        window.draw_sprites_and_status_panel()
-
-        mock_engine.return_value.cur_level.dungeon_sprites.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.cur_level.entities.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.cur_level.creatures.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_engine.return_value.characters.draw.assert_called_once_with(
-            filter=mock_gl.GL_NEAREST
-        )
-        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
-            0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
-        )
-
-    def test_on_draw_in_normal_state(self, mocker, mock_arcade, window):
-        mock_draw_sprites_and_status_panel = mocker.patch(
-            "game_window.MyGame.draw_sprites_and_status_panel"
-        )
-        mock_draw_in_normal_state = mocker.patch(
-            "game_window.MyGame.draw_in_normal_state"
-        )
-        window.game_engine.game_state = NORMAL
-
-        window.on_draw()
-
-        mock_arcade.start_render.assert_called_once()
-        mock_draw_sprites_and_status_panel.assert_called_once()
-        mock_draw_in_normal_state.assert_called_once()
-
-    def test_on_draw_in_select_location_state(self, mocker, mock_arcade, window):
-        mock_draw_sprites_and_status_panel = mocker.patch(
-            "game_window.MyGame.draw_sprites_and_status_panel"
-        )
-        mock_draw_in_select_location_state = mocker.patch(
-            "game_window.MyGame.draw_in_select_location_state"
-        )
-        window.game_engine.game_state = SELECT_LOCATION
-
-        window.on_draw()
-
-        mock_arcade.start_render.assert_called_once()
-        mock_draw_sprites_and_status_panel.assert_called_once()
-        mock_draw_in_select_location_state.assert_called_once()
 
     def test_draw_hp_and_status_bar_for_fifth_level(
         self, mocker, mock_arcade, mock_draw_text, mock_player, window
@@ -190,28 +135,6 @@ class TestMyGame:
         assert mock_draw_text.call_args_list == [
             call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
             call(f"XP: {xp:,}", 100, 0, (0, 0, 0, 255)),
-            call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
-        ]
-        mock_draw_status_bar.assert_called_once_with(
-            65 / 2 + 2, 24, 65, 10, mock_hp, mock_max_hp
-        )
-
-    def test_draw_hp_and_status_bar_for_fourth_level(
-        self, mocker, mock_arcade, mock_draw_text, mock_player, window
-    ):
-        mock_draw_status_bar = mocker.patch("game_window.draw_status_bar")
-        lvl = len(EXPERIENCE_PER_LEVEL)
-        mock_player.fighter.level = lvl
-        xp = EXPERIENCE_PER_LEVEL[-1] - 1
-        mock_player.fighter.current_xp = xp
-        mock_hp = mock_player.fighter.hp
-        mock_max_hp = mock_player.fighter.max_hp
-
-        window.draw_hp_and_status_bar()
-
-        assert mock_draw_text.call_args_list == [
-            call(f"HP: {mock_hp}/{mock_max_hp}", 0, 0, colors["status_panel_text"]),
-            call(f"XP: {xp:,}/{xp + 1:,}", 100, 0, (0, 0, 0, 255)),
             call(f"Level: {lvl}", 200, 0, (0, 0, 0, 255)),
         ]
         mock_draw_status_bar.assert_called_once_with(
@@ -296,51 +219,6 @@ class TestMyGame:
         mock_arcade.draw_xywh_rectangle_filled.assert_not_called()
         mock_draw_text.assert_not_called()
 
-    def test_draw_character_screen_without_ability_points(
-        self, mock_arcade, mock_draw_text, mock_engine, mock_player, window
-    ):
-        mock_player.fighter.ability_points = 0
-
-        window.draw_character_screen()
-
-        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
-            0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, colors["status_panel_background"],
-        )
-
-        character_sheet_elements = [
-            "Character Screen",
-            f"Attack: {mock_player.fighter.power}",
-            f"Defense: {mock_player.fighter.defense}",
-            f"HP: {mock_player.fighter.hp} / {mock_player.fighter.max_hp}",
-            f"Max Inventory: {mock_player.inventory.capacity}",
-            f"Level: {mock_player.fighter.level}",
-        ]
-        y_values = [
-            pytest.approx(x, 0.1) for x in [627, 583.8, 547.8, 511.8, 475.8, 439.8]
-        ]
-        text_sizes = [24] + [20] * 5
-
-        for call_, element, y_value, text_size in zip(
-            mock_draw_text.call_args_list,
-            character_sheet_elements,
-            y_values,
-            text_sizes,
-        ):
-            assert call_ == call(
-                element, 10, y_value, colors["status_panel_text"], text_size
-            )
-
-        mock_arcade.SpriteList.return_value.draw.assert_not_called()
-
-    def test_draw_character_screen_with_ability_points(
-            self, mock_arcade, mock_player, window
-    ):
-        mock_player.fighter.ability_points = 1
-
-        window.draw_character_screen()
-
-        mock_arcade.SpriteList.return_value.draw.assert_called_once()
-
     def test_draw_in_normal_state(self, mocker, mock_arcade, mock_engine, window):
         mock_draw_hp = mocker.patch("game_window.MyGame.draw_hp_and_status_bar")
         mock_draw_inventory = mocker.patch("game_window.MyGame.draw_inventory")
@@ -390,3 +268,125 @@ class TestMyGame:
         window.draw_in_select_location_state()
 
         mock_pixel_to_char.assert_not_called()
+
+    def test_draw_character_screen_without_ability_points(
+        self, mock_arcade, mock_draw_text, mock_engine, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 0
+
+        window.draw_character_screen()
+
+        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
+            0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, colors["status_panel_background"],
+        )
+
+        character_sheet_elements = [
+            "Character Screen",
+            f"Attack: {mock_player.fighter.power}",
+            f"Defense: {mock_player.fighter.defense}",
+            f"HP: {mock_player.fighter.hp} / {mock_player.fighter.max_hp}",
+            f"Max Inventory: {mock_player.inventory.capacity}",
+            f"Level: {mock_player.fighter.level}",
+        ]
+        y_values = [
+            pytest.approx(x, 0.1) for x in [627, 583.8, 547.8, 511.8, 475.8, 439.8]
+        ]
+        text_sizes = [24] + [20] * 5
+
+        for call_, element, y_value, text_size in zip(
+            mock_draw_text.call_args_list,
+            character_sheet_elements,
+            y_values,
+            text_sizes,
+        ):
+            assert call_ == call(
+                element, 10, y_value, colors["status_panel_text"], text_size
+            )
+
+        mock_arcade.SpriteList.return_value.draw.assert_not_called()
+
+    def test_draw_character_screen_with_ability_points(
+            self, mock_arcade, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 1
+
+        window.draw_character_screen()
+
+        mock_arcade.SpriteList.return_value.draw.assert_called_once()
+
+    def test_draw_sprites_and_status_panel(
+        self, mocker, mock_arcade, mock_engine, window
+    ):
+        mock_gl = mocker.patch("game_window.gl")
+
+        window.draw_sprites_and_status_panel()
+
+        mock_engine.return_value.cur_level.dungeon_sprites.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.cur_level.entities.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.cur_level.creatures.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_engine.return_value.characters.draw.assert_called_once_with(
+            filter=mock_gl.GL_NEAREST
+        )
+        mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
+            0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
+        )
+
+    def test_on_mouse_press_in_normal_state(
+        self, mock_arcade, mock_engine, mock_pixel_to_char, window
+    ):
+        window.game_engine.game_state = NORMAL
+
+        window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
+
+        mock_pixel_to_char.assert_not_called()
+        mock_engine.return_value.grid_click.assert_not_called()
+        assert window.game_engine.game_state == NORMAL
+
+    def test_on_mouse_press_in_select_location_state(
+        self, mock_arcade, mock_engine, mock_pixel_to_char, window
+    ):
+        mock_pixel_to_char.return_value = (Mock(), Mock())
+        window.game_engine.game_state = SELECT_LOCATION
+
+        window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
+
+        mock_pixel_to_char.asser_called_once_with(1.1, 4.2)
+        mock_engine.return_value.grid_click.assert_called_once_with(
+            *mock_pixel_to_char.return_value
+        )
+
+    def test_on_draw_in_select_location_state(self, mocker, mock_arcade, window):
+        mock_draw_sprites_and_status_panel = mocker.patch(
+            "game_window.MyGame.draw_sprites_and_status_panel"
+        )
+        mock_draw_in_select_location_state = mocker.patch(
+            "game_window.MyGame.draw_in_select_location_state"
+        )
+        window.game_engine.game_state = SELECT_LOCATION
+
+        window.on_draw()
+
+        mock_arcade.start_render.assert_called_once()
+        mock_draw_sprites_and_status_panel.assert_called_once()
+        mock_draw_in_select_location_state.assert_called_once()
+
+    def test_on_draw_in_normal_state(self, mocker, mock_arcade, window):
+        mock_draw_sprites_and_status_panel = mocker.patch(
+            "game_window.MyGame.draw_sprites_and_status_panel"
+        )
+        mock_draw_in_normal_state = mocker.patch(
+            "game_window.MyGame.draw_in_normal_state"
+        )
+        window.game_engine.game_state = NORMAL
+
+        window.on_draw()
+
+        mock_arcade.start_render.assert_called_once()
+        mock_draw_sprites_and_status_panel.assert_called_once()
+        mock_draw_in_normal_state.assert_called_once()
