@@ -219,22 +219,32 @@ class TestMyGame:
         mock_arcade.draw_xywh_rectangle_filled.assert_not_called()
         mock_draw_text.assert_not_called()
 
-    def test_draw_in_normal_state(self, mocker, mock_arcade, mock_engine, window):
+    def test_draw_in_normal_state_does_stuff_in_order(
+        self, mocker, mock_arcade, mock_engine, window
+    ):
         mock_draw_hp = mocker.patch("game_window.MyGame.draw_hp_and_status_bar")
         mock_draw_inventory = mocker.patch("game_window.MyGame.draw_inventory")
-        mock_handle_and_draw_messages = mocker.patch(
-            "game_window.MyGame.handle_and_draw_messages"
-        )
+        mock_handle_messages = mocker.patch("game_window.MyGame.handle_messages")
+        mock_draw_messages = mocker.patch("game_window.MyGame.draw_messages")
         mock_draw_mouse_over_text = mocker.patch(
             "game_window.MyGame.draw_mouse_over_text"
         )
+        ordering_manager = Mock()
+        ordering_manager.attach_mock(mock_draw_hp, "draw_hp")
+        ordering_manager.attach_mock(mock_draw_inventory, "draw_inventory")
+        ordering_manager.attach_mock(mock_handle_messages, "handle_messages")
+        ordering_manager.attach_mock(mock_draw_messages, "draw_messages")
+        ordering_manager.attach_mock(mock_draw_mouse_over_text, "draw_mouse_over_text")
 
         window.draw_in_normal_state()
 
-        mock_draw_hp.assert_called_once()
-        mock_draw_inventory.assert_called_once()
-        mock_handle_and_draw_messages.assert_called_once()
-        mock_draw_mouse_over_text.assert_called_once()
+        assert ordering_manager.method_calls == [
+            call.draw_hp,
+            call.draw_inventory,
+            call.handle_messages,
+            call.draw_messages,
+            call.draw_mouse_over_text,
+        ]
 
     def test_draw_in_select_location_state_with_mouse_position(
         self, mocker, mock_arcade, mock_pixel_to_char, window
@@ -314,15 +324,32 @@ class TestMyGame:
 
         mock_arcade.SpriteList.return_value.draw.assert_called_once()
 
-    def test_handle_and_draw_messages(self, mock_draw_text, mock_engine, window):
+    def test_handle_messages_limits_message_list_to_two(
+        self, mock_draw_text, mock_engine, window
+    ):
         mock_engine.return_value.messages = ["foo", "bar", "baz"]
 
-        window.handle_and_draw_messages()
+        window.handle_messages()
 
         assert mock_engine.return_value.messages == ["bar", "baz"]
+
+    def test_handle_messages_does_not_touch_two_element_message_list(
+        self, mock_draw_text, mock_engine, window
+    ):
+        mock_engine.return_value.messages = ["foo", "bar"]
+
+        window.handle_messages()
+
+        assert mock_engine.return_value.messages == ["foo", "bar"]
+
+    def test_draw_messages(self, mock_draw_text, mock_engine, window):
+        mock_engine.return_value.messages = ["foo", "bar"]
+
+        window.draw_messages()
+
         assert mock_draw_text.call_args_list == [
-            call("bar", 300, 20, colors["status_panel_text"]),
-            call("baz", 300, 0, colors["status_panel_text"]),
+            call("foo", 300, 20, colors["status_panel_text"]),
+            call("bar", 300, 0, colors["status_panel_text"]),
         ]
 
     def test_draw_sprites_and_status_panel(

@@ -125,7 +125,8 @@ class MyGame(arcade.Window):
     def draw_in_normal_state(self):
         self.draw_hp_and_status_bar()
         self.draw_inventory()
-        self.handle_and_draw_messages()
+        self.handle_messages()
+        self.draw_messages()
         self.draw_mouse_over_text()
 
     def draw_in_select_location_state(self):
@@ -181,12 +182,12 @@ class MyGame(arcade.Window):
         if self.game_engine.player.fighter.ability_points > 0:
             self.character_sheet_buttons.draw()
 
-    def handle_and_draw_messages(self):
+    def handle_messages(self):
         # Check message queue. Limit to 2 lines
         while len(self.game_engine.messages) > 2:
             self.game_engine.messages.pop(0)
 
-        # Draw messages
+    def draw_messages(self):
         y = 20
         for message in self.game_engine.messages:
             arcade.draw_text(message, 300, y, colors["status_panel_text"])
