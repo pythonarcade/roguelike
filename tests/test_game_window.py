@@ -306,13 +306,24 @@ class TestMyGame:
         mock_arcade.SpriteList.return_value.draw.assert_not_called()
 
     def test_draw_character_screen_with_ability_points(
-            self, mock_arcade, mock_player, window
+        self, mock_arcade, mock_player, window
     ):
         mock_player.fighter.ability_points = 1
 
         window.draw_character_screen()
 
         mock_arcade.SpriteList.return_value.draw.assert_called_once()
+
+    def test_handle_and_draw_messages(self, mock_draw_text, mock_engine, window):
+        mock_engine.return_value.messages = ["foo", "bar", "baz"]
+
+        window.handle_and_draw_messages()
+
+        assert mock_engine.return_value.messages == ["bar", "baz"]
+        assert mock_draw_text.call_args_list == [
+            call("bar", 300, 20, colors["status_panel_text"]),
+            call("baz", 300, 0, colors["status_panel_text"]),
+        ]
 
     def test_draw_sprites_and_status_panel(
         self, mocker, mock_arcade, mock_engine, window
