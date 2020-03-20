@@ -209,7 +209,7 @@ class MyGame(arcade.Window):
             colors["status_panel_background"],
         )
 
-    def handle_character_screen_click(self, x, y):
+    def handle_character_screen_click(self, x: float, y: float):
         if self.game_engine.player.fighter.ability_points > 0:
             sprites_clicked = arcade.get_sprites_at_point((x, y), self.character_sheet_buttons)
             for sprite in sprites_clicked:
