@@ -209,21 +209,22 @@ class MyGame(arcade.Window):
             colors["status_panel_background"],
         )
 
-    def handle_character_screen_click(self, x, y):
+    def handle_character_screen_click(self, x: float, y: float):
         if self.game_engine.player.fighter.ability_points > 0:
             sprites_clicked = arcade.get_sprites_at_point((x, y), self.character_sheet_buttons)
+            button_names_to_effects = {
+                "attack": {"area": "fighter", "trait": "power", "change": 1},
+                "defense": {"area": "fighter", "trait": "defense", "change": 1},
+                "hp": {"area": "fighter", "trait": "max_hp", "change": 5},
+                "capacity": {"area": "inventory", "trait": "capacity", "change": 1},
+            }
+
             for sprite in sprites_clicked:
-                if sprite.name == "attack":
-                    self.game_engine.player.fighter.power += 1
-                    self.game_engine.player.fighter.ability_points -= 1
-                elif sprite.name == "defense":
-                    self.game_engine.player.fighter.defense += 1
-                    self.game_engine.player.fighter.ability_points -= 1
-                elif sprite.name == "hp":
-                    self.game_engine.player.fighter.max_hp += 5
-                    self.game_engine.player.fighter.ability_points -= 1
-                elif sprite.name == "capacity":
-                    self.game_engine.player.inventory.capacity += 1
+                if sprite.name in button_names_to_effects:
+                    effect = button_names_to_effects[sprite.name]
+                    area = getattr(self.game_engine.player, effect["area"])
+                    original_value = getattr(area, effect["trait"])
+                    setattr(area, effect["trait"], original_value + effect["change"])
                     self.game_engine.player.fighter.ability_points -= 1
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):

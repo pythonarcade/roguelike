@@ -1,4 +1,4 @@
-from unittest.mock import call, Mock
+from unittest.mock import call, Mock, sentinel
 
 import pytest
 
@@ -31,6 +31,11 @@ def mock_draw_text(mock_arcade):
 @pytest.fixture()
 def mock_draw_lrtb_rectangle_outline(mock_arcade):
     return mock_arcade.draw_lrtb_rectangle_outline
+
+
+@pytest.fixture()
+def mock_get_sprites_at_point(mock_arcade):
+    return mock_arcade.get_sprites_at_point
 
 
 @pytest.fixture()
@@ -374,6 +379,87 @@ class TestMyGame:
         mock_arcade.draw_xywh_rectangle_filled.assert_called_once_with(
             0, 0, SCREEN_WIDTH, STATUS_PANEL_HEIGHT, colors["status_panel_background"],
         )
+
+    def test_handle_character_screen_click_does_nothing_if_character_has_no_ability_points(
+        self, mock_get_sprites_at_point, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 0
+
+        window.handle_character_screen_click(sentinel.x, sentinel.y)
+
+        mock_get_sprites_at_point.assert_not_called()
+
+    def test_handle_character_screen_click_increases_power_if_attack_button_is_clicked(
+        self, mock_arcade, mock_get_sprites_at_point, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 1
+        mock_player.fighter.power = 1
+        mock_attack = Mock()
+        mock_attack.configure_mock(name="attack")
+        mock_get_sprites_at_point.return_value = [mock_attack]
+
+        window.handle_character_screen_click(sentinel.x, sentinel.y)
+
+        mock_arcade.get_sprites_at_point.assert_called_once_with(
+            (sentinel.x, sentinel.y), mock_arcade.SpriteList.return_value
+        )
+
+        assert mock_player.fighter.ability_points == 0
+        assert mock_player.fighter.power == 2
+
+    def test_handle_character_screen_click_increases_defense_if_defense_button_is_clicked(
+        self, mock_arcade, mock_get_sprites_at_point, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 1
+        mock_player.fighter.defense = 1
+        mock_defense = Mock()
+        mock_defense.configure_mock(name="defense")
+        mock_get_sprites_at_point.return_value = [mock_defense]
+
+        window.handle_character_screen_click(sentinel.x, sentinel.y)
+
+        mock_arcade.get_sprites_at_point.assert_called_once_with(
+            (sentinel.x, sentinel.y), mock_arcade.SpriteList.return_value
+        )
+
+        assert mock_player.fighter.ability_points == 0
+        assert mock_player.fighter.defense == 2
+
+    def test_handle_character_screen_click_increases_max_hp_if_hp_button_is_clicked(
+        self, mock_arcade, mock_get_sprites_at_point, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 1
+        mock_player.fighter.max_hp = 5
+        mock_hp = Mock()
+        mock_hp.configure_mock(name="hp")
+        mock_get_sprites_at_point.return_value = [mock_hp]
+
+        window.handle_character_screen_click(sentinel.x, sentinel.y)
+
+        mock_arcade.get_sprites_at_point.assert_called_once_with(
+            (sentinel.x, sentinel.y), mock_arcade.SpriteList.return_value
+        )
+
+        assert mock_player.fighter.ability_points == 0
+        assert mock_player.fighter.max_hp == 10
+
+    def test_handle_character_screen_click_increases_capacity_if_capacity_button_is_clicked(
+        self, mock_arcade, mock_get_sprites_at_point, mock_player, window
+    ):
+        mock_player.fighter.ability_points = 1
+        mock_player.inventory.capacity = 1
+        mock_capacity = Mock()
+        mock_capacity.configure_mock(name="capacity")
+        mock_get_sprites_at_point.return_value = [mock_capacity]
+
+        window.handle_character_screen_click(sentinel.x, sentinel.y)
+
+        mock_arcade.get_sprites_at_point.assert_called_once_with(
+            (sentinel.x, sentinel.y), mock_arcade.SpriteList.return_value
+        )
+
+        assert mock_player.fighter.ability_points == 0
+        assert mock_player.inventory.capacity == 2
 
     def test_on_mouse_press_in_normal_state(
         self, mock_arcade, mock_engine, mock_pixel_to_char, window
