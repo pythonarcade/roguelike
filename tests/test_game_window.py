@@ -12,6 +12,7 @@ from constants import (
     SPRITE_WIDTH,
     STATUS_PANEL_HEIGHT,
     EXPERIENCE_PER_LEVEL,
+    CHARACTER_SCREEN,
 )
 from game_window import main, MyGame
 from themes.current_theme import colors
@@ -36,6 +37,11 @@ def mock_draw_lrtb_rectangle_outline(mock_arcade):
 @pytest.fixture()
 def mock_get_sprites_at_point(mock_arcade):
     return mock_arcade.get_sprites_at_point
+
+
+@pytest.fixture()
+def mock_draw_sprites_and_status_panel(mocker):
+    return mocker.patch("game_window.MyGame.draw_sprites_and_status_panel")
 
 
 @pytest.fixture()
@@ -485,10 +491,23 @@ class TestMyGame:
             *mock_pixel_to_char.return_value
         )
 
-    def test_on_draw_in_select_location_state(self, mocker, mock_arcade, window):
-        mock_draw_sprites_and_status_panel = mocker.patch(
-            "game_window.MyGame.draw_sprites_and_status_panel"
+    def test_on_mouse_press_in_character_screen_state(
+        self, mocker, mock_arcade, mock_engine, mock_pixel_to_char, window
+    ):
+        mock_handle_character_screen_click = mocker.patch(
+            "game_window.MyGame.handle_character_screen_click"
         )
+        window.game_engine.game_state = CHARACTER_SCREEN
+
+        window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
+
+        mock_handle_character_screen_click.assert_called_once_with(1.1, 4.2)
+        mock_pixel_to_char.assert_not_called()
+        mock_engine.return_value.grid_click.assert_not_called()
+
+    def test_on_draw_in_select_location_state(
+        self, mocker, mock_arcade, mock_draw_sprites_and_status_panel, window
+    ):
         mock_draw_in_select_location_state = mocker.patch(
             "game_window.MyGame.draw_in_select_location_state"
         )
@@ -500,10 +519,9 @@ class TestMyGame:
         mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_select_location_state.assert_called_once()
 
-    def test_on_draw_in_normal_state(self, mocker, mock_arcade, window):
-        mock_draw_sprites_and_status_panel = mocker.patch(
-            "game_window.MyGame.draw_sprites_and_status_panel"
-        )
+    def test_on_draw_in_normal_state(
+        self, mocker, mock_arcade, mock_draw_sprites_and_status_panel, window
+    ):
         mock_draw_in_normal_state = mocker.patch(
             "game_window.MyGame.draw_in_normal_state"
         )
@@ -514,3 +532,17 @@ class TestMyGame:
         mock_arcade.start_render.assert_called_once()
         mock_draw_sprites_and_status_panel.assert_called_once()
         mock_draw_in_normal_state.assert_called_once()
+
+    def test_on_draw_in_character_screen_state(
+        self, mocker, mock_arcade, mock_draw_sprites_and_status_panel, window
+    ):
+        mock_draw_character_screen = mocker.patch(
+            "game_window.MyGame.draw_character_screen"
+        )
+        window.game_engine.game_state = CHARACTER_SCREEN
+
+        window.on_draw()
+
+        mock_arcade.start_render.assert_called_once()
+        mock_draw_sprites_and_status_panel.assert_called_once()
+        mock_draw_character_screen.assert_called_once()
