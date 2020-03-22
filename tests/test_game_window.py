@@ -18,48 +18,48 @@ from game_window import main, MyGame
 from themes.current_theme import colors
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_arcade(mocker):
     mocker.patch("arcade.Window.__init__")
     return mocker.patch("game_window.arcade")
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_draw_text(mock_arcade):
     return mock_arcade.draw_text
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_draw_lrtb_rectangle_outline(mock_arcade):
     return mock_arcade.draw_lrtb_rectangle_outline
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_get_sprites_at_point(mock_arcade):
     return mock_arcade.get_sprites_at_point
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_draw_sprites_and_status_panel(mocker):
     return mocker.patch("game_window.MyGame.draw_sprites_and_status_panel")
 
 
-@pytest.fixture()
+@pytest.fixture
 def window(mock_arcade):
     return MyGame(100, 100, "foo")
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_engine(mocker):
     return mocker.patch("game_window.GameEngine")
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_player(mock_engine):
     return mock_engine.return_value.player
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_pixel_to_char(mocker):
     return mocker.patch("game_window.pixel_to_char")
 
