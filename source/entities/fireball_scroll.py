@@ -24,7 +24,7 @@ class FireballScroll(Entity):
     def use(self, game_engine: "GameEngine"):
         print("Use")
         self.game_engine = game_engine
-        game_engine.game_state = SELECT_LOCATION
+        game_engine.game_state = STATE.SELECT_LOCATION
         game_engine.grid_select_handlers.append(self.click)
         return None
 
@@ -67,7 +67,7 @@ class FireballScroll(Entity):
         arcade.play_sound(self.sound)
 
         self.game_engine.player.inventory.remove_item(self)
-        self.game_engine.game_state = NORMAL
+        self.game_engine.game_state = STATE.NORMAL
 
         results.extend([{"enemy_turn": True}])
         return results

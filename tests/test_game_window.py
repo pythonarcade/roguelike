@@ -3,16 +3,14 @@ from unittest.mock import call, Mock, sentinel
 import pytest
 
 from constants import (
-    NORMAL,
     SCREEN_HEIGHT,
     SCREEN_TITLE,
     SCREEN_WIDTH,
-    SELECT_LOCATION,
+    STATE,
     SPRITE_HEIGHT,
     SPRITE_WIDTH,
     STATUS_PANEL_HEIGHT,
     EXPERIENCE_PER_LEVEL,
-    CHARACTER_SCREEN,
 )
 from game_window import main, MyGame
 from themes.current_theme import colors
@@ -470,19 +468,19 @@ class TestMyGame:
     def test_on_mouse_press_in_normal_state(
         self, mock_arcade, mock_engine, mock_pixel_to_char, window
     ):
-        window.game_engine.game_state = NORMAL
+        window.game_engine.game_state = STATE.NORMAL
 
         window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
 
         mock_pixel_to_char.assert_not_called()
         mock_engine.return_value.grid_click.assert_not_called()
-        assert window.game_engine.game_state == NORMAL
+        assert window.game_engine.game_state == STATE.NORMAL
 
     def test_on_mouse_press_in_select_location_state(
         self, mock_arcade, mock_engine, mock_pixel_to_char, window
     ):
         mock_pixel_to_char.return_value = (Mock(), Mock())
-        window.game_engine.game_state = SELECT_LOCATION
+        window.game_engine.game_state = STATE.SELECT_LOCATION
 
         window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
 
@@ -497,7 +495,7 @@ class TestMyGame:
         mock_handle_character_screen_click = mocker.patch(
             "game_window.MyGame.handle_character_screen_click"
         )
-        window.game_engine.game_state = CHARACTER_SCREEN
+        window.game_engine.game_state = STATE.CHARACTER_SCREEN
 
         window.on_mouse_press(x=1.1, y=4.2, button=1, modifiers=0)
 
@@ -511,7 +509,7 @@ class TestMyGame:
         mock_draw_in_select_location_state = mocker.patch(
             "game_window.MyGame.draw_in_select_location_state"
         )
-        window.game_engine.game_state = SELECT_LOCATION
+        window.game_engine.game_state = STATE.SELECT_LOCATION
 
         window.on_draw()
 
@@ -525,7 +523,7 @@ class TestMyGame:
         mock_draw_in_normal_state = mocker.patch(
             "game_window.MyGame.draw_in_normal_state"
         )
-        window.game_engine.game_state = NORMAL
+        window.game_engine.game_state = STATE.NORMAL
 
         window.on_draw()
 
@@ -539,7 +537,7 @@ class TestMyGame:
         mock_draw_character_screen = mocker.patch(
             "game_window.MyGame.draw_character_screen"
         )
-        window.game_engine.game_state = CHARACTER_SCREEN
+        window.game_engine.game_state = STATE.CHARACTER_SCREEN
 
         window.on_draw()
 

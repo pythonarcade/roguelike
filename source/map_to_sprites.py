@@ -23,39 +23,39 @@ def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
         for x in range(len(game_map)):
             sprite = None
             # print(f"{game_map[x][y]} ", end="")
-            if game_map[x][y] == TILE_WALL:
+            if game_map[x][y] == TILE.WALL:
                 sprite = Entity(x, y, WALL_TEXTURE_ID, colors['transparent'])
                 sprite.name = "Wall"
                 sprite.block_sight = True
                 sprite.blocks = True
                 sprite.visible_color = colors["light_wall"]
                 sprite.not_visible_color = colors["dark_wall"]
-            elif game_map[x][y] == TILE_FLOOR:
+            elif game_map[x][y] == TILE.FLOOR:
                 sprite = Entity(x, y, FLOOR_TEXTURE_ID, colors['transparent'])
                 sprite.name = "Ground"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]
                 sprite.not_visible_color = colors["dark_ground"]
-            elif game_map[x][y] == TILE_STAIRS_DOWN:
+            elif game_map[x][y] == TILE.STAIRS_DOWN:
                 sprite = Stairs(x, y, STAIRS_DOWN_TEXTURE_ID, colors['transparent'])
                 sprite.name = "Stairs Down"
                 sprite.block_sight = False
                 sprite.visible_color = colors["light_ground"]
                 sprite.not_visible_color = colors["dark_ground"]
-            elif game_map[x][y] == TILE_HEALING_POTION:
+            elif game_map[x][y] == TILE.HEALING_POTION:
                 sprite = Potion(x, y)
-            elif game_map[x][y] == TILE_LIGHTNING_SCROLL:
+            elif game_map[x][y] == TILE.LIGHTNING_SCROLL:
                 sprite = LightningScroll(x, y)
-            elif game_map[x][y] == TILE_FIREBALL_SCROLL:
+            elif game_map[x][y] == TILE.FIREBALL_SCROLL:
                 sprite = FireballScroll(x, y)
             elif game_map[x][y]:
                 raise ValueError(f"Unknown number in map: {game_map[x][y]}")
 
             if sprite:
                 sprite_list.append(sprite)
-        # print()
 
     return sprite_list
+
 
 def creatures_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
     """ Take a grid of numbers and convert to sprites. """
@@ -74,6 +74,5 @@ def creatures_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]
                 sprite.visible_color = colors['monster']
 
                 sprite_list.append(sprite)
-        # print()
 
     return sprite_list

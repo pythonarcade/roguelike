@@ -16,45 +16,58 @@ DEATH_DELAY = 0.5
 
 REPEAT_MOVEMENT_DELAY = 0.25
 
-KEYMAP_UP = [arcade.key.UP, arcade.key.NUM_8]
-KEYMAP_LEFT = [arcade.key.LEFT, arcade.key.NUM_4]
-KEYMAP_DOWN = [arcade.key.DOWN, arcade.key.NUM_2]
-KEYMAP_RIGHT = [arcade.key.RIGHT, arcade.key.NUM_6]
-KEYMAP_UP_LEFT = [arcade.key.NUM_7]
-KEYMAP_DOWN_LEFT = [arcade.key.NUM_1]
-KEYMAP_UP_RIGHT = [arcade.key.NUM_9]
-KEYMAP_DOWN_RIGHT = [arcade.key.NUM_3]
-KEYMAP_PICKUP = [arcade.key.NUM_5, arcade.key.G]
-KEYMAP_SELECT_ITEM_1 = [arcade.key.KEY_1]
-KEYMAP_SELECT_ITEM_2 = [arcade.key.KEY_2]
-KEYMAP_SELECT_ITEM_3 = [arcade.key.KEY_3]
-KEYMAP_SELECT_ITEM_4 = [arcade.key.KEY_4]
-KEYMAP_SELECT_ITEM_5 = [arcade.key.KEY_5]
-KEYMAP_SELECT_ITEM_6 = [arcade.key.KEY_6]
-KEYMAP_SELECT_ITEM_7 = [arcade.key.KEY_7]
-KEYMAP_SELECT_ITEM_8 = [arcade.key.KEY_8]
-KEYMAP_SELECT_ITEM_9 = [arcade.key.KEY_9]
-KEYMAP_SELECT_ITEM_0 = [arcade.key.KEY_0]
-KEYMAP_USE_ITEM = [arcade.key.U]
-KEYMAP_DROP_ITEM = [arcade.key.D]
-KEYMAP_CHARACTER_SCREEN = [arcade.key.C]
-KEYMAP_USE_STAIRS = [arcade.key.ENTER]
-KEYMAP_CANCEL = [arcade.key.ESCAPE]
 
-# Game States
-NORMAL = 1
-SELECT_LOCATION = 2
-CHARACTER_SCREEN = 3
+class _GameState:
+    NORMAL = 1
+    SELECT_LOCATION = 2
+    CHARACTER_SCREEN = 3
 
-# Tile Types
-TILE_EMPTY = 0
-TILE_FLOOR = 1
-TILE_WALL = 2
-TILE_ORC = 3
-TILE_TROLL = 4
-TILE_LIGHTNING_SCROLL = 5
-TILE_FIREBALL_SCROLL = 6
-TILE_HEALING_POTION = 7
-TILE_STAIRS_DOWN = 8
+
+STATE = _GameState()
+
+
+class _KeyMap:
+    UP = [arcade.key.UP, arcade.key.NUM_8]
+    LEFT = [arcade.key.LEFT, arcade.key.NUM_4]
+    DOWN = [arcade.key.DOWN, arcade.key.NUM_2]
+    RIGHT = [arcade.key.RIGHT, arcade.key.NUM_6]
+    UP_LEFT = [arcade.key.NUM_7]
+    DOWN_LEFT = [arcade.key.NUM_1]
+    UP_RIGHT = [arcade.key.NUM_9]
+    DOWN_RIGHT = [arcade.key.NUM_3]
+    PICKUP = [arcade.key.NUM_5, arcade.key.G]
+    SELECT_ITEM_1 = [arcade.key.KEY_1]
+    SELECT_ITEM_2 = [arcade.key.KEY_2]
+    SELECT_ITEM_3 = [arcade.key.KEY_3]
+    SELECT_ITEM_4 = [arcade.key.KEY_4]
+    SELECT_ITEM_5 = [arcade.key.KEY_5]
+    SELECT_ITEM_6 = [arcade.key.KEY_6]
+    SELECT_ITEM_7 = [arcade.key.KEY_7]
+    SELECT_ITEM_8 = [arcade.key.KEY_8]
+    SELECT_ITEM_9 = [arcade.key.KEY_9]
+    SELECT_ITEM_0 = [arcade.key.KEY_0]
+    USE_ITEM = [arcade.key.U]
+    DROP_ITEM = [arcade.key.D]
+    CHARACTER_SCREEN = [arcade.key.C]
+    USE_STAIRS = [arcade.key.ENTER]
+    CANCEL = [arcade.key.ESCAPE]
+
+
+KEYMAP = _KeyMap()
+
+
+class _Tile:
+    EMPTY = 0
+    FLOOR = 1
+    WALL = 2
+    ORC = 3
+    TROLL = 4
+    LIGHTNING_SCROLL = 5
+    FIREBALL_SCROLL = 6
+    HEALING_POTION = 7
+    STAIRS_DOWN = 8
+
+
+TILE = _Tile()
 
 EXPERIENCE_PER_LEVEL = [650, 1500, 2500, 4000]
