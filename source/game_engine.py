@@ -43,7 +43,7 @@ class GameEngine:
         self.messages = []
         self.action_queue = []
         self.selected_item: Optional[int] = None
-        self.game_state = NORMAL
+        self.game_state = STATE.NORMAL
         self.grid_select_handlers = []
 
         self.walk_sound = arcade.load_sound("sounds/footstep_concrete_002.ogg")

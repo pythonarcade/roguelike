@@ -16,6 +16,16 @@ DEATH_DELAY = 0.5
 
 REPEAT_MOVEMENT_DELAY = 0.25
 
+
+class _GameState:
+    NORMAL = 1
+    SELECT_LOCATION = 2
+    CHARACTER_SCREEN = 3
+
+
+STATE = _GameState()
+
+
 KEYMAP_UP = [arcade.key.UP, arcade.key.NUM_8]
 KEYMAP_LEFT = [arcade.key.LEFT, arcade.key.NUM_4]
 KEYMAP_DOWN = [arcade.key.DOWN, arcade.key.NUM_2]
@@ -40,11 +50,6 @@ KEYMAP_DROP_ITEM = [arcade.key.D]
 KEYMAP_CHARACTER_SCREEN = [arcade.key.C]
 KEYMAP_USE_STAIRS = [arcade.key.ENTER]
 KEYMAP_CANCEL = [arcade.key.ESCAPE]
-
-# Game States
-NORMAL = 1
-SELECT_LOCATION = 2
-CHARACTER_SCREEN = 3
 
 # Tile Types
 TILE_EMPTY = 0

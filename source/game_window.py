@@ -238,13 +238,13 @@ class MyGame(arcade.Window):
         """
 
         # If we are currently in a 'select location' state, process
-        if self.game_engine.game_state == SELECT_LOCATION:
+        if self.game_engine.game_state == STATE.SELECT_LOCATION:
             # Grab grid location
             grid_x, grid_y = pixel_to_char(x, y)
             # Notify game engine
             self.game_engine.grid_click(grid_x, grid_y)
 
-        if self.game_engine.game_state == CHARACTER_SCREEN:
+        if self.game_engine.game_state == STATE.CHARACTER_SCREEN:
             self.handle_character_screen_click(x, y)
 
     def on_draw(self):
@@ -255,11 +255,11 @@ class MyGame(arcade.Window):
 
         self.draw_sprites_and_status_panel()
 
-        if self.game_engine.game_state == NORMAL:
+        if self.game_engine.game_state == STATE.NORMAL:
             self.draw_in_normal_state()
-        elif self.game_engine.game_state == SELECT_LOCATION:
+        elif self.game_engine.game_state == STATE.SELECT_LOCATION:
             self.draw_in_select_location_state()
-        elif self.game_engine.game_state == CHARACTER_SCREEN:
+        elif self.game_engine.game_state == STATE.CHARACTER_SCREEN:
             self.draw_character_screen()
 
     def on_key_press(self, key: int, modifiers: int):
@@ -275,10 +275,10 @@ class MyGame(arcade.Window):
         if key in KEYMAP_UP:
             self.up_pressed = True
         elif key in KEYMAP_CHARACTER_SCREEN:
-            self.game_engine.game_state = CHARACTER_SCREEN
+            self.game_engine.game_state = STATE.CHARACTER_SCREEN
             print("Open character screen")
         elif key in KEYMAP_CANCEL:
-            self.game_engine.game_state = NORMAL
+            self.game_engine.game_state = STATE.NORMAL
 
         # Movement
         elif key in KEYMAP_DOWN:
