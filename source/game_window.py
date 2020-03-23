@@ -272,56 +272,56 @@ class MyGame(arcade.Window):
 
         # Clear the timer for auto-repeat of movement
         self.time_since_last_move_check = None
-        if key in KEYMAP_UP:
+        if key in KEYMAP.UP:
             self.up_pressed = True
-        elif key in KEYMAP_CHARACTER_SCREEN:
+        elif key in KEYMAP.CHARACTER_SCREEN:
             self.game_engine.game_state = STATE.CHARACTER_SCREEN
             print("Open character screen")
-        elif key in KEYMAP_CANCEL:
+        elif key in KEYMAP.CANCEL:
             self.game_engine.game_state = STATE.NORMAL
 
         # Movement
-        elif key in KEYMAP_DOWN:
+        elif key in KEYMAP.DOWN:
             self.down_pressed = True
-        elif key in KEYMAP_LEFT:
+        elif key in KEYMAP.LEFT:
             self.left_pressed = True
-        elif key in KEYMAP_RIGHT:
+        elif key in KEYMAP.RIGHT:
             self.right_pressed = True
-        elif key in KEYMAP_UP_LEFT:
+        elif key in KEYMAP.UP_LEFT:
             self.up_left_pressed = True
-        elif key in KEYMAP_UP_RIGHT:
+        elif key in KEYMAP.UP_RIGHT:
             self.up_right_pressed = True
-        elif key in KEYMAP_DOWN_LEFT:
+        elif key in KEYMAP.DOWN_LEFT:
             self.down_left_pressed = True
-        elif key in KEYMAP_DOWN_RIGHT:
+        elif key in KEYMAP.DOWN_RIGHT:
             self.down_right_pressed = True
 
         # Item management
-        elif key in KEYMAP_PICKUP:
+        elif key in KEYMAP.PICKUP:
             self.game_engine.action_queue.extend([{"pickup": True}])
-        elif key in KEYMAP_DROP_ITEM:
+        elif key in KEYMAP.DROP_ITEM:
             self.game_engine.action_queue.extend([{"drop_item": True}])
-        elif key in KEYMAP_SELECT_ITEM_1:
+        elif key in KEYMAP.SELECT_ITEM_1:
             self.game_engine.action_queue.extend([{"select_item": 1}])
-        elif key in KEYMAP_SELECT_ITEM_2:
+        elif key in KEYMAP.SELECT_ITEM_2:
             self.game_engine.action_queue.extend([{"select_item": 2}])
-        elif key in KEYMAP_SELECT_ITEM_3:
+        elif key in KEYMAP.SELECT_ITEM_3:
             self.game_engine.action_queue.extend([{"select_item": 3}])
-        elif key in KEYMAP_SELECT_ITEM_4:
+        elif key in KEYMAP.SELECT_ITEM_4:
             self.game_engine.action_queue.extend([{"select_item": 4}])
-        elif key in KEYMAP_SELECT_ITEM_5:
+        elif key in KEYMAP.SELECT_ITEM_5:
             self.game_engine.action_queue.extend([{"select_item": 5}])
-        elif key in KEYMAP_SELECT_ITEM_6:
+        elif key in KEYMAP.SELECT_ITEM_6:
             self.game_engine.action_queue.extend([{"select_item": 6}])
-        elif key in KEYMAP_SELECT_ITEM_7:
+        elif key in KEYMAP.SELECT_ITEM_7:
             self.game_engine.action_queue.extend([{"select_item": 7}])
-        elif key in KEYMAP_SELECT_ITEM_8:
+        elif key in KEYMAP.SELECT_ITEM_8:
             self.game_engine.action_queue.extend([{"select_item": 8}])
-        elif key in KEYMAP_SELECT_ITEM_9:
+        elif key in KEYMAP.SELECT_ITEM_9:
             self.game_engine.action_queue.extend([{"select_item": 9}])
-        elif key in KEYMAP_SELECT_ITEM_0:
+        elif key in KEYMAP.SELECT_ITEM_0:
             self.game_engine.action_queue.extend([{"select_item": 0}])
-        elif key in KEYMAP_USE_ITEM:
+        elif key in KEYMAP.USE_ITEM:
             self.game_engine.action_queue.extend([{"use_item": True}])
 
         # Save/load
@@ -330,7 +330,7 @@ class MyGame(arcade.Window):
         elif key == arcade.key.L:
             self.load()
 
-        elif key in KEYMAP_USE_STAIRS:
+        elif key in KEYMAP.USE_STAIRS:
             self.game_engine.action_queue.extend([{"use_stairs": True}])
 
     def on_key_release(self, key: int, modifiers: int):
@@ -340,21 +340,21 @@ class MyGame(arcade.Window):
         :param key:
         :param modifiers:
         """
-        if key in KEYMAP_UP:
+        if key in KEYMAP.UP:
             self.up_pressed = False
-        elif key in KEYMAP_DOWN:
+        elif key in KEYMAP.DOWN:
             self.down_pressed = False
-        elif key in KEYMAP_LEFT:
+        elif key in KEYMAP.LEFT:
             self.left_pressed = False
-        elif key in KEYMAP_RIGHT:
+        elif key in KEYMAP.RIGHT:
             self.right_pressed = False
-        elif key in KEYMAP_UP_LEFT:
+        elif key in KEYMAP.UP_LEFT:
             self.up_left_pressed = False
-        elif key in KEYMAP_UP_RIGHT:
+        elif key in KEYMAP.UP_RIGHT:
             self.up_right_pressed = False
-        elif key in KEYMAP_DOWN_LEFT:
+        elif key in KEYMAP.DOWN_LEFT:
             self.down_left_pressed = False
-        elif key in KEYMAP_DOWN_RIGHT:
+        elif key in KEYMAP.DOWN_RIGHT:
             self.down_right_pressed = False
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
