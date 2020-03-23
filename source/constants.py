@@ -26,6 +26,21 @@ class _GameState:
 STATE = _GameState()
 
 
+class _Tile:
+    EMPTY = 0
+    FLOOR = 1
+    WALL = 2
+    ORC = 3
+    TROLL = 4
+    LIGHTNING_SCROLL = 5
+    FIREBALL_SCROLL = 6
+    HEALING_POTION = 7
+    STAIRS_DOWN = 8
+
+
+TILE = _Tile()
+
+
 KEYMAP_UP = [arcade.key.UP, arcade.key.NUM_8]
 KEYMAP_LEFT = [arcade.key.LEFT, arcade.key.NUM_4]
 KEYMAP_DOWN = [arcade.key.DOWN, arcade.key.NUM_2]
@@ -52,14 +67,6 @@ KEYMAP_USE_STAIRS = [arcade.key.ENTER]
 KEYMAP_CANCEL = [arcade.key.ESCAPE]
 
 # Tile Types
-TILE_EMPTY = 0
-TILE_FLOOR = 1
-TILE_WALL = 2
-TILE_ORC = 3
-TILE_TROLL = 4
-TILE_LIGHTNING_SCROLL = 5
-TILE_FIREBALL_SCROLL = 6
-TILE_HEALING_POTION = 7
-TILE_STAIRS_DOWN = 8
+
 
 EXPERIENCE_PER_LEVEL = [650, 1500, 2500, 4000]

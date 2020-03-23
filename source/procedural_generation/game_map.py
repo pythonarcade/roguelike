@@ -1,6 +1,6 @@
 from random import randint
 from random import choice
-from constants import *
+from constants import TILE
 
 
 # Some variables for the rooms in the map
@@ -47,7 +47,6 @@ def place_entities(room, creatures, entities, max_items_per_room, level):
     else:
         combos = [[], [1, 1, 1], [2], [1, 2], [1, 2], [1, 2, 1]]
 
-
     monster_choice = choice(combos)
     for challenge_level in monster_choice:
         # Choose a random location in the room
@@ -63,13 +62,13 @@ def place_entities(room, creatures, entities, max_items_per_room, level):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         if not entities[x][y]:
-            type = randint(0, 100)
-            if type < 70:
-                entities[x][y] = TILE_HEALING_POTION
-            elif type < 85:
-                entities[x][y] = TILE_LIGHTNING_SCROLL
+            type_ = randint(0, 100)
+            if type_ < 70:
+                entities[x][y] = TILE.HEALING_POTION
+            elif type_ < 85:
+                entities[x][y] = TILE.LIGHTNING_SCROLL
             else:
-                entities[x][y] = TILE_FIREBALL_SCROLL
+                entities[x][y] = TILE.FIREBALL_SCROLL
 
 
 class GameMap:
@@ -78,13 +77,13 @@ class GameMap:
         self.map_height = height
         self.dungeon_level = dungeon_level
         self.tiles = [
-            [TILE_WALL for _ in range(self.map_height)] for _ in range(self.map_width)
+            [TILE.WALL for _ in range(self.map_height)] for _ in range(self.map_width)
         ]
         self.entities = [
-            [TILE_EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
+            [TILE.EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
         ]
         self.creatures = [
-            [TILE_EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
+            [TILE.EMPTY for _ in range(self.map_height)] for _ in range(self.map_width)
         ]
 
     def make_map(
@@ -155,18 +154,18 @@ class GameMap:
                 rooms.append(new_room)
                 num_rooms += 1
 
-        self.tiles[center_of_last_room_x][center_of_last_room_y] = TILE_STAIRS_DOWN
+        self.tiles[center_of_last_room_x][center_of_last_room_y] = TILE.STAIRS_DOWN
 
     def create_room(self, room):
         # go through the tiles in the rectangle and make them passable
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
-                self.tiles[x][y] = TILE_FLOOR
+                self.tiles[x][y] = TILE.FLOOR
 
     def create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
-            self.tiles[x][y] = TILE_FLOOR
+            self.tiles[x][y] = TILE.FLOOR
 
     def create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            self.tiles[x][y] = TILE_FLOOR
+            self.tiles[x][y] = TILE.FLOOR
