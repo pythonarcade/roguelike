@@ -11,7 +11,7 @@ from entities.entity import Entity
 from util import char_to_pixel
 
 
-def recalculate_fov(char_x: int, char_y: int, radius: int, sprite_lists: List[arcade.SpriteList[Entity]]):
+def recalculate_fov(char_x: int, char_y: int, radius: int, sprite_lists: List[arcade.SpriteList]):
     for sprite_list in sprite_lists:
         for sprite in sprite_list:
             if sprite.is_visible:

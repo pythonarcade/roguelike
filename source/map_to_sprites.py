@@ -14,7 +14,7 @@ from entities.creature_factory import get_random_monster_by_challenge
 from entities.creature_factory import make_monster_sprite
 
 
-def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
+def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList:
     """ Take a grid of numbers and convert to sprites. """
     sprite_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=16)
 
@@ -57,7 +57,7 @@ def map_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
     return sprite_list
 
 
-def creatures_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList[Entity]:
+def creatures_to_sprites(game_map: List[List[int]]) -> arcade.SpriteList:
     """ Take a grid of numbers and convert to sprites. """
     sprite_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=16)
 
