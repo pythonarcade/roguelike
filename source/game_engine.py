@@ -9,7 +9,7 @@ from entities.stairs import Stairs
 from entities.inventory import Inventory
 from entities.entity import Entity
 from entities.fighter import Fighter
-from procedural_generation.game_map import GameMap
+from load_map.game_map import GameMap
 from recalculate_fov import recalculate_fov
 from get_blocking_sprites import get_blocking_sprites
 from map_to_sprites import map_to_sprites
@@ -94,7 +94,7 @@ class GameEngine:
 
         level = GameLevel()
 
-        self.game_map = GameMap(map_width, map_height)
+        self.game_map = GameMap(level_number=level_number)
         self.game_map.make_map(player=self.player, level=level_number)
 
         level.dungeon_sprites = map_to_sprites(self.game_map.tiles)
